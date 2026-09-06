@@ -7,11 +7,12 @@ import { getDragon } from '../data/dragons';
 import { SceneBackground, type SceneBg } from './SceneBackground';
 import { PixelIcon } from './PixelIcon';
 import { audio } from '../utils/audio';
+import { getBossForChapter } from '../data/bosses';
 import type { DecisionOption } from '../types';
 import './EventScreen.css';
 
 export function EventScreen({ eventId }: { eventId: string }) {
-  const { dispatch } = useGame();
+  const { state, dispatch } = useGame();
   const event = getEvent(eventId);
   const location = event ? getLocation(event.locationId) : undefined;
 
@@ -51,10 +52,18 @@ export function EventScreen({ eventId }: { eventId: string }) {
     audio.click();
     if (event!.nextEventId) {
       dispatch({ type: 'PLAY_EVENT', eventId: event!.nextEventId });
-    } else {
-      dispatch({ type: 'EXIT_EVENT' });
+      return;
     }
+    const boss = getBossForChapter(event!.chapterId);
+    if (boss && state.save && !state.save.defeatedBossIds.includes(boss.id)) {
+      dispatch({ type: 'PLAY_BOSS', bossId: boss.id });
+      return;
+    }
+    dispatch({ type: 'EXIT_EVENT' });
   }
+
+  const pendingBoss = !event.nextEventId ? getBossForChapter(event.chapterId) : undefined;
+  const bossPending = Boolean(pendingBoss && state.save && !state.save.defeatedBossIds.includes(pendingBoss.id));
 
   return (
     <div className="event-screen fade-in">
@@ -202,7 +211,7 @@ export function EventScreen({ eventId }: { eventId: string }) {
             )}
             {event.tvOnlyNote && <p className="event-tv-note">⚠ {event.tvOnlyNote}</p>}
             <button className="btn btn-primary event-continue" onClick={handleFinish}>
-              {event.nextEventId ? 'Siguiente Acontecimiento' : 'Volver al Mapa'}
+              {event.nextEventId ? 'Siguiente Acontecimiento' : bossPending ? 'Enfrentar al Jefe del Capítulo' : 'Volver al Mapa'}
             </button>
           </div>
         )}

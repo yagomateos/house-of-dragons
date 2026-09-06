@@ -4,12 +4,14 @@ import { loadGame, saveGame, createNewSave, clearGame, hasSavedGame } from '../u
 import { computeUnlockedAchievements } from './achievementLogic';
 import { chapters } from '../data/chapters';
 import { getEvent } from '../data/events';
+import { getBoss, getBossForChapter } from '../data/bosses';
 
 interface AppState {
   save: GameSaveState | null;
   screen: ScreenId;
   viewingLocationId: string | null;
   viewingEventId: string | null;
+  viewingBossId: string | null;
   newlyUnlockedAchievements: string[];
 }
 
@@ -20,6 +22,9 @@ type Action =
   | { type: 'SET_VIEWING_LOCATION'; locationId: string | null }
   | { type: 'PLAY_EVENT'; eventId: string }
   | { type: 'EXIT_EVENT' }
+  | { type: 'PLAY_BOSS'; bossId: string }
+  | { type: 'EXIT_BOSS' }
+  | { type: 'DEFEAT_BOSS'; bossId: string }
   | { type: 'RECORD_DECISION'; eventId: string; optionId: string; knowledgeBonus: number }
   | { type: 'RECORD_ANSWER'; correct: boolean }
   | { type: 'APPLY_REWARD'; reward: SceneStepReward; eventId: string }
@@ -31,6 +36,7 @@ const initialState: AppState = {
   screen: 'start',
   viewingLocationId: null,
   viewingEventId: null,
+  viewingBossId: null,
   newlyUnlockedAchievements: [],
 };
 
@@ -41,16 +47,30 @@ function withAchievements(save: GameSaveState): { save: GameSaveState; newly: st
   return { save: { ...save, unlockedAchievementIds: after }, newly };
 }
 
+/** Un capítulo con jefe pendiente no avanza hasta que el jefe se supera. */
+function chapterHasPendingBoss(save: GameSaveState, chapterId: string): boolean {
+  const boss = getBossForChapter(chapterId);
+  return Boolean(boss && !save.defeatedBossIds.includes(boss.id));
+}
+
+function advanceToNextChapter(save: GameSaveState, fromChapterId: string): GameSaveState {
+  const currentChapter = chapters.find((c) => c.id === fromChapterId);
+  if (!currentChapter) return save;
+  const nextChapter = chapters.find((c) => c.order === currentChapter.order + 1);
+  if (nextChapter && nextChapter.id !== save.currentChapterId) {
+    const nextEventId = nextChapter.eventIds[0] ?? save.currentEventId;
+    return { ...save, currentChapterId: nextChapter.id, currentEventId: nextEventId };
+  }
+  return save;
+}
+
 function advanceChapterIfNeeded(save: GameSaveState): GameSaveState {
   const currentChapter = chapters.find((c) => c.id === save.currentChapterId);
   if (!currentChapter) return save;
   const currentEvent = getEvent(save.currentEventId);
   if (currentEvent && !currentEvent.nextEventId && save.completedEventIds.includes(currentEvent.id)) {
-    const nextChapter = chapters.find((c) => c.order === currentChapter.order + 1);
-    if (nextChapter && nextChapter.id !== save.currentChapterId) {
-      const nextEventId = nextChapter.eventIds[0] ?? save.currentEventId;
-      return { ...save, currentChapterId: nextChapter.id, currentEventId: nextEventId };
-    }
+    if (chapterHasPendingBoss(save, currentChapter.id)) return save;
+    return advanceToNextChapter(save, currentChapter.id);
   }
   return save;
 }
@@ -75,6 +95,33 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, screen: 'event', viewingEventId: action.eventId };
     case 'EXIT_EVENT':
       return { ...state, screen: 'map', viewingEventId: null };
+    case 'PLAY_BOSS':
+      return { ...state, screen: 'boss', viewingBossId: action.bossId };
+    case 'EXIT_BOSS':
+      return { ...state, screen: 'map', viewingBossId: null };
+    case 'DEFEAT_BOSS': {
+      if (!state.save) return state;
+      const boss = getBoss(action.bossId);
+      if (!boss) return state;
+      const discoveredCharacterIds = Array.from(
+        new Set([...state.save.discoveredCharacterIds, ...(boss.rewards.unlockCharacterIds ?? [])])
+      );
+      const unlockedLocationIds = Array.from(
+        new Set([...state.save.unlockedLocationIds, ...(boss.rewards.unlockLocationIds ?? [])])
+      );
+      let save: GameSaveState = {
+        ...state.save,
+        knowledge: state.save.knowledge + boss.rewards.knowledge,
+        experience: state.save.experience + boss.rewards.experience,
+        discoveredCharacterIds,
+        unlockedLocationIds,
+        defeatedBossIds: Array.from(new Set([...state.save.defeatedBossIds, boss.id])),
+      };
+      save = advanceToNextChapter(save, boss.chapterId);
+      const withAch = withAchievements(save);
+      saveGame(withAch.save);
+      return { ...state, save: withAch.save, newlyUnlockedAchievements: withAch.newly };
+    }
     case 'RECORD_DECISION': {
       if (!state.save) return state;
       let save: GameSaveState = {

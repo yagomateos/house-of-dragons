@@ -176,6 +176,30 @@ export interface HistoricalEvent {
   tvOnlyNote?: string;
 }
 
+// ---------- JEFES DE CAPÍTULO ----------
+
+export type BossType = 'dragon' | 'strategy' | 'politics' | 'battle' | 'resources' | 'flight' | 'survival';
+
+export type Difficulty = 'facil' | 'normal' | 'dificil';
+
+export interface BossData {
+  id: string;
+  chapterId: string;
+  name: string;
+  type: BossType;
+  title: string;
+  tagline: string;
+  icon: IconKey;
+  /** texto narrativo mostrado al superar el jefe */
+  victoryText: string;
+  rewards: {
+    knowledge: number;
+    experience: number;
+    unlockLocationIds?: string[];
+    unlockCharacterIds?: string[];
+  };
+}
+
 // ---------- LOGROS ----------
 
 export interface AchievementData {
@@ -197,6 +221,7 @@ export interface GameSaveState {
   discoveredCharacterIds: string[];
   discoveredDragonIds: string[];
   unlockedAchievementIds: string[];
+  defeatedBossIds: string[];
   decisionsMade: Record<string, string>; // eventId -> optionId
   knowledge: number;
   experience: number;
@@ -212,6 +237,7 @@ export type ScreenId =
   | 'create'
   | 'map'
   | 'event'
+  | 'boss'
   | 'timeline'
   | 'encyclopedia'
   | 'settings';

@@ -1,0 +1,138 @@
+.boss-screen {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 20%, #2a1414 0%, #0b0b0f 70%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.boss-exit-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  width: 34px;
+  height: 34px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--c-stone-light);
+  color: var(--c-text-dim);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.boss-exit-btn:hover {
+  border-color: var(--c-red-bright);
+  color: var(--c-bone);
+}
+
+.boss-intro,
+.boss-result {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.2rem;
+  overflow-y: auto;
+}
+
+.boss-eyebrow {
+  font-family: var(--font-title);
+  font-size: 0.7rem;
+  color: var(--c-red-bright);
+  letter-spacing: 0.1em;
+  margin: 0 0 0.6rem;
+}
+
+.boss-title {
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  color: var(--c-gold-bright);
+  text-shadow: 0 0 14px rgba(201, 162, 39, 0.5), 2px 2px 0 #000;
+  margin: 0 0 1.2rem;
+}
+
+.boss-portrait {
+  margin-bottom: 0.8rem;
+  filter: drop-shadow(0 0 20px rgba(79, 107, 58, 0.6));
+}
+
+.boss-name {
+  font-family: var(--font-ui);
+  font-size: 1.3rem;
+  color: var(--c-bone);
+  margin: 0 0 0.4rem;
+}
+
+.boss-tagline {
+  font-style: italic;
+  color: var(--c-text-dim);
+  margin: 0 0 1.6rem;
+  max-width: 420px;
+}
+
+.boss-difficulty {
+  margin-bottom: 1.8rem;
+}
+
+.boss-difficulty-label {
+  font-family: var(--font-ui);
+  color: var(--c-gold);
+  font-size: 1rem;
+  margin: 0 0 0.6rem;
+}
+
+.boss-difficulty-options {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.boss-start-btn {
+  min-width: 200px;
+}
+
+.boss-result-title {
+  font-family: var(--font-title);
+  font-size: clamp(0.9rem, 3.4vw, 1.3rem);
+  margin: 0 0 1.2rem;
+}
+
+.boss-result-title--win {
+  color: var(--c-gold-bright);
+  text-shadow: 0 0 14px rgba(201, 162, 39, 0.6);
+}
+
+.boss-result-title--lose {
+  color: #e07a7a;
+}
+
+.boss-result-text {
+  max-width: 520px;
+  color: var(--c-text);
+  line-height: 1.55;
+  margin: 0 0 1.2rem;
+}
+
+.boss-reward-grid {
+  display: flex;
+  gap: 1.2rem;
+  font-family: var(--font-ui);
+  color: var(--c-bone);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.boss-result-sub {
+  color: var(--c-text-dim);
+  font-style: italic;
+  margin: 0 0 1.4rem;
+}
+
+.boss-result-actions {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.6rem;
+}

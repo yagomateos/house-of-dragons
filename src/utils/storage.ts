@@ -19,6 +19,8 @@ export function loadGame(): GameSaveState | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as GameSaveState;
     if (parsed.version !== SAVE_VERSION) return null;
+    // Migración leve: partidas guardadas antes de añadir el sistema de jefes.
+    if (!parsed.defeatedBossIds) parsed.defeatedBossIds = [];
     return parsed;
   } catch {
     return null;
@@ -58,6 +60,7 @@ export function createNewSave(player: PlayerCharacter): GameSaveState {
     discoveredCharacterIds: [],
     discoveredDragonIds: [],
     unlockedAchievementIds: [],
+    defeatedBossIds: [],
     decisionsMade: {},
     knowledge: 0,
     experience: 0,
