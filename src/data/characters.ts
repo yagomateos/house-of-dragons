@@ -126,13 +126,134 @@ export const characters: CharacterData[] = [
     status: 'muerto',
   },
 
+  // --- Capítulo 2: Las Cenizas ---
+  {
+    id: 'char_aegon3',
+    name: 'Aegon III Targaryen',
+    house: 'Targaryen',
+    portrait: 'portrait-male',
+    description:
+      'Hijo de Rhaenyra, coronado con solo diez años tras el final de la Danza de los Dragones. Su resentimiento hacia los dragones le valió el apodo de "el Destructor de Dragones".',
+    periodLabel: '120 d.C. — 157 d.C. (fecha aproximada)',
+    eventIds: ['ev_regencia_cenizas', 'ev_ultimo_dragon'],
+    status: 'muerto',
+  },
+
+  // --- Capítulo 3: Los Targaryen ---
+  {
+    id: 'char_aerys2',
+    name: 'Aerys II Targaryen',
+    house: 'Targaryen',
+    portrait: 'portrait-old-silver',
+    description:
+      'El "Rey Loco", último Targaryen en ocupar el Trono de Hierro antes de la rebelión. Su reinado, inicialmente prometedor, degeneró en paranoia tras el Desafío de Duskendale.',
+    periodLabel: '244 d.C. — 283 d.C. (fecha aproximada)',
+    eventIds: ['ev_generaciones_paz', 'ev_rapto_lyanna', 'ev_llamado_armas', 'ev_saqueo_desembarco'],
+    status: 'muerto',
+  },
+  {
+    id: 'char_rhaegar',
+    name: 'Rhaegar Targaryen',
+    house: 'Targaryen',
+    portrait: 'portrait-male-silver',
+    description:
+      'Príncipe heredero, célebre por su melancolía y su afición a la música y las profecías antiguas. Sus acciones en el Torneo de Harrenhal precipitaron la Rebelión de Robert.',
+    periodLabel: '259 d.C. — 283 d.C. (fecha aproximada)',
+    eventIds: ['ev_torneo_harrenhal', 'ev_rapto_lyanna', 'ev_batalla_tridente'],
+    status: 'muerto',
+  },
+  {
+    id: 'char_lyanna',
+    name: 'Lyanna Stark',
+    house: 'Stark',
+    portrait: 'portrait-female-dark',
+    description:
+      'Hija de Lord Rickard Stark, prometida a Robert Baratheon. Su desaparición junto al príncipe Rhaegar —rapto o huida voluntaria, según la fuente— encendió la mecha de la rebelión.',
+    periodLabel: '264 d.C. — 283 d.C. (fecha aproximada)',
+    eventIds: ['ev_torneo_harrenhal', 'ev_rapto_lyanna'],
+    status: 'muerto',
+  },
+
+  // --- Capítulo 4: La Rebelión ---
+  {
+    id: 'char_brandon_stark',
+    name: 'Brandon Stark',
+    house: 'Stark',
+    portrait: 'portrait-male-blonde',
+    description:
+      'Hermano mayor de Lyanna y Eddard, heredero de Invernalia. Su furiosa cabalgata hasta Desembarco del Rey para exigir la cabeza de Rhaegar acabó en tragedia.',
+    periodLabel: '263 d.C. — 282 d.C. (fecha aproximada)',
+    eventIds: ['ev_rapto_lyanna'],
+    status: 'muerto',
+  },
+  {
+    id: 'char_rickard_stark',
+    name: 'Rickard Stark',
+    house: 'Stark',
+    portrait: 'portrait-old-noble',
+    description:
+      'Señor de Invernalia, padre de Brandon, Eddard y Lyanna. Acudió a la corte a pedir clemencia para su hijo y no volvió a salir con vida.',
+    periodLabel: '234 d.C. — 282 d.C. (fecha aproximada)',
+    eventIds: ['ev_rapto_lyanna'],
+    status: 'muerto',
+  },
+  {
+    id: 'char_jon_arryn',
+    name: 'Jon Arryn',
+    house: 'Arryn',
+    portrait: 'portrait-old-warm',
+    description:
+      'Señor del Valle y tutor de Robert Baratheon y Eddard Stark. Su negativa a entregarlos para su ejecución encendió la Rebelión de Robert.',
+    periodLabel: '244 d.C. — 298 d.C. (fecha aproximada)',
+    eventIds: ['ev_llamado_armas'],
+    status: 'muerto',
+  },
+  {
+    id: 'char_robert',
+    name: 'Robert Baratheon',
+    house: 'Baratheon',
+    portrait: 'portrait-male-dark',
+    description:
+      'Señor de Bastión de Tormentas, prometido de Lyanna Stark. Encabezó la rebelión contra los Targaryen y mató a Rhaegar en la Batalla del Tridente.',
+    periodLabel: '262 d.C. — 298 d.C. (fecha aproximada)',
+    eventIds: ['ev_llamado_armas', 'ev_batalla_tridente'],
+    status: 'muerto',
+  },
+  {
+    id: 'char_eddard',
+    name: 'Eddard Stark',
+    house: 'Stark',
+    portrait: 'portrait-male-grey',
+    description:
+      'Hermano menor de Brandon y Lyanna, conocido por su honor inquebrantable. Se unió a la rebelión de Robert tras la muerte de su padre y su hermano.',
+    periodLabel: '263 d.C. — 298 d.C. (fecha aproximada)',
+    eventIds: ['ev_llamado_armas'],
+    status: 'muerto',
+  },
+  {
+    id: 'char_tywin',
+    name: 'Tywin Lannister',
+    house: 'Lannister',
+    portrait: 'portrait-old',
+    description:
+      'Señor de Roca Casterly, permaneció neutral durante la mayor parte de la rebelión hasta ofrecer una lealtad de última hora que resultó fatal para Aerys II.',
+    periodLabel: '242 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_saqueo_desembarco'],
+    status: 'muerto',
+  },
+  {
+    id: 'char_jaime',
+    name: 'Jaime Lannister',
+    house: 'Lannister',
+    portrait: 'portrait-male-gold',
+    description:
+      'Joven caballero de la Guardia Real jurado a proteger al rey. Puso fin a la dinastía Targaryen y ganó el apodo de "Matarreyes" por ello.',
+    periodLabel: '266 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_saqueo_desembarco'],
+    status: 'muerto',
+  },
+
   // --- Personajes de capítulos futuros (aparecerán bloqueados) ---
-  { id: 'char_robert', name: 'Robert Baratheon', house: 'Baratheon', portrait: 'portrait-male', description: 'Señor de Bastión de Tormentas que encabezó la rebelión contra los Targaryen.', periodLabel: '262 d.C. — 298 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
-  { id: 'char_eddard', name: 'Eddard Stark', house: 'Stark', portrait: 'portrait-male', description: 'Señor de Invernalia, conocido por su honor inquebrantable.', periodLabel: '263 d.C. — 298 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
-  { id: 'char_rhaegar', name: 'Rhaegar Targaryen', house: 'Targaryen', portrait: 'portrait-male', description: 'Príncipe heredero cuyas acciones desencadenaron la Rebelión de Robert.', periodLabel: '259 d.C. — 283 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
-  { id: 'char_aerys2', name: 'Aerys II Targaryen', house: 'Targaryen', portrait: 'portrait-old', description: 'El "Rey Loco", último Targaryen en ocupar el Trono de Hierro antes de la rebelión.', periodLabel: '244 d.C. — 283 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
-  { id: 'char_jon_arryn', name: 'Jon Arryn', house: 'Arryn', portrait: 'portrait-old', description: 'Señor del Valle y Mano del Rey de Robert Baratheon.', periodLabel: '244 d.C. — 298 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
-  { id: 'char_ned_stark_kl', name: 'Eddard Stark en Desembarco', house: 'Stark', portrait: 'portrait-male', description: 'Nombrado Mano del Rey tras la muerte de Jon Arryn.', periodLabel: '298 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
   { id: 'char_daenerys', name: 'Daenerys Targaryen', house: 'Targaryen', portrait: 'portrait-female', description: 'Última Targaryen conocida, madre de dragones.', periodLabel: '284 d.C. — 300 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
   { id: 'char_jon_snow', name: 'Jon Nieve', house: 'Stark / Targaryen', portrait: 'portrait-male', description: 'Hijo criado como bastardo en Invernalia, figura central del conflicto final.', periodLabel: '283 d.C. — 300 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
   { id: 'char_night_king', name: 'El Rey de la Noche', house: 'Desconocida', portrait: 'skull', description: 'Líder de los Caminantes Blancos.', periodLabel: 'Fecha desconocida', eventIds: [], status: 'desconocido', tvOnlyNote: 'Este personaje y su rol final proceden de la adaptación televisiva; su desarrollo en las novelas aún no se ha publicado.' },

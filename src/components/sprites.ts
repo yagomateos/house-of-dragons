@@ -441,6 +441,11 @@ const sprites: Record<IconKey, Sprite> = {
   'portrait-old': portraitSprite(C.hairGrey, C.skinDark, OLD_ROWS),
   'portrait-old-warm': portraitSprite(C.hairWarmGrey, C.skin, OLD_ROWS),
   'portrait-old-tan': portraitSprite(C.hairDark, C.skinDark, OLD_ROWS),
+  'portrait-old-silver': portraitSprite(C.hairSilver, C.skinDark, OLD_ROWS),
+  'portrait-old-noble': portraitSprite(C.hairDark, C.skin, OLD_ROWS),
+  'portrait-male-grey': portraitSprite(C.hairGrey, C.skin, MALE_ROWS),
+  'portrait-male-blonde': portraitSprite(C.hairBlonde, C.skin, MALE_ROWS),
+  'portrait-male-gold': portraitSprite(C.gold, C.skin, MALE_ROWS),
 };
 
 export function getSprite(icon: IconKey): Sprite {

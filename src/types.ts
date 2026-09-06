@@ -47,6 +47,11 @@ export type IconKey =
   | 'portrait-female-dark'
   | 'portrait-old-warm'
   | 'portrait-old-tan'
+  | 'portrait-old-silver'
+  | 'portrait-old-noble'
+  | 'portrait-male-grey'
+  | 'portrait-male-blonde'
+  | 'portrait-male-gold'
   | 'iron-throne'
   | 'wall'
   | 'map-pin';
