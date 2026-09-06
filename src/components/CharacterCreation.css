@@ -1,0 +1,124 @@
+.creation-screen {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+}
+
+.creation-panel {
+  width: min(560px, 100%);
+  padding: 1.6rem 1.6rem 1.4rem;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.creation-title {
+  color: var(--c-gold-bright);
+  font-size: 1.1rem;
+  margin: 0 0 0.9rem;
+  text-align: center;
+}
+
+.creation-hint {
+  color: var(--c-text-dim);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+.creation-label {
+  font-family: var(--font-ui);
+  font-size: 1.1rem;
+  color: var(--c-gold);
+  margin: 0.8rem 0 0.4rem;
+}
+
+.creation-input {
+  width: 100%;
+  background: var(--c-black);
+  border: 2px solid var(--c-stone-light);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  padding: 0.6em 0.8em;
+}
+
+.creation-input:focus {
+  outline: none;
+  border-color: var(--c-gold);
+}
+
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+  margin-top: 0.4rem;
+}
+
+.class-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--c-stone-light);
+  color: var(--c-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.8rem 0.5rem;
+  text-align: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.class-card:hover {
+  border-color: var(--c-gold);
+}
+
+.class-card--active {
+  border-color: var(--c-gold);
+  background: rgba(201, 162, 39, 0.12);
+  box-shadow: 0 0 12px rgba(201, 162, 39, 0.3);
+}
+
+.class-name {
+  font-family: var(--font-ui);
+  font-size: 1.05rem;
+  color: var(--c-gold-bright);
+}
+
+.class-desc {
+  font-size: 0.78rem;
+  color: var(--c-text-dim);
+  line-height: 1.3;
+}
+
+.creation-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.2rem;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--c-text-dim);
+  border-top: 1px solid var(--c-stone-light);
+  padding-top: 0.8rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.creation-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 1.4rem;
+}
+
+.creation-actions .btn {
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .class-grid {
+    grid-template-columns: 1fr;
+  }
+}

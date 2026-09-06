@@ -1,0 +1,100 @@
+.scene-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #050510 0%, #0d1128 35%, #171225 65%, #0b0b0f 100%);
+}
+
+.scene-bg--battle {
+  background: linear-gradient(180deg, #1a0808 0%, #2a0f0f 35%, #1a0a0a 65%, #0b0b0f 100%);
+}
+
+.scene-bg--throne {
+  background: linear-gradient(180deg, #0a0812 0%, #171029 40%, #120c1c 70%, #0b0b0f 100%);
+}
+
+.scene-bg--sea {
+  background: linear-gradient(180deg, #050a18 0%, #0c1c33 40%, #0a1420 70%, #0b0b0f 100%);
+}
+
+.scene-bg--snow {
+  background: linear-gradient(180deg, #0a0e1c 0%, #16223a 40%, #1a2436 70%, #0b0b0f 100%);
+}
+
+.scene-bg--hall {
+  background: linear-gradient(180deg, #100b08 0%, #241a12 40%, #1a130d 70%, #0b0b0f 100%);
+}
+
+.scene-sky {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 22%;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.85));
+}
+
+.scene-castle {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.9;
+  filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.9));
+}
+
+.scene-throne {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0 40px rgba(201, 162, 39, 0.25));
+}
+
+.scene-torch {
+  position: absolute;
+  bottom: 10%;
+}
+
+.scene-torch--left {
+  left: 8%;
+}
+
+.scene-torch--right {
+  right: 8%;
+}
+
+@keyframes flyAcross {
+  0% { transform: translate(-10vw, 10vh) scale(0.7) scaleX(-1); opacity: 0; }
+  10% { opacity: 0.85; }
+  50% { transform: translate(45vw, 2vh) scale(1) scaleX(-1); }
+  90% { opacity: 0.85; }
+  100% { transform: translate(110vw, 8vh) scale(0.8) scaleX(-1); opacity: 0; }
+}
+
+.scene-dragon-fly {
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: flyAcross 22s linear infinite;
+  opacity: 0.85;
+}
+
+.scene-vignette {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 160px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+}
+
+.scene-content {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+}

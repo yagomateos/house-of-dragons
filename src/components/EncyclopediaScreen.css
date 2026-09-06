@@ -1,0 +1,86 @@
+.ency-screen {
+  position: absolute;
+  inset: 0;
+  padding-top: 52px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 50% 0%, #14181f 0%, #0b0b0f 70%);
+}
+
+.ency-header {
+  text-align: center;
+  padding: 0.6rem 0 0.2rem;
+}
+
+.ency-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem 0.6rem;
+}
+
+.ency-tab {
+  flex-shrink: 0;
+  background: transparent;
+  border: 2px solid var(--c-stone-light);
+  color: var(--c-text-dim);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  padding: 0.4rem 0.9rem;
+}
+
+.ency-tab--active {
+  border-color: var(--c-gold);
+  color: var(--c-gold-bright);
+  background: rgba(201, 162, 39, 0.1);
+}
+
+.ency-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.7rem;
+  padding: 0.4rem 0.8rem 1.5rem;
+  align-content: start;
+}
+
+.ency-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--c-gold);
+  color: var(--c-text);
+  padding: 0.7rem 0.4rem;
+  text-align: center;
+}
+
+.ency-card--locked {
+  border-color: var(--c-stone-light);
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.ency-card-name {
+  font-size: 0.82rem;
+  line-height: 1.2;
+}
+
+.ency-card-sub {
+  font-size: 0.7rem;
+  color: var(--c-text-dim);
+}
+
+.ency-detail-lines {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: var(--c-text-dim);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}

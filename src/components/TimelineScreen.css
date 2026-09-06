@@ -1,0 +1,121 @@
+.timeline-screen {
+  position: absolute;
+  inset: 0;
+  padding-top: 52px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 50% 0%, #1a1420 0%, #0b0b0f 70%);
+}
+
+.timeline-header {
+  text-align: center;
+  padding: 0.6rem 0;
+}
+
+.timeline-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 1rem 2rem;
+  position: relative;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 2.1rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--c-gold), var(--c-stone-light));
+  opacity: 0.5;
+}
+
+.timeline-chapter-block {
+  margin-bottom: 1.6rem;
+  position: relative;
+}
+
+.timeline-chapter-label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.6rem;
+  padding-left: 2.4rem;
+}
+
+.timeline-chapter-order {
+  font-family: var(--font-title);
+  font-size: 0.6rem;
+  color: var(--c-gold);
+}
+
+.timeline-chapter-title {
+  font-family: var(--font-ui);
+  font-size: 1.15rem;
+  color: var(--c-bone);
+}
+
+.timeline-chapter-range {
+  font-size: 0.78rem;
+  color: var(--c-text-dim);
+}
+
+.timeline-card {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: calc(100% - 0.5rem);
+  margin: 0 0 0.55rem 1.7rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--c-gold);
+  color: var(--c-text);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  position: relative;
+}
+
+.timeline-card--locked {
+  border-color: var(--c-stone-light);
+  opacity: 0.45;
+  cursor: default;
+}
+
+.timeline-card--future {
+  font-style: italic;
+}
+
+.timeline-card--done {
+  border-color: var(--c-gold);
+  background: rgba(201, 162, 39, 0.08);
+}
+
+.timeline-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.timeline-card-year {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--c-gold);
+  margin: 0;
+}
+
+.timeline-card-title {
+  margin: 0.1rem 0 0;
+  font-size: 0.92rem;
+}
+
+.timeline-card-check {
+  color: var(--c-gold-bright);
+  font-size: 1.1rem;
+}
+
+.timeline-detail-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.timeline-detail-actions .btn {
+  flex: 1;
+}

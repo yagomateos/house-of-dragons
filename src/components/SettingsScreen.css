@@ -1,0 +1,81 @@
+.settings-screen {
+  position: absolute;
+  inset: 0;
+  padding-top: 52px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background: radial-gradient(ellipse at 50% 0%, #1a1420 0%, #0b0b0f 70%);
+  overflow-y: auto;
+}
+
+.settings-header {
+  text-align: center;
+  padding: 0.6rem 0 0.2rem;
+}
+
+.settings-panel {
+  width: min(460px, 92vw);
+  padding: 1.2rem 1.3rem;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--c-stone-light);
+  font-family: var(--font-ui);
+  font-size: 1.05rem;
+}
+
+.toggle {
+  font-family: var(--font-title);
+  font-size: 0.65rem;
+  background: var(--c-stone);
+  border: 2px solid var(--c-stone-light);
+  color: var(--c-text-dim);
+  padding: 0.4em 0.8em;
+}
+
+.toggle--on {
+  border-color: var(--c-gold);
+  color: var(--c-gold-bright);
+  background: rgba(201, 162, 39, 0.15);
+}
+
+.settings-label {
+  font-family: var(--font-ui);
+  color: var(--c-gold);
+  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+}
+
+.settings-note {
+  font-size: 0.82rem;
+  color: var(--c-text-dim);
+  line-height: 1.4;
+  margin: 0.8rem 0;
+}
+
+.settings-divider {
+  height: 1px;
+  background: var(--c-stone-light);
+  margin: 0.8rem 0;
+}
+
+.settings-confirm p {
+  font-size: 0.9rem;
+  color: var(--c-bone);
+}
+
+.settings-confirm-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.settings-confirm-actions .btn {
+  flex: 1;
+}
