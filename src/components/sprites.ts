@@ -41,8 +41,14 @@ const C = {
   hairBrown: '#4a3323',
   hairBlonde: '#d8c273',
   hairGrey: '#9a9a9a',
+  hairSilver: '#ece6d6',
+  hairDark: '#241a12',
+  hairWarmGrey: '#8f8778',
   eye: '#14141a',
   wood: '#5a3d24',
+  steel: '#9aa0a8',
+  steelDark: '#5f666e',
+  patch: '#14141a',
 };
 
 function dragonSprite(body: string, wing: string): Sprite {
@@ -65,23 +71,83 @@ function dragonSprite(body: string, wing: string): Sprite {
   );
 }
 
-function portraitSprite(hair: string, skin: string, extra?: string[]): Sprite {
-  const base = [
-    '....HHHHHH..',
-    '...HHHHHHHH.',
-    '..HSSSSSSSH.',
-    '.HSSSSSSSSH.',
-    '.HSEESSSSEH.',
-    '.HSSSSSSSSH.',
-    '.HSSSSSSSSH.',
-    '..HSSSSSSH..',
-    '...SSSSSS...',
-    '..CCCCCCCC..',
-    '.CCCCCCCCCC.',
-    'CCCCCCCCCCCC',
-  ];
-  const rows = extra ?? base;
-  return sprite(rows, { H: hair, S: skin, E: C.eye, C: C.night });
+const MALE_ROWS = [
+  '....HHHHHH..',
+  '...HHHHHHHH.',
+  '..HSSSSSSSH.',
+  '.HSSSSSSSSH.',
+  '.HSEESSSSEH.',
+  '.HSSSSSSSSH.',
+  '.HSSSSSSSSH.',
+  '..HSSSSSSH..',
+  '...SSSSSS...',
+  '..CCCCCCCC..',
+  '.CCCCCCCCCC.',
+  'CCCCCCCCCCCC',
+];
+
+const FEMALE_ROWS = [
+  '..HHHHHHHH..',
+  '.HHHHHHHHHH.',
+  'HHSSSSSSSSHH',
+  'HSSSSSSSSSSH',
+  'HSEESSSSEESH',
+  'HSSSSSSSSSSH',
+  'HSSSSSSSSSSH',
+  'HHSSSSSSSSHH',
+  'HH.SSSSSS.HH',
+  '..CCCCCCCC..',
+  '.CCCCCCCCCC.',
+  'CCCCCCCCCCCC',
+];
+
+const OLD_ROWS = [
+  '....GGGGGG..',
+  '...GGGGGGGG.',
+  '..GSSSSSSSG.',
+  '.GSSSSSSSSG.',
+  '.GSEESSSSEG.',
+  '.GSSSSSSSSG.',
+  '.GSSGGGGSSG.',
+  '..GGGGGGGG..',
+  '...GGGGGG...',
+  '..CCCCCCCC..',
+  '.CCCCCCCCCC.',
+  'CCCCCCCCCCCC',
+];
+
+const AEMOND_ROWS = [
+  '....HHHHHH..',
+  '...HHHHHHHH.',
+  '..HSSSSSSSH.',
+  '.HSSSSSSSSH.',
+  '.HSXXSSSSEH.',
+  '.HSXXSSSSSH.',
+  '.HSSSSSSSSH.',
+  '..HSSSSSSH..',
+  '...SSSSSS...',
+  '..CCCCCCCC..',
+  '.CCCCCCCCCC.',
+  'CCCCCCCCCCCC',
+];
+
+const KNIGHT_ROWS = [
+  '....KKKKKK..',
+  '...KKKKKKKK.',
+  '..KKKKKKKKK.',
+  '.KSSSSSSSSK.',
+  '.KSEESSSSEK.',
+  '.KSSSSSSSSK.',
+  '.KSSSSSSSSK.',
+  '..KSSSSSSK..',
+  '...SSSSSS...',
+  '..CCCCCCCC..',
+  '.CCCCCCCCCC.',
+  'CCCCCCCCCCCC',
+];
+
+function portraitSprite(hair: string, skin: string, rows: string[] = MALE_ROWS): Sprite {
+  return sprite(rows, { H: hair, S: skin, E: C.eye, C: C.night, X: C.patch, K: C.steel });
 }
 
 const sprites: Record<IconKey, Sprite> = {
@@ -357,35 +423,24 @@ const sprites: Record<IconKey, Sprite> = {
   'dragon-gold': dragonSprite(C.gold, C.darkGold),
   'dragon-green': dragonSprite(C.green, C.darkGreen),
   'dragon-pale': dragonSprite(C.bone, C.silver),
-  'portrait-male': portraitSprite(C.hairBrown, C.skin),
-  'portrait-female': portraitSprite(C.hairBlonde, C.skin, [
-    '..HHHHHHHH..',
-    '.HHHHHHHHHH.',
-    'HHSSSSSSSSHH',
-    'HSSSSSSSSSSH',
-    'HSEESSSSEESH',
-    'HSSSSSSSSSSH',
-    'HSSSSSSSSSSH',
-    'HHSSSSSSSSHH',
-    'HH.SSSSSS.HH',
-    '..CCCCCCCC..',
-    '.CCCCCCCCCC.',
-    'CCCCCCCCCCCC',
-  ]),
-  'portrait-old': portraitSprite(C.hairGrey, C.skinDark, [
-    '....GGGGGG..',
-    '...GGGGGGGG.',
-    '..GSSSSSSSG.',
-    '.GSSSSSSSSG.',
-    '.GSEESSSSEG.',
-    '.GSSSSSSSSG.',
-    '.GSSGGGGSSG.',
-    '..GGGGGGGG..',
-    '...GGGGGG...',
-    '..CCCCCCCC..',
-    '.CCCCCCCCCC.',
-    'CCCCCCCCCCCC',
-  ]),
+  'dragon-silver': dragonSprite(C.silver, C.stone),
+  'dragon-gold-bright': dragonSprite(C.gold, C.ember),
+  'dragon-crimson': dragonSprite('#c2434f', C.red),
+
+  // Retratos: cada personaje descubrible tiene su propia combinación de
+  // plantilla (hombre/mujer/anciano/nudillo) y color, para que ninguno
+  // se confunda con otro en la Enciclopedia.
+  'portrait-male': portraitSprite(C.hairBrown, C.skin, MALE_ROWS),
+  'portrait-male-silver': portraitSprite(C.hairSilver, C.skin, MALE_ROWS),
+  'portrait-male-dark': portraitSprite(C.hairDark, C.skin, MALE_ROWS),
+  'portrait-aemond': portraitSprite(C.hairSilver, C.skin, AEMOND_ROWS),
+  'portrait-knight': portraitSprite(C.steelDark, C.skin, KNIGHT_ROWS),
+  'portrait-female': portraitSprite(C.hairBlonde, C.skin, FEMALE_ROWS),
+  'portrait-female-silver': portraitSprite(C.hairSilver, C.skin, FEMALE_ROWS),
+  'portrait-female-dark': portraitSprite(C.hairDark, C.skin, FEMALE_ROWS),
+  'portrait-old': portraitSprite(C.hairGrey, C.skinDark, OLD_ROWS),
+  'portrait-old-warm': portraitSprite(C.hairWarmGrey, C.skin, OLD_ROWS),
+  'portrait-old-tan': portraitSprite(C.hairDark, C.skinDark, OLD_ROWS),
 };
 
 export function getSprite(icon: IconKey): Sprite {

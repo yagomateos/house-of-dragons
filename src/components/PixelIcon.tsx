@@ -7,9 +7,13 @@ interface PixelIconProps {
   size?: number;
   className?: string;
   title?: string;
+  /** Dibuja la silueta correcta (misma forma) en un tono oscuro uniforme, para entradas aún no descubiertas. */
+  silhouette?: boolean;
 }
 
-export function PixelIcon({ icon, size = 48, className, title }: PixelIconProps) {
+const SILHOUETTE_COLOR = '#2c2f3a';
+
+export function PixelIcon({ icon, size = 48, className, title, silhouette = false }: PixelIconProps) {
   const sprite = getSprite(icon);
   const rows = sprite.grid.length;
   const cols = sprite.cols;
@@ -21,20 +25,20 @@ export function PixelIcon({ icon, size = 48, className, title }: PixelIconProps)
       for (let x = 0; x < row.length; x++) {
         const ch = row[x];
         if (ch === '.' || ch === undefined) continue;
-        const color = sprite.legend[ch];
+        const color = silhouette ? SILHOUETTE_COLOR : sprite.legend[ch];
         if (!color) continue;
         shadows.push(`${(x * unit).toFixed(2)}px ${(y * unit).toFixed(2)}px 0 0 ${color}`);
       }
     });
     return shadows.join(', ');
-  }, [sprite, unit]);
+  }, [sprite, unit, silhouette]);
 
   return (
     <div
       className={`pixel-icon ${className ?? ''}`}
       style={{ width: size, height: rows * unit, position: 'relative', flexShrink: 0 }}
       role="img"
-      aria-label={title ?? icon}
+      aria-label={silhouette ? '???' : (title ?? icon)}
       title={title}
     >
       <div

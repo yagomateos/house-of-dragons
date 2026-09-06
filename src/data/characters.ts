@@ -20,7 +20,7 @@ export const characters: CharacterData[] = [
     id: 'char_rhaenyra',
     name: 'Rhaenyra Targaryen',
     house: 'Targaryen',
-    portrait: 'portrait-female',
+    portrait: 'portrait-female-silver',
     description:
       'Única hija superviviente de Viserys I, nombrada heredera por su padre. Su reclamación del Trono de Hierro desató la Danza de los Dragones.',
     periodLabel: '97 d.C. — 130 d.C.',
@@ -31,7 +31,7 @@ export const characters: CharacterData[] = [
     id: 'char_aegon2',
     name: 'Aegon II Targaryen',
     house: 'Targaryen',
-    portrait: 'portrait-male',
+    portrait: 'portrait-male-silver',
     description:
       'Hijo mayor de Viserys I y la reina Alicent Hightower. Coronado rey por el partido Verde tras la muerte de su padre, disputando el trono a su media hermana.',
     periodLabel: '107 d.C. — 131 d.C.',
@@ -53,7 +53,7 @@ export const characters: CharacterData[] = [
     id: 'char_daemon',
     name: 'Daemon Targaryen',
     house: 'Targaryen',
-    portrait: 'portrait-male',
+    portrait: 'portrait-male-dark',
     description:
       'Hermano menor de Viserys I, temerario jinete de dragón y esposo de Rhaenyra. Guerrero formidable y figura clave del partido Negro.',
     periodLabel: '81 d.C. — 130 d.C.',
@@ -64,7 +64,7 @@ export const characters: CharacterData[] = [
     id: 'char_otto',
     name: 'Otto Hightower',
     house: 'Hightower',
-    portrait: 'portrait-old',
+    portrait: 'portrait-old-warm',
     description:
       'Mano del Rey durante gran parte del reinado de Viserys I. Arquitecto principal del ascenso de Aegon II al trono.',
     periodLabel: '68 d.C. — 130 d.C. (fecha aproximada)',
@@ -86,7 +86,7 @@ export const characters: CharacterData[] = [
     id: 'char_aemond',
     name: 'Aemond Targaryen',
     house: 'Targaryen',
-    portrait: 'portrait-male',
+    portrait: 'portrait-aemond',
     description:
       'Hijo de Alicent y Viserys I, jinete de la dragona Vhagar. Su persecución de Lucerys terminó en tragedia y en el inicio abierto de las hostilidades.',
     periodLabel: '110 d.C. — 130 d.C. (fecha aproximada)',
@@ -97,7 +97,7 @@ export const characters: CharacterData[] = [
     id: 'char_criston',
     name: 'Criston Cole',
     house: 'Guardia Real',
-    portrait: 'portrait-male',
+    portrait: 'portrait-knight',
     description: 'Caballero de la Guardia Real, luego Mano del Rey de Aegon II. Firme defensor del partido Verde.',
     periodLabel: '98 d.C. — 130 d.C. (fecha aproximada)',
     eventIds: ['ev_muerte_viserys', 'ev_batalla_bosque'],
@@ -107,7 +107,7 @@ export const characters: CharacterData[] = [
     id: 'char_corlys',
     name: 'Corlys Velaryon',
     house: 'Velaryon',
-    portrait: 'portrait-old',
+    portrait: 'portrait-old-tan',
     description:
       'Llamado "la Serpiente Marina". Señor de Marcaderiva y el mayor navegante de su época, aliado del partido Negro.',
     periodLabel: '53 d.C. — 132 d.C. (fecha aproximada)',
@@ -118,7 +118,7 @@ export const characters: CharacterData[] = [
     id: 'char_rhaenys',
     name: 'Rhaenys Targaryen',
     house: 'Targaryen',
-    portrait: 'portrait-female',
+    portrait: 'portrait-female-dark',
     description:
       'Llamada "la Reina que Nunca Fue". Prima de Viserys I y esposa de Corlys, jinete de la dragona Meleys.',
     periodLabel: '81 d.C. — 130 d.C.',

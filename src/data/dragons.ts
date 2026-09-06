@@ -40,7 +40,7 @@ export const dragons: DragonData[] = [
     description: 'Dragón de escamas doradas, considerado el más hermoso de su generación.',
     sizeLabel: 'Grande',
     status: 'muerto',
-    portrait: 'dragon-gold',
+    portrait: 'dragon-gold-bright',
   },
   {
     id: 'drag_meleys',
@@ -50,7 +50,7 @@ export const dragons: DragonData[] = [
     description: 'Llamada "la Reina Roja Sangre", una de las dragonas más veloces jamás conocidas.',
     sizeLabel: 'Grande',
     status: 'muerto',
-    portrait: 'dragon-red',
+    portrait: 'dragon-crimson',
   },
   {
     id: 'drag_arrax',
@@ -80,7 +80,7 @@ export const dragons: DragonData[] = [
     description: 'Dragona de color plata y blanco, antigua montura de la reina Buena Reina Alysanne.',
     sizeLabel: 'Grande',
     status: 'vivo',
-    portrait: 'dragon-pale',
+    portrait: 'dragon-silver',
   },
 ];
 

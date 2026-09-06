@@ -143,7 +143,7 @@ export function EncyclopediaScreen() {
               setDetail(e);
             }}
           >
-            <PixelIcon icon={e.unlocked ? e.icon : 'skull'} size={40} />
+            <PixelIcon icon={e.icon} size={40} silhouette={!e.unlocked} />
             <span className="ency-card-name">{e.unlocked ? e.name : '???'}</span>
             {e.unlocked && e.subtitle && <span className="ency-card-sub">{e.subtitle}</span>}
           </button>

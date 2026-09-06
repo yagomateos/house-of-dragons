@@ -88,7 +88,7 @@ export function MapScreen() {
               onClick={() => handlePinClick(loc.id, status)}
             >
               <span className={`map-pin-badge ${status === 'available' ? 'pulse-gold' : ''}`}>
-                <PixelIcon icon={status === 'locked' ? 'map-pin' : loc.icon} size={26} />
+                <PixelIcon icon={loc.icon} size={26} silhouette={status === 'locked'} />
                 {status === 'done' && <span className="map-pin-check">✓</span>}
                 {status === 'locked' && <span className="map-pin-lock">🔒</span>}
               </span>
