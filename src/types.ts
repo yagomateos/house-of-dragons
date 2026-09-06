@@ -242,6 +242,7 @@ export type ScreenId =
   | 'create'
   | 'map'
   | 'event'
+  | 'defeat'
   | 'boss'
   | 'timeline'
   | 'encyclopedia'

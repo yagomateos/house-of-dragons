@@ -8,6 +8,7 @@ import { SceneBackground, type SceneBg } from './SceneBackground';
 import { PixelIcon } from './PixelIcon';
 import { audio } from '../utils/audio';
 import { getBossForChapter } from '../data/bosses';
+import { DAMAGE_WRONG_ANSWER } from '../state/GameContext';
 import type { DecisionOption } from '../types';
 import './EventScreen.css';
 
@@ -64,6 +65,7 @@ export function EventScreen({ eventId }: { eventId: string }) {
 
   const pendingBoss = !event.nextEventId ? getBossForChapter(event.chapterId) : undefined;
   const bossPending = Boolean(pendingBoss && state.save && !state.save.defeatedBossIds.includes(pendingBoss.id));
+  const survivedWrongAnswer = (state.sessionHealth ?? state.save?.health ?? 0) > 0;
 
   return (
     <div className="event-screen fade-in">
@@ -158,18 +160,46 @@ export function EventScreen({ eventId }: { eventId: string }) {
           </div>
         )}
 
-        {step.type === 'question' && answered && (
+        {step.type === 'question' && answered && answered.correct && (
           <div className="rpg-panel event-box slide-up">
-            <p className={`question-verdict ${answered.correct ? 'question-verdict--ok' : 'question-verdict--bad'}`}>
-              {answered.correct ? 'CORRECTO · +10 Conocimiento' : 'INCORRECTO'}
+            <p className="question-verdict question-verdict--ok">CORRECTO · +10 Conocimiento</p>
+            <p className="event-narration-text">{step.explanation}</p>
+            <button className="btn btn-small event-continue" onClick={goNext}>
+              Continuar
+            </button>
+          </div>
+        )}
+
+        {step.type === 'question' && answered && !answered.correct && (
+          <div className="rpg-panel event-box slide-up">
+            <p className="question-verdict question-verdict--bad">
+              INCORRECTO · -{DAMAGE_WRONG_ANSWER} <span className="heart-icon">❤</span>
             </p>
             <p className="event-narration-text">
               <strong>Respuesta correcta:</strong> {step.options[step.correctIndex]}
             </p>
             <p className="event-narration-text">{step.explanation}</p>
-            <button className="btn btn-small event-continue" onClick={goNext}>
-              Continuar
-            </button>
+            {survivedWrongAnswer ? (
+              <button
+                className="btn btn-small event-continue"
+                onClick={() => {
+                  audio.click();
+                  setAnswered(null);
+                }}
+              >
+                Inténtalo de Nuevo
+              </button>
+            ) : (
+              <button
+                className="btn btn-primary event-continue"
+                onClick={() => {
+                  audio.deny();
+                  dispatch({ type: 'SET_SCREEN', screen: 'defeat' });
+                }}
+              >
+                Continuar
+              </button>
+            )}
           </div>
         )}
 

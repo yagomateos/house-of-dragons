@@ -133,6 +133,10 @@
   color: #e07a7a;
 }
 
+.heart-icon {
+  color: #e07a7a;
+}
+
 .event-reward-line {
   color: var(--c-gold-bright);
   font-family: var(--font-ui);

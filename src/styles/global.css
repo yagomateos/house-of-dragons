@@ -18,6 +18,14 @@
   --font-title: 'Press Start 2P', monospace;
   --font-body: 'EB Garamond', 'Georgia', serif;
   --font-ui: 'IM Fell English SC', serif;
+  /* Altura del HUD: dos filas en móvil, una sola fila a partir de 640px (ver HUD.css). */
+  --hud-height: 84px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --hud-height: 56px;
+  }
 }
 
 * {

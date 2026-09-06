@@ -4,6 +4,7 @@ import { CharacterCreation } from './components/CharacterCreation';
 import { MapScreen } from './components/MapScreen';
 import { EventScreen } from './components/EventScreen';
 import { BossScreen } from './components/BossScreen';
+import { DefeatScreen } from './components/DefeatScreen';
 import { TimelineScreen } from './components/TimelineScreen';
 import { EncyclopediaScreen } from './components/EncyclopediaScreen';
 import { SettingsScreen } from './components/SettingsScreen';
@@ -13,9 +14,9 @@ import { AchievementToast } from './components/AchievementToast';
 
 function App() {
   const { state } = useGame();
-  const { screen, save, viewingEventId, viewingBossId } = state;
+  const { screen, save, viewingEventId, viewingBossId, retryToken } = state;
 
-  const showHud = screen !== 'start' && screen !== 'create' && screen !== 'boss';
+  const showHud = screen !== 'start' && screen !== 'create' && screen !== 'boss' && screen !== 'defeat';
   const showBottomNav = Boolean(save) && ['map', 'timeline', 'encyclopedia'].includes(screen);
 
   return (
@@ -26,8 +27,11 @@ function App() {
       {screen === 'start' && <StartScreen />}
       {screen === 'create' && <CharacterCreation />}
       {screen === 'map' && save && <MapScreen />}
-      {screen === 'event' && viewingEventId && <EventScreen key={viewingEventId} eventId={viewingEventId} />}
+      {screen === 'event' && viewingEventId && (
+        <EventScreen key={`${viewingEventId}-${retryToken}`} eventId={viewingEventId} />
+      )}
       {screen === 'boss' && viewingBossId && <BossScreen key={viewingBossId} bossId={viewingBossId} />}
+      {screen === 'defeat' && <DefeatScreen />}
       {screen === 'timeline' && <TimelineScreen />}
       {screen === 'encyclopedia' && <EncyclopediaScreen />}
       {screen === 'settings' && <SettingsScreen />}

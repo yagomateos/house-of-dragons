@@ -19,23 +19,48 @@
 
 .dodge-health {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  min-width: 0;
+  width: 40%;
+  max-width: 180px;
+}
+
+.dodge-health-icon {
+  color: #d97a7a;
   flex-shrink: 0;
 }
 
-.dodge-pip {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #000;
+.dodge-health-track {
+  flex: 1;
+  height: 12px;
+  min-width: 40px;
+  background: #14141a;
+  border: 1px solid var(--c-stone-light);
+  overflow: hidden;
 }
 
-.dodge-pip--alive {
-  background: var(--c-red-bright);
-  box-shadow: 0 0 4px rgba(168, 50, 50, 0.8);
+.dodge-health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7fb562, #a8d878);
+  transition: width 0.2s ease;
 }
 
-.dodge-pip--dead {
-  background: #2a2a33;
+.dodge-health-fill--mid {
+  background: linear-gradient(90deg, #d0a13a, #e6c14f);
+}
+
+.dodge-health-fill--low {
+  background: linear-gradient(90deg, #a83232, #e07a7a);
+}
+
+.dodge-health-value {
+  font-family: var(--font-title);
+  font-size: 0.55rem;
+  color: var(--c-bone);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .dodge-timer-track {

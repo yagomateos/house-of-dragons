@@ -1,0 +1,36 @@
+.defeat-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.2rem;
+}
+
+.defeat-eyebrow {
+  font-size: 2.4rem;
+  margin: 0 0 0.6rem;
+  filter: grayscale(0.2);
+}
+
+.defeat-title {
+  font-size: clamp(1.1rem, 4.5vw, 1.7rem);
+  color: #e07a7a;
+  text-shadow: 0 0 16px rgba(224, 122, 122, 0.5), 2px 2px 0 #000;
+  margin: 0 0 1.2rem;
+}
+
+.defeat-text {
+  max-width: 480px;
+  color: var(--c-text-dim);
+  line-height: 1.55;
+  margin: 0 0 2rem;
+}
+
+.defeat-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  width: min(320px, 88vw);
+}

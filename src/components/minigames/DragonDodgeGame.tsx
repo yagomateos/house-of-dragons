@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { PixelIcon } from '../PixelIcon';
 import type { Difficulty, IconKey } from '../../types';
+import { DAMAGE_BOSS_HIT } from '../../state/GameContext';
 import './DragonDodgeGame.css';
 
 interface DragonDodgeGameProps {
   difficulty: Difficulty;
   dragonIcon: IconKey;
+  /** Vida real del jugador (0-100) con la que entra a la batalla. */
+  startingHealth: number;
+  /** Se llama cada vez que el jugador recibe un golpe, con el nuevo valor de vida (0-100). */
+  onDamage: (newHealth: number) => void;
   onWin: () => void;
   onLose: () => void;
 }
@@ -29,14 +34,13 @@ interface DifficultyConfig {
   duration: number;
   spawnEvery: number;
   telegraph: number;
-  maxHealth: number;
   speed: number;
 }
 
 const CONFIG: Record<Difficulty, DifficultyConfig> = {
-  facil: { duration: 28, spawnEvery: 1300, telegraph: 900, maxHealth: 5, speed: 3.4 },
-  normal: { duration: 36, spawnEvery: 950, telegraph: 700, maxHealth: 4, speed: 3.7 },
-  dificil: { duration: 45, spawnEvery: 650, telegraph: 550, maxHealth: 3, speed: 4.1 },
+  facil: { duration: 28, spawnEvery: 1300, telegraph: 900, speed: 3.4 },
+  normal: { duration: 36, spawnEvery: 950, telegraph: 700, speed: 3.7 },
+  dificil: { duration: 45, spawnEvery: 650, telegraph: 550, speed: 4.1 },
 };
 
 const TICK_MS = 50;
@@ -102,14 +106,21 @@ function spawnAttack(cfg: DifficultyConfig, now: number): Attack {
   };
 }
 
-export function DragonDodgeGame({ difficulty, dragonIcon, onWin, onLose }: DragonDodgeGameProps) {
+export function DragonDodgeGame({
+  difficulty,
+  dragonIcon,
+  startingHealth,
+  onDamage,
+  onWin,
+  onLose,
+}: DragonDodgeGameProps) {
   const cfg = CONFIG[difficulty];
 
   const gameRef = useRef({
     player: { x: 50, y: 80 },
     keys: new Set<string>(),
     attacks: [] as Attack[],
-    health: cfg.maxHealth,
+    health: startingHealth,
     timeLeft: cfg.duration,
     lastSpawn: 0,
     invulnerableUntil: 0,
@@ -189,8 +200,9 @@ export function DragonDodgeGame({ difficulty, dragonIcon, onWin, onLose }: Drago
           }
           if (hit) {
             atk.hit = true;
-            g.health -= 1;
+            g.health = Math.max(0, g.health - DAMAGE_BOSS_HIT);
             g.invulnerableUntil = now + 900;
+            onDamage(g.health);
           }
         }
       }
@@ -225,7 +237,7 @@ export function DragonDodgeGame({ difficulty, dragonIcon, onWin, onLose }: Drago
   }
 
   const g = gameRef.current;
-  const healthPips = Array.from({ length: cfg.maxHealth }, (_, i) => i < g.health);
+  const healthPct = Math.max(0, Math.min(100, g.health));
   const timePct = Math.max(0, (g.timeLeft / cfg.duration) * 100);
   const now = performance.now();
   const flashHit = now < g.invulnerableUntil;
@@ -234,9 +246,14 @@ export function DragonDodgeGame({ difficulty, dragonIcon, onWin, onLose }: Drago
     <div className="dodge-game">
       <div className="dodge-hud">
         <div className="dodge-health">
-          {healthPips.map((alive, i) => (
-            <span key={i} className={`dodge-pip ${alive ? 'dodge-pip--alive' : 'dodge-pip--dead'}`} />
-          ))}
+          <span className="dodge-health-icon">❤</span>
+          <div className="dodge-health-track">
+            <div
+              className={`dodge-health-fill ${healthPct <= 25 ? 'dodge-health-fill--low' : healthPct <= 55 ? 'dodge-health-fill--mid' : ''}`}
+              style={{ width: `${healthPct}%` }}
+            />
+          </div>
+          <span className="dodge-health-value">{Math.round(healthPct)}/100</span>
         </div>
         <div className="dodge-timer-track">
           <div className="dodge-timer-fill" style={{ width: `${timePct}%` }} />

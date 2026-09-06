@@ -19,14 +19,16 @@ const DIFFICULTY_LABELS: { id: Difficulty; label: string }[] = [
 ];
 
 export function BossScreen({ bossId }: { bossId: string }) {
-  const { dispatch } = useGame();
+  const { state, dispatch } = useGame();
   const boss = getBoss(bossId);
   const [phase, setPhase] = useState<Phase>('intro');
   const [difficulty, setDifficulty] = useState<Difficulty>('normal');
   const [attempt, setAttempt] = useState(0);
   const [rewardApplied, setRewardApplied] = useState(false);
 
-  if (!boss) return null;
+  if (!boss || !state.save) return null;
+
+  const currentHealth = state.sessionHealth ?? state.save.health;
 
   function handleWin() {
     audio.achievement();
@@ -39,11 +41,16 @@ export function BossScreen({ bossId }: { bossId: string }) {
 
   function handleLose() {
     audio.error();
+    // Se descarta el daño de este intento: el punto de guardado no se
+    // toca, así que el jugador vuelve a intentarlo con la vida de su
+    // última partida guardada, no con 0.
+    dispatch({ type: 'DISCARD_BOSS_ATTEMPT' });
     setPhase('lost');
   }
 
   function handleRetry() {
     audio.click();
+    dispatch({ type: 'RESTART_BOSS_ATTEMPT' });
     setAttempt((a) => a + 1);
     setPhase('playing');
   }
@@ -82,6 +89,10 @@ export function BossScreen({ bossId }: { bossId: string }) {
           <p className="boss-name">{boss.name}</p>
           <p className="boss-tagline">&ldquo;{boss.tagline}&rdquo;</p>
 
+          <p className="boss-health-preview">
+            Llegas con <span className="heart-icon">❤ {currentHealth}/100</span>
+          </p>
+
           <div className="boss-difficulty">
             <p className="boss-difficulty-label">Dificultad</p>
             <div className="boss-difficulty-options">
@@ -117,6 +128,8 @@ export function BossScreen({ bossId }: { bossId: string }) {
           key={attempt}
           difficulty={difficulty}
           dragonIcon={boss.icon}
+          startingHealth={currentHealth}
+          onDamage={(value) => dispatch({ type: 'SET_SESSION_HEALTH', value })}
           onWin={handleWin}
           onLose={handleLose}
         />
@@ -162,7 +175,7 @@ export function BossScreen({ bossId }: { bossId: string }) {
           <p className="boss-result-title boss-result-title--lose">HAS SIDO DERROTADO</p>
           <p className="boss-result-text">
             El dragón resulta demasiado fiero esta vez. Tu progreso del capítulo está a salvo: puedes
-            volver a intentarlo cuando quieras.
+            volver a intentarlo cuando quieras, con la vida de tu última partida guardada.
           </p>
           <div className="boss-result-actions">
             <button className="btn btn-primary" onClick={handleRetry}>
