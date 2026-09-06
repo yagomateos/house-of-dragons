@@ -9,9 +9,8 @@ export function HUD() {
   const { state, dispatch } = useGame();
   const { save } = state;
   const [confirmingExit, setConfirmingExit] = useState(false);
-  if (!save) return null;
 
-  const chapter = getChapter(save.currentChapterId);
+  const chapter = save ? getChapter(save.currentChapterId) : undefined;
 
   function goToMenu() {
     audio.click();
@@ -34,28 +33,30 @@ export function HUD() {
         <span className="hud-menu-label">Menú</span>
       </button>
 
-      <div className="hud-stats">
-        <div className="hud-item">
-          <span className="hud-label">Capítulo</span>
-          <span className="hud-value">{chapter ? chapter.order : '-'}</span>
+      {save && (
+        <div className="hud-stats">
+          <div className="hud-item">
+            <span className="hud-label">Capítulo</span>
+            <span className="hud-value">{chapter ? chapter.order : '-'}</span>
+          </div>
+          <div className="hud-item">
+            <span className="hud-label">Año</span>
+            <span className="hud-value">{save.currentYear}</span>
+          </div>
+          <div className="hud-item">
+            <span className="hud-label">Vida</span>
+            <span className="hud-value hud-value--red">{save.health}</span>
+          </div>
+          <div className="hud-item">
+            <span className="hud-label">Conocimiento</span>
+            <span className="hud-value hud-value--gold">{save.knowledge}</span>
+          </div>
+          <div className="hud-item hud-item--hide-mobile">
+            <span className="hud-label">Experiencia</span>
+            <span className="hud-value">{save.experience}</span>
+          </div>
         </div>
-        <div className="hud-item">
-          <span className="hud-label">Año</span>
-          <span className="hud-value">{save.currentYear}</span>
-        </div>
-        <div className="hud-item">
-          <span className="hud-label">Vida</span>
-          <span className="hud-value hud-value--red">{save.health}</span>
-        </div>
-        <div className="hud-item">
-          <span className="hud-label">Conocimiento</span>
-          <span className="hud-value hud-value--gold">{save.knowledge}</span>
-        </div>
-        <div className="hud-item hud-item--hide-mobile">
-          <span className="hud-label">Experiencia</span>
-          <span className="hud-value">{save.experience}</span>
-        </div>
-      </div>
+      )}
 
       {confirmingExit && (
         <div className="hud-confirm-backdrop" onClick={() => setConfirmingExit(false)}>

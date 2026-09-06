@@ -14,7 +14,7 @@ function App() {
   const { state } = useGame();
   const { screen, save, viewingEventId } = state;
 
-  const showHud = Boolean(save) && screen !== 'start' && screen !== 'create';
+  const showHud = screen !== 'start' && screen !== 'create';
   const showBottomNav = Boolean(save) && ['map', 'timeline', 'encyclopedia'].includes(screen);
 
   return (
