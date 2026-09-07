@@ -21,6 +21,7 @@ export type IconKey =
   | 'dragon-gold-bright'
   | 'dragon-crimson'
   | 'dragon-flying'
+  | 'dragon-egg'
   | 'crown'
   | 'sword'
   | 'book'

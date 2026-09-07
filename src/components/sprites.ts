@@ -110,6 +110,25 @@ function flyingDragonSprite(): Sprite {
   );
 }
 
+/** Huevo de dragón: silueta ovalada con una grieta, para el minijuego
+ * del Arquero de Harrenhal (huevos que eclosionan en dragones). */
+function dragonEggSprite(): Sprite {
+  return sprite(
+    [
+      '...OO...',
+      '..OSSO..',
+      '.OSSSSO.',
+      '.OSSCSO.',
+      'OSSSSSSO',
+      'OSSCSSSO',
+      'OSSSSSSO',
+      '.OSSSSO.',
+      '..OOOO..',
+    ],
+    { O: C.darkGreen, S: C.bone, C: C.green }
+  );
+}
+
 const MALE_ROWS = [
   '....HHHHHH..',
   '...HHHHHHHH.',
@@ -466,6 +485,7 @@ const sprites: Record<IconKey, Sprite> = {
   'dragon-gold-bright': dragonSprite(C.gold, C.ember),
   'dragon-crimson': dragonSprite('#c2434f', C.red),
   'dragon-flying': flyingDragonSprite(),
+  'dragon-egg': dragonEggSprite(),
 
   // Retratos: cada personaje descubrible tiene su propia combinación de
   // plantilla (hombre/mujer/anciano/nudillo) y color, para que ninguno

@@ -11,8 +11,8 @@ const CHARACTER_OPTIONS: { icon: IconKey; name: string }[] = [
 ];
 
 const ENEMY_ICON: Record<EnemyKind, IconKey> = {
-  soldado: 'portrait-male-dark',
-  arquero: 'portrait-aemond',
+  egg: 'dragon-egg',
+  dragonling: 'dragon-green',
 };
 
 interface ArcherShooterBossProps {
@@ -23,7 +23,7 @@ interface ArcherShooterBossProps {
   onLose: () => void;
 }
 
-type EnemyKind = 'soldado' | 'arquero';
+type EnemyKind = 'egg' | 'dragonling';
 
 interface Enemy {
   id: number;
@@ -34,6 +34,10 @@ interface Enemy {
   speed: number;
   lastShot: number;
   hurtUntil: number;
+  /** Momento en que un huevo eclosiona (irrelevante para dragoncillos). */
+  hatchAt: number;
+  /** Breve resplandor justo después de eclosionar. */
+  hatchedUntil: number;
   dead: boolean;
 }
 
@@ -57,7 +61,8 @@ interface FireBreath {
 interface WaveDef {
   count: number;
   spawnEvery: number;
-  archerRatio: number;
+  /** Probabilidad de que aparezca un huevo (eclosiona en dragoncillo) en vez de uno directamente. */
+  eggRatio: number;
   enemySpeed: number;
 }
 
@@ -70,24 +75,24 @@ interface DifficultyConfig {
 const CONFIG: Record<Difficulty, DifficultyConfig> = {
   facil: {
     waves: [
-      { count: 5, spawnEvery: 1100, archerRatio: 0, enemySpeed: 0.32 },
-      { count: 6, spawnEvery: 950, archerRatio: 0.2, enemySpeed: 0.36 },
+      { count: 5, spawnEvery: 1100, eggRatio: 0, enemySpeed: 0.32 },
+      { count: 6, spawnEvery: 950, eggRatio: 0.3, enemySpeed: 0.36 },
     ],
     dragonHp: 160,
     fireDamageMult: 0.8,
   },
   normal: {
     waves: [
-      { count: 6, spawnEvery: 950, archerRatio: 0, enemySpeed: 0.4 },
-      { count: 8, spawnEvery: 800, archerRatio: 0.3, enemySpeed: 0.45 },
+      { count: 6, spawnEvery: 950, eggRatio: 0.15, enemySpeed: 0.4 },
+      { count: 8, spawnEvery: 800, eggRatio: 0.35, enemySpeed: 0.45 },
     ],
     dragonHp: 220,
     fireDamageMult: 1,
   },
   dificil: {
     waves: [
-      { count: 7, spawnEvery: 800, archerRatio: 0, enemySpeed: 0.48 },
-      { count: 10, spawnEvery: 650, archerRatio: 0.4, enemySpeed: 0.55 },
+      { count: 7, spawnEvery: 800, eggRatio: 0.2, enemySpeed: 0.48 },
+      { count: 10, spawnEvery: 650, eggRatio: 0.45, enemySpeed: 0.55 },
     ],
     dragonHp: 290,
     fireDamageMult: 1.2,
@@ -104,17 +109,21 @@ const DRAGON_Y = 16;
 
 let nextId = 1;
 
-function spawnEnemy(wave: WaveDef): Enemy {
-  const isArcher = Math.random() < wave.archerRatio;
+function spawnEnemy(wave: WaveDef, now: number): Enemy {
+  const isEgg = Math.random() < wave.eggRatio;
   return {
     id: nextId++,
-    kind: isArcher ? 'arquero' : 'soldado',
+    kind: isEgg ? 'egg' : 'dragonling',
     x: 4 + Math.random() * 92,
     y: 4,
-    hp: isArcher ? 2 : 1,
-    speed: wave.enemySpeed * (isArcher ? 0.8 : 1),
+    hp: isEgg ? 1 : 2,
+    // Un huevo se queda quieto mientras incuba; un dragoncillo (directo
+    // o recién nacido) avanza hacia las murallas como cualquier oleada.
+    speed: isEgg ? 0 : wave.enemySpeed,
     lastShot: 0,
     hurtUntil: 0,
+    hatchAt: isEgg ? now + 2200 + Math.random() * 900 : 0,
+    hatchedUntil: 0,
     dead: false,
   };
 }
@@ -262,13 +271,23 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
         if (g.spawnedInWave < currentWave.count && now - g.lastSpawn > currentWave.spawnEvery) {
           g.lastSpawn = now;
           g.spawnedInWave += 1;
-          g.enemies.push(spawnEnemy(currentWave));
+          g.enemies.push(spawnEnemy(currentWave, now));
         }
 
         for (const e of g.enemies) {
           if (e.dead) continue;
+          if (e.kind === 'egg') {
+            if (now > e.hatchAt) {
+              e.kind = 'dragonling';
+              e.hp = 2;
+              e.speed = currentWave.enemySpeed;
+              e.hatchedUntil = now + 400;
+              audio.hitEnemy();
+            }
+            continue;
+          }
           e.y += e.speed;
-          if (e.kind === 'arquero' && now - e.lastShot > 1800 && e.y > 15 && e.y < 70) {
+          if (now - e.lastShot > 1800 && e.y > 15 && e.y < 70) {
             e.lastShot = now;
             g.enemyShots.push({ id: nextId++, x: e.x, y: e.y, vy: 2.2, dead: false });
             audio.enemyShoot();
@@ -467,13 +486,14 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
 
         {g.enemies.map((e) => {
           const hit = now < e.hurtUntil;
+          const hatching = now < e.hatchedUntil;
           return (
             <div
               key={e.id}
-              className={`archer-enemy archer-enemy--${e.kind} ${hit ? 'archer-enemy--hit' : ''}`}
+              className={`archer-enemy archer-enemy--${e.kind} ${hit ? 'archer-enemy--hit' : ''} ${hatching ? 'archer-enemy--hatching' : ''}`}
               style={{ left: `${e.x}%`, top: `${e.y}%` }}
             >
-              <PixelIcon icon={ENEMY_ICON[e.kind]} size={26} />
+              <PixelIcon icon={ENEMY_ICON[e.kind]} size={e.kind === 'egg' ? 20 : 30} />
             </div>
           );
         })}
@@ -531,8 +551,9 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
             <div className="archer-briefing-box">
               <p className="archer-briefing-title">🏹 El Arquero de Harrenhal</p>
               <p className="archer-briefing-text">
-                Muévete arrastrando el dedo o con ◀▶: disparas flechas automáticamente. Derrota las
-                oleadas de soldados y luego al dragón que ronda el castillo maldito.
+                Muévete arrastrando el dedo o con ◀▶: disparas flechas automáticamente. Los huevos
+                eclosionan en dragoncillos que escupen fuego — reviéntalos antes de que nazcan o acaba
+                con el dragoncillo igualmente. Luego enfréntate al dragón que ronda el castillo maldito.
               </p>
               <p className="archer-briefing-text">
                 El dragón esquiva flechas hasta lanzar su primer aliento de fuego: sobrevívelo esquivando
