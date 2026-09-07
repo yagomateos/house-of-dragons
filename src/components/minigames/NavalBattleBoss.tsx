@@ -476,6 +476,17 @@ export function NavalBattleBoss({ difficulty, startingHealth, onDamage, onWin, o
         ))}
 
         <div
+          className="naval-track"
+          style={{ top: `${PLAYER_Y}%` }}
+          onPointerDown={handleArenaPointerDown}
+          onPointerMove={handleArenaPointerMove}
+          onPointerUp={handleArenaPointerUp}
+          onPointerCancel={handleArenaPointerUp}
+        >
+          <div className="naval-track-handle" style={{ left: `${g.playerX}%` }} />
+        </div>
+
+        <div
           className={`naval-player ${flashHit ? 'naval-player--hit' : ''}`}
           style={{ left: `${g.playerX}%`, top: `${PLAYER_Y}%` }}
         >

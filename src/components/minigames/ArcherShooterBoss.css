@@ -261,6 +261,45 @@
   z-index: 2;
 }
 
+/* Carril de arrastre estilo Arkanoid: una franja horizontal visible y
+ * de sobra táctil (44px+) a la altura del jugador, para que quede
+ * claro dónde arrastrar en móvil en vez de tener que adivinar que
+ * toda la pantalla responde al arrastre. */
+.archer-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 44px;
+  transform: translateY(-50%);
+  z-index: 3;
+  touch-action: none;
+  cursor: ew-resize;
+}
+
+.archer-track::before {
+  content: '';
+  position: absolute;
+  left: 2%;
+  right: 2%;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  background: rgba(230, 193, 79, 0.25);
+  border-top: 1px dashed rgba(230, 193, 79, 0.4);
+  border-bottom: 1px dashed rgba(230, 193, 79, 0.4);
+}
+
+.archer-track-handle {
+  position: absolute;
+  top: 50%;
+  width: 34px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  background: rgba(230, 193, 79, 0.35);
+  border: 1px solid rgba(230, 193, 79, 0.7);
+  border-radius: 4px;
+}
+
 .archer-player {
   position: absolute;
   transform: translate(-50%, -50%);

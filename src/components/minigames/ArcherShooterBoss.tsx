@@ -482,6 +482,17 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
         ))}
 
         <div
+          className="archer-track"
+          style={{ top: `${PLAYER_Y}%` }}
+          onPointerDown={handleArenaPointerDown}
+          onPointerMove={handleArenaPointerMove}
+          onPointerUp={handleArenaPointerUp}
+          onPointerCancel={handleArenaPointerUp}
+        >
+          <div className="archer-track-handle" style={{ left: `${g.playerX}%` }} />
+        </div>
+
+        <div
           className={`archer-player ${flashHit ? 'archer-player--hit' : ''}`}
           style={{ left: `${g.playerX}%`, top: `${PLAYER_Y}%` }}
         >
