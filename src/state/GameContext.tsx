@@ -146,24 +146,32 @@ function reducer(state: AppState, action: Action): AppState {
       if (!state.save) return state;
       const boss = getBoss(action.bossId);
       if (!boss) return state;
-      const discoveredCharacterIds = Array.from(
-        new Set([...state.save.discoveredCharacterIds, ...(boss.rewards.unlockCharacterIds ?? [])])
-      );
-      const unlockedLocationIds = Array.from(
-        new Set([...state.save.unlockedLocationIds, ...(boss.rewards.unlockLocationIds ?? [])])
-      );
+      // El jugador puede volver a enfrentar un jefe ya superado (desde el
+      // mapa) para divertirse o practicar: en ese caso solo se confirma
+      // la vida con la que termina, sin volver a dar recompensas ni
+      // re-avanzar de capítulo.
+      const alreadyDefeated = state.save.defeatedBossIds.includes(boss.id);
       let save: GameSaveState = {
         ...state.save,
-        // Se confirma la vida con la que terminó la batalla (nunca se
-        // "regala" salud extra por ganar; solo se conserva la que quedaba).
         health: clampHealth(state.sessionHealth ?? state.save.health),
-        knowledge: state.save.knowledge + boss.rewards.knowledge,
-        experience: state.save.experience + boss.rewards.experience,
-        discoveredCharacterIds,
-        unlockedLocationIds,
-        defeatedBossIds: Array.from(new Set([...state.save.defeatedBossIds, boss.id])),
       };
-      save = advanceToNextChapter(save, boss.chapterId);
+      if (!alreadyDefeated) {
+        const discoveredCharacterIds = Array.from(
+          new Set([...state.save.discoveredCharacterIds, ...(boss.rewards.unlockCharacterIds ?? [])])
+        );
+        const unlockedLocationIds = Array.from(
+          new Set([...state.save.unlockedLocationIds, ...(boss.rewards.unlockLocationIds ?? [])])
+        );
+        save = {
+          ...save,
+          knowledge: state.save.knowledge + boss.rewards.knowledge,
+          experience: state.save.experience + boss.rewards.experience,
+          discoveredCharacterIds,
+          unlockedLocationIds,
+          defeatedBossIds: Array.from(new Set([...state.save.defeatedBossIds, boss.id])),
+        };
+        save = advanceToNextChapter(save, boss.chapterId);
+      }
       const withAch = withAchievements(save);
       saveGame(withAch.save);
       return { ...state, save: withAch.save, sessionHealth: null, newlyUnlockedAchievements: withAch.newly };

@@ -2,9 +2,28 @@ import { useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { locations } from '../data/locations';
 import { getEvent } from '../data/events';
+import { chapters } from '../data/chapters';
+import { bosses } from '../data/bosses';
 import { PixelIcon } from './PixelIcon';
 import { audio } from '../utils/audio';
+import type { BossData, GameSaveState } from '../types';
 import './MapScreen.css';
+
+/** El jefe de un capítulo se ofrece en la localización de su último
+ * acontecimiento, una vez completado — y sigue disponible para siempre
+ * después, se haya superado ya o no, para poder volver a enfrentarlo. */
+function getBossAvailableAtLocation(locationId: string, save: GameSaveState): BossData | null {
+  for (const boss of bosses) {
+    const chapter = chapters.find((c) => c.id === boss.chapterId);
+    if (!chapter || chapter.eventIds.length === 0) continue;
+    const lastEventId = chapter.eventIds[chapter.eventIds.length - 1];
+    const lastEvent = getEvent(lastEventId);
+    if (!lastEvent || lastEvent.locationId !== locationId) continue;
+    if (!save.completedEventIds.includes(lastEventId)) continue;
+    return boss;
+  }
+  return null;
+}
 
 type PinStatus = 'locked' | 'available' | 'done';
 
@@ -36,6 +55,8 @@ export function MapScreen() {
   }
 
   const openLocation = locations.find((l) => l.id === openLocationId);
+  const availableBoss = openLocation && save ? getBossAvailableAtLocation(openLocation.id, save) : null;
+  const bossDefeated = availableBoss ? (save?.defeatedBossIds.includes(availableBoss.id) ?? false) : false;
 
   return (
     <div className="map-screen fade-in">
@@ -143,6 +164,25 @@ export function MapScreen() {
                 );
               })}
             </div>
+
+            {availableBoss && (
+              <div className="location-boss-block">
+                <p className="location-modal-subtitle">Jefe del capítulo</p>
+                <button
+                  className="btn btn-primary location-boss-btn"
+                  onClick={() => {
+                    audio.click();
+                    dispatch({ type: 'PLAY_BOSS', bossId: availableBoss.id });
+                    setOpenLocationId(null);
+                  }}
+                >
+                  <span>{availableBoss.name}</span>
+                  <span className="location-boss-btn-status">
+                    {bossDefeated ? '✓ Superado · Volver a enfrentar' : 'Enfrentar'}
+                  </span>
+                </button>
+              </div>
+            )}
 
             <button
               className="btn btn-ghost"

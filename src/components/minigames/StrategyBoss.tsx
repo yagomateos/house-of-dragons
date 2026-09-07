@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Difficulty } from '../../types';
+import { PixelIcon } from '../PixelIcon';
 import './StrategyBoss.css';
 
 // Una brecha en el castillo duele menos que un golpe directo de jefe:
@@ -36,14 +37,6 @@ interface Unit {
   flashUntil: number;
   dead: boolean;
 }
-
-const ICONS: Record<UnitKind, string> = {
-  soldado: '🗡️',
-  arquero: '🏹',
-  caballeria: '🐴',
-  asaltante: '👹',
-  asaltante_arco: '🏹',
-};
 
 const LABELS: Record<UnitKind, string> = {
   soldado: 'Soldado',
@@ -325,13 +318,13 @@ export function StrategyBoss({ difficulty, startingHealth, onDamage, onWin, onLo
       </div>
 
       <div className="war-objective">
-        🏰 Defiende el castillo durante {cfg.duration}s · <span className="war-objective-you">Verde = tuyo</span> ·{' '}
+        Defiende el castillo durante {cfg.duration}s · <span className="war-objective-you">Verde = tuyo</span> ·{' '}
         <span className="war-objective-enemy">Rojo = enemigo</span>
       </div>
 
       <div className="war-arena" ref={arenaRef} onClick={handleArenaClick}>
         <div className="war-base" style={{ left: `${BASE.x}%`, top: `${BASE.y}%` }}>
-          <span className="war-base-icon">🏰</span>
+          <PixelIcon icon="castle" size={40} />
           <span className="war-base-label">Tu castillo</span>
         </div>
         <div className="war-breach-line" style={{ top: `${BREACH_Y}%` }} />
@@ -346,9 +339,7 @@ export function StrategyBoss({ difficulty, startingHealth, onDamage, onWin, onLo
               className={`war-unit war-unit--${u.side} ${hit ? 'war-unit--hit' : ''} ${selected ? 'war-unit--selected' : ''}`}
               style={{ left: `${u.x}%`, top: `${u.y}%` }}
             >
-              <span className="war-unit-badge">
-                <span className="war-unit-icon">{ICONS[u.kind]}</span>
-              </span>
+              <span className={`war-unit-badge war-unit-badge--${u.kind}`} />
               <span className="war-unit-label">{LABELS[u.kind]}</span>
               <div className="war-unit-hp-track">
                 <div

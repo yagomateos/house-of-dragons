@@ -7,7 +7,7 @@ import { chapters } from '../data/chapters';
 import { PixelIcon } from './PixelIcon';
 import { DragonDodgeGame } from './minigames/DragonDodgeGame';
 import { StrategyBoss } from './minigames/StrategyBoss';
-import { PoliticsBoss } from './minigames/PoliticsBoss';
+import { CastleAssaultBoss } from './minigames/CastleAssaultBoss';
 import { BattleBoss } from './minigames/BattleBoss';
 import { audio } from '../utils/audio';
 import type { Difficulty } from '../types';
@@ -28,6 +28,7 @@ export function BossScreen({ bossId }: { bossId: string }) {
   const [difficulty, setDifficulty] = useState<Difficulty>('normal');
   const [attempt, setAttempt] = useState(0);
   const [rewardApplied, setRewardApplied] = useState(false);
+  const [wasAlreadyDefeated] = useState(() => state.save?.defeatedBossIds.includes(bossId) ?? false);
 
   if (!boss || !state.save) return null;
 
@@ -150,7 +151,7 @@ export function BossScreen({ bossId }: { bossId: string }) {
       )}
 
       {phase === 'playing' && boss.type === 'politics' && (
-        <PoliticsBoss
+        <CastleAssaultBoss
           key={attempt}
           difficulty={difficulty}
           startingHealth={currentHealth}
@@ -173,13 +174,17 @@ export function BossScreen({ bossId }: { bossId: string }) {
 
       {phase === 'won' && (
         <div className="boss-result">
-          <p className="boss-result-title boss-result-title--win">¡HAS SOBREVIVIDO AL DRAGÓN!</p>
+          <p className="boss-result-title boss-result-title--win">¡VICTORIA!</p>
           <p className="boss-result-text">{boss.victoryText}</p>
-          <div className="boss-reward-grid">
-            <span>+{boss.rewards.knowledge} Conocimiento</span>
-            <span>+{boss.rewards.experience} Experiencia</span>
-          </div>
-          {(boss.rewards.unlockCharacterIds?.length || boss.rewards.unlockLocationIds?.length) && (
+          {wasAlreadyDefeated ? (
+            <p className="boss-result-sub">Ya habías superado este jefe — sin recompensas adicionales.</p>
+          ) : (
+            <div className="boss-reward-grid">
+              <span>+{boss.rewards.knowledge} Conocimiento</span>
+              <span>+{boss.rewards.experience} Experiencia</span>
+            </div>
+          )}
+          {!wasAlreadyDefeated && (boss.rewards.unlockCharacterIds?.length || boss.rewards.unlockLocationIds?.length) && (
             <div className="event-unlocks">
               {boss.rewards.unlockCharacterIds?.map((id) => {
                 const c = getCharacter(id);

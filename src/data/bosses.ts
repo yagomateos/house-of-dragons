@@ -38,13 +38,13 @@ export const bosses: BossData[] = [
   {
     id: 'boss_ch3_consejo',
     chapterId: 'ch3_targaryen',
-    name: 'Los Rumores de Harrenhal',
+    name: 'El Campeón de Harrenhal',
     type: 'politics',
-    title: 'EL CONSEJO',
-    tagline: 'Bajo las banderas y la música del torneo, no todas las palabras son sinceras.',
+    title: 'ASALTO AL CASTILLO',
+    tagline: 'El torneo se abre paso entre guardias, arqueros y caballeros hasta el campeón del castillo.',
     icon: 'tower',
     victoryText:
-      'Separas la verdad de la manipulación antes de que la corte se deje engañar. El Consejo ha sido superado.',
+      'El campeón cae en el patio de armas de Harrenhal. El nombre del vencedor del torneo se añadirá a las canciones... aunque nadie aún sospecha lo que esa corona de amor y belleza desatará.',
     rewards: {
       knowledge: 45,
       experience: 80,

@@ -131,11 +131,6 @@
   pointer-events: none;
 }
 
-.war-base-icon {
-  font-size: 2.1rem;
-  filter: drop-shadow(0 0 12px rgba(201, 162, 39, 0.7));
-}
-
 .war-base-label {
   font-family: var(--font-ui);
   font-size: 0.55rem;
@@ -191,9 +186,34 @@
   box-shadow: 0 0 14px rgba(230, 193, 79, 1);
 }
 
-.war-unit-icon {
-  font-size: 1.15rem;
-  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.9));
+.war-unit-badge::before {
+  content: '';
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+.war-unit-badge--soldado::before {
+  background: #b9c0c8;
+}
+
+.war-unit-badge--arquero::before {
+  background: #6fae54;
+  transform: rotate(45deg);
+}
+
+.war-unit-badge--caballeria::before {
+  background: #c9a05a;
+  border-radius: 50%;
+}
+
+.war-unit-badge--asaltante::before {
+  background: #c0453a;
+}
+
+.war-unit-badge--asaltante_arco::before {
+  background: #c0453a;
+  transform: rotate(45deg);
 }
 
 .war-unit-label {

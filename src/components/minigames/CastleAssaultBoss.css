@@ -1,0 +1,332 @@
+.castle-game {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+.castle-hud {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.9rem;
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 2px solid var(--c-gold);
+  z-index: 5;
+}
+
+.castle-health {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  min-width: 0;
+  width: 40%;
+  max-width: 170px;
+}
+
+.castle-health-icon {
+  color: #d97a7a;
+  flex-shrink: 0;
+}
+
+.castle-health-track {
+  flex: 1;
+  height: 12px;
+  min-width: 40px;
+  background: #14141a;
+  border: 1px solid var(--c-stone-light);
+  overflow: hidden;
+}
+
+.castle-health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7fb562, #a8d878);
+  transition: width 0.2s ease;
+}
+
+.castle-health-fill--mid {
+  background: linear-gradient(90deg, #d0a13a, #e6c14f);
+}
+
+.castle-health-fill--low {
+  background: linear-gradient(90deg, #a83232, #e07a7a);
+}
+
+.castle-health-value {
+  font-family: var(--font-title);
+  font-size: 0.55rem;
+  color: var(--c-bone);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.castle-progress {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--c-gold);
+  white-space: nowrap;
+}
+
+.castle-boss-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.castle-boss-label {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  color: #d68fd6;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.castle-boss-track {
+  flex: 1;
+  height: 12px;
+  background: #14141a;
+  border: 2px solid #7a3a8f;
+  overflow: hidden;
+}
+
+.castle-boss-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7a3a8f, #b154d1);
+  transition: width 0.15s ease;
+}
+
+.castle-arena {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: linear-gradient(180deg, #241a2a 0%, #1c1420 60%, #120c14 100%);
+}
+
+.castle-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14%;
+  height: 3px;
+  background: rgba(201, 162, 39, 0.4);
+}
+
+.castle-wall {
+  position: absolute;
+  bottom: 14%;
+  height: 14%;
+  background: repeating-linear-gradient(
+    45deg,
+    #4a3a2a,
+    #4a3a2a 6px,
+    #3a2c20 6px,
+    #3a2c20 12px
+  );
+  border: 2px solid #6a5a3a;
+}
+
+.castle-enemy {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  z-index: 3;
+}
+
+.castle-enemy-sprite {
+  display: block;
+  width: 22px;
+  height: 30px;
+  background: #b0453a;
+  border: 2px solid #000;
+  box-shadow: 0 0 6px rgba(224, 60, 40, 0.7);
+}
+
+.castle-enemy--guardia .castle-enemy-sprite {
+  background: #9aa0a8;
+  box-shadow: 0 0 6px rgba(154, 160, 168, 0.7);
+}
+
+.castle-enemy--arquero .castle-enemy-sprite {
+  background: #6fae54;
+  box-shadow: 0 0 6px rgba(111, 174, 84, 0.7);
+}
+
+.castle-enemy--caballero .castle-enemy-sprite {
+  background: #7a2a2a;
+  box-shadow: 0 0 6px rgba(122, 42, 42, 0.7);
+}
+
+.castle-enemy--hit .castle-enemy-sprite {
+  box-shadow: 0 0 12px rgba(255, 80, 80, 1);
+  background: #ff8a7a;
+}
+
+.castle-enemy-hp-track {
+  width: 26px;
+  height: 4px;
+  background: #14141a;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+.castle-enemy-hp-fill {
+  height: 100%;
+  background: #a83232;
+}
+
+.castle-arrow {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 4px;
+  background: var(--c-gold-bright);
+  box-shadow: 0 0 6px rgba(230, 193, 79, 0.9);
+  z-index: 3;
+}
+
+.castle-boss {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  z-index: 4;
+  filter: drop-shadow(0 0 10px rgba(177, 84, 209, 0.7));
+  transition: filter 0.15s ease;
+}
+
+.castle-boss--telegraph {
+  filter: drop-shadow(0 0 16px rgba(255, 200, 60, 1));
+  animation: castleBossTelegraph 0.3s ease infinite;
+}
+
+.castle-boss--attacking {
+  filter: drop-shadow(0 0 18px rgba(224, 60, 40, 1));
+}
+
+@keyframes castleBossTelegraph {
+  0%, 100% { transform: translate(-50%, -100%) scale(1); }
+  50% { transform: translate(-50%, -100%) scale(1.15); }
+}
+
+.castle-player {
+  position: absolute;
+  z-index: 5;
+}
+
+.castle-player-sprite {
+  display: block;
+  width: 18px;
+  height: 30px;
+  background: var(--c-gold-bright);
+  border: 2px solid #000;
+  box-shadow: 0 0 6px rgba(230, 193, 79, 0.8);
+}
+
+.castle-player--dodge .castle-player-sprite {
+  box-shadow: 0 0 14px rgba(120, 200, 255, 1);
+  opacity: 0.75;
+}
+
+.castle-player--attack .castle-player-sprite {
+  box-shadow: 0 0 14px rgba(255, 255, 255, 1);
+  background: #fff2b0;
+}
+
+.castle-briefing {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.78);
+  cursor: pointer;
+}
+
+.castle-briefing-box {
+  max-width: 440px;
+  padding: 1.4rem;
+  background: rgba(20, 18, 26, 0.95);
+  border: 2px solid var(--c-gold);
+  text-align: center;
+}
+
+.castle-briefing-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--c-gold-bright);
+  margin: 0 0 0.8rem;
+}
+
+.castle-briefing-text {
+  color: var(--c-text);
+  line-height: 1.5;
+  margin: 0 0 0.6rem;
+}
+
+.castle-briefing-tap {
+  margin: 1rem 0 0;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--c-gold);
+  animation: castleBriefingPulse 1.2s ease infinite;
+}
+
+@keyframes castleBriefingPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.castle-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.castle-controls-move,
+.castle-controls-action {
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.castle-btn {
+  width: 48px;
+  height: 48px;
+  background: rgba(20, 20, 26, 0.75);
+  border: 2px solid var(--c-gold);
+  color: var(--c-gold-bright);
+  font-size: 1.2rem;
+  touch-action: manipulation;
+}
+
+.castle-btn:active {
+  background: rgba(201, 162, 39, 0.3);
+}
+
+.castle-btn--attack {
+  border-color: #e07a7a;
+  color: #e07a7a;
+}
+
+.castle-btn--dodge {
+  border-color: #78c8ff;
+  color: #78c8ff;
+}
+
+@media (min-width: 900px) {
+  .castle-controls {
+    opacity: 0.55;
+  }
+}
