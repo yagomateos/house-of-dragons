@@ -71,6 +71,35 @@ function dragonSprite(body: string, wing: string): Sprite {
   );
 }
 
+/** Silueta de dragón volando de cuerpo completo (cabeza, cuello, alas
+ * bien extendidas, cola y patas), pensada para verse a distancia como
+ * un dragón real y no como un simple emblema/retrato. Mira a la
+ * izquierda; el contenedor que lo anima lo voltea según la dirección
+ * de vuelo. */
+function flyingDragonSprite(body: string, wing: string): Sprite {
+  return sprite(
+    [
+      '..........WW....WW....WW..........',
+      '.........WWWWW.WWWWW.WWWWW........',
+      '........WWWWWWWWWWWWWWWWWWW.......',
+      '.......WWWWWWWWWWWWWWWWWWWWW......',
+      '......WWWWWWWWWWWWWWWWWWWWWWW.....',
+      '......WWWWWWWWWWWWWWWWWWWWWWW.....',
+      '.......WWW..BBBBBBB.WWWWWWWW......',
+      '......BBBBBBBBBBBBBB..............',
+      '...BBBBBBBBBBBBBBBBBB.............',
+      '.BBBBBB..BBBBBBBBBBBBB............',
+      'BBBBBEBB.BBBBBBBBBBBBB............',
+      '..BBBBBB..BBBBBBBBBBBBBBB.........',
+      '...........BBBBBBBBB.BBBBBB.......',
+      '............BBBBBB.....BBBBBB.....',
+      '............BB..BB.......BBBBBB...',
+      '...........BB....BB........BBBBB..',
+    ],
+    { W: wing, B: body, E: C.flame }
+  );
+}
+
 const MALE_ROWS = [
   '....HHHHHH..',
   '...HHHHHHHH.',
@@ -426,6 +455,7 @@ const sprites: Record<IconKey, Sprite> = {
   'dragon-silver': dragonSprite(C.silver, C.stone),
   'dragon-gold-bright': dragonSprite(C.gold, C.ember),
   'dragon-crimson': dragonSprite('#c2434f', C.red),
+  'dragon-flying': flyingDragonSprite(C.darkGreen, C.green),
 
   // Retratos: cada personaje descubrible tiene su propia combinación de
   // plantilla (hombre/mujer/anciano/nudillo) y color, para que ninguno

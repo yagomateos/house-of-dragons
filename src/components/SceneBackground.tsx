@@ -52,7 +52,7 @@ export function SceneBackground({ variant = 'castle', showDragon = true, childre
           <div className="dragon-fire-breath">
             <span className="dragon-fire-spark" />
           </div>
-          <PixelIcon icon="dragon-black" size={64} />
+          <PixelIcon icon="dragon-flying" size={128} />
         </div>
       )}
 
