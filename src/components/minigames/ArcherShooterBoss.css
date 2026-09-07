@@ -137,27 +137,34 @@
 
 .archer-fire {
   position: absolute;
-  top: 100%;
-  height: 74%;
+  top: 92%;
+  height: 84%;
   transform: translateX(-50%);
   pointer-events: none;
+  clip-path: polygon(38% 0%, 62% 0%, 100% 100%, 0% 100%);
 }
 
 .archer-fire--warn {
   background: repeating-linear-gradient(
-    180deg,
-    rgba(255, 120, 40, 0.25),
-    rgba(255, 120, 40, 0.25) 8px,
-    rgba(255, 120, 40, 0.4) 8px,
-    rgba(255, 120, 40, 0.4) 16px
+    45deg,
+    rgba(168, 50, 50, 0.25),
+    rgba(168, 50, 50, 0.25) 6px,
+    rgba(168, 50, 50, 0.4) 6px,
+    rgba(168, 50, 50, 0.4) 12px
   );
-  border-left: 2px dashed rgba(255, 140, 60, 0.7);
-  border-right: 2px dashed rgba(255, 140, 60, 0.7);
+  border-left: 2px dashed rgba(255, 100, 100, 0.6);
+  border-right: 2px dashed rgba(255, 100, 100, 0.6);
 }
 
 .archer-fire--active {
-  background: linear-gradient(180deg, #ffcf5c, #ff7a30 40%, #c0392b 100%);
-  box-shadow: 0 0 16px rgba(255, 120, 40, 0.9);
+  background: linear-gradient(180deg, #fff2b0 0%, #ffcf5c 20%, #ff7a30 55%, #c0392b 100%);
+  box-shadow: 0 0 28px rgba(255, 120, 40, 0.95);
+  animation: archerFlameFlicker 0.15s ease infinite alternate;
+}
+
+@keyframes archerFlameFlicker {
+  0% { filter: brightness(1); transform: translateX(-50%) scaleX(1); }
+  100% { filter: brightness(1.2); transform: translateX(-50%) scaleX(1.08); }
 }
 
 .archer-enemy {

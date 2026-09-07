@@ -279,7 +279,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
         if (d.x > 82 || d.x < 18) d.dir = d.dir === 1 ? -1 : 1;
 
         if (!d.fire && now > d.nextFireAt) {
-          d.fire = { id: nextId++, x: d.x, width: 16, telegraphUntil: now + 700, activeUntil: now + 700 + 900, hit: false };
+          d.fire = { id: nextId++, x: d.x, width: 26, telegraphUntil: now + 700, activeUntil: now + 700 + 1100, hit: false };
         }
         if (d.fire) {
           if (now > d.fire.activeUntil) {
@@ -303,7 +303,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
         if (d.firesCompleted >= 1) {
           for (const arrow of g.arrows) {
             if (arrow.dead) continue;
-            if (Math.abs(arrow.x - d.x) < 10 && arrow.y < DRAGON_Y + 8 && arrow.y > DRAGON_Y - 4) {
+            if (Math.abs(arrow.x - d.x) < 15 && arrow.y < DRAGON_Y + 13 && arrow.y > DRAGON_Y - 8) {
               arrow.dead = true;
               d.hp = Math.max(0, d.hp - 6);
             }
@@ -382,7 +382,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
             className={`archer-dragon ${g.dragon.firesCompleted < 1 ? 'archer-dragon--shielded' : ''}`}
             style={{ left: `${g.dragon.x}%`, top: `${DRAGON_Y}%` }}
           >
-            <PixelIcon icon="dragon-crimson" size={64} />
+            <PixelIcon icon="dragon-crimson" size={104} />
             {g.dragon.fire && (
               <div
                 className={`archer-fire ${now > g.dragon.fire.telegraphUntil ? 'archer-fire--active' : 'archer-fire--warn'}`}
