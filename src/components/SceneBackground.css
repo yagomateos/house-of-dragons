@@ -85,6 +85,40 @@
   opacity: 0.85;
 }
 
+/* Aliento de fuego que sale de la boca del dragón mientras vuela. Se
+ * posiciona en el borde izquierdo del sprite (boca, en su orientación
+ * nativa) para que, tras el scaleX(-1) del contenedor padre, acabe
+ * apareciendo por delante del dragón en la dirección del vuelo. */
+.dragon-fire-breath {
+  position: absolute;
+  top: 40%;
+  left: -30px;
+  width: 32px;
+  height: 13px;
+  clip-path: polygon(100% 12%, 100% 88%, 55% 62%, 30% 78%, 0% 50%, 30% 28%, 55% 42%);
+  background: linear-gradient(90deg, #c0392b 0%, #ff7a30 42%, #ffcf5c 72%, #fff2b0 100%);
+  box-shadow: 0 0 10px rgba(255, 140, 60, 0.85);
+  transform-origin: right center;
+  animation: dragonFireBreath 0.45s ease-in-out infinite alternate;
+}
+
+.dragon-fire-spark {
+  position: absolute;
+  top: 50%;
+  right: -3px;
+  width: 5px;
+  height: 5px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #fff2b0;
+  box-shadow: 0 0 6px rgba(255, 242, 176, 0.9);
+}
+
+@keyframes dragonFireBreath {
+  0% { transform: scaleX(0.82) scaleY(0.85); opacity: 0.8; }
+  100% { transform: scaleX(1.18) scaleY(1.1); opacity: 1; }
+}
+
 .scene-vignette {
   position: absolute;
   inset: 0;
