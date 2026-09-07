@@ -104,7 +104,7 @@ function spawnEnemy(wave: WaveDef): Enemy {
   return {
     id: nextId++,
     kind: isBallestero ? 'ballestero' : 'galera',
-    x: 8 + Math.random() * 84,
+    x: 4 + Math.random() * 92,
     y: 4,
     hp: isBallestero ? 2 : 1,
     speed: wave.enemySpeed * (isBallestero ? 0.8 : 1),

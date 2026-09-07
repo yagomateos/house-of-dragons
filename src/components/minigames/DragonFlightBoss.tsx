@@ -12,6 +12,11 @@ interface DragonFlightBossProps {
   onLose: () => void;
 }
 
+// A diferencia de los otros dos jefes de barcos (Capítulos 3 y 5), aquí
+// no hay un carril fijo: Drogon vuela libremente por el cielo (2D) y
+// escupe fuego hacia abajo sobre la flota anclada en la bahía, mientras
+// esquiva sus disparos en cualquier dirección, no solo lateralmente.
+
 type EnemyKind = 'esclavista' | 'ballestero';
 
 interface Enemy {
@@ -19,6 +24,7 @@ interface Enemy {
   kind: EnemyKind;
   x: number;
   y: number;
+  driftDir: 1 | -1;
   hp: number;
   speed: number;
   lastShot: number;
@@ -26,7 +32,7 @@ interface Enemy {
   dead: boolean;
 }
 
-interface Projectile {
+interface Bolt {
   id: number;
   x: number;
   y: number;
@@ -34,74 +40,81 @@ interface Projectile {
   dead: boolean;
 }
 
-interface Barrage {
+interface GroundBlast {
   id: number;
   x: number;
+  y: number;
   width: number;
   telegraphUntil: number;
   activeUntil: number;
   hit: boolean;
+  spent: boolean;
 }
 
 interface WaveDef {
   count: number;
   spawnEvery: number;
   ballesteroRatio: number;
-  enemySpeed: number;
 }
 
 interface DifficultyConfig {
   waves: WaveDef[];
   flagshipHp: number;
-  barrageDamageMult: number;
+  blastDamageMult: number;
+  speed: number;
 }
 
 const CONFIG: Record<Difficulty, DifficultyConfig> = {
   facil: {
     waves: [
-      { count: 5, spawnEvery: 1100, ballesteroRatio: 0, enemySpeed: 0.32 },
-      { count: 6, spawnEvery: 950, ballesteroRatio: 0.2, enemySpeed: 0.36 },
+      { count: 5, spawnEvery: 1300, ballesteroRatio: 0.1 },
+      { count: 6, spawnEvery: 1100, ballesteroRatio: 0.22 },
     ],
-    flagshipHp: 160,
-    barrageDamageMult: 0.8,
+    flagshipHp: 150,
+    blastDamageMult: 0.85,
+    speed: 3.6,
   },
   normal: {
     waves: [
-      { count: 6, spawnEvery: 950, ballesteroRatio: 0, enemySpeed: 0.4 },
-      { count: 8, spawnEvery: 800, ballesteroRatio: 0.3, enemySpeed: 0.45 },
+      { count: 6, spawnEvery: 1050, ballesteroRatio: 0.16 },
+      { count: 8, spawnEvery: 900, ballesteroRatio: 0.3 },
     ],
-    flagshipHp: 220,
-    barrageDamageMult: 1,
+    flagshipHp: 200,
+    blastDamageMult: 1,
+    speed: 3.9,
   },
   dificil: {
     waves: [
-      { count: 7, spawnEvery: 800, ballesteroRatio: 0, enemySpeed: 0.48 },
-      { count: 10, spawnEvery: 650, ballesteroRatio: 0.4, enemySpeed: 0.55 },
+      { count: 7, spawnEvery: 850, ballesteroRatio: 0.22 },
+      { count: 10, spawnEvery: 700, ballesteroRatio: 0.4 },
     ],
-    flagshipHp: 290,
-    barrageDamageMult: 1.2,
+    flagshipHp: 260,
+    blastDamageMult: 1.2,
+    speed: 4.3,
   },
 };
 
 const TICK_MS = 50;
-const PLAYER_Y = 88;
-const PLAYER_SPEED = 3.4;
-const BOLT_SPEED = 3.4;
+const PLAYER_BOUNDS = { xMin: 4, xMax: 96, yMin: 8, yMax: 60 };
+const SHIP_Y_MIN = 68;
+const SHIP_Y_MAX = 88;
+const BOLT_SPEED = 3.6;
+const ENEMY_BOLT_SPEED = 2.4;
 const BOLT_COOLDOWN_MS = 260;
-const BREACH_Y = 90;
-const FLAGSHIP_Y = 16;
+const FLAGSHIP_Y = 78;
 
 let nextId = 1;
 
-function spawnEnemy(wave: WaveDef): Enemy {
+function spawnFromWave(wave: WaveDef): Enemy {
   const isBallestero = Math.random() < wave.ballesteroRatio;
   return {
     id: nextId++,
     kind: isBallestero ? 'ballestero' : 'esclavista',
-    x: 8 + Math.random() * 84,
-    y: 4,
+    x: 4 + Math.random() * 92,
+    y: SHIP_Y_MIN + Math.random() * (SHIP_Y_MAX - SHIP_Y_MIN),
+    driftDir: Math.random() < 0.5 ? 1 : -1,
     hp: isBallestero ? 2 : 1,
-    speed: wave.enemySpeed * (isBallestero ? 0.8 : 1),
+    speed: 0.12 + Math.random() * 0.08,
     lastShot: 0,
     hurtUntil: 0,
     dead: false,
@@ -113,12 +126,13 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
   const arenaRef = useRef<HTMLDivElement>(null);
 
   const gameRef = useRef({
-    playerX: 50,
+    player: { x: 50, y: 34 },
     keys: new Set<string>(),
     health: startingHealth,
-    bolts: [] as Projectile[],
-    enemyShots: [] as Projectile[],
+    bolts: [] as Bolt[],
+    enemyShots: [] as Bolt[],
     enemies: [] as Enemy[],
+    groundBlasts: [] as GroundBlast[],
     lastBolt: 0,
     lastSpawn: 0,
     waveIndex: 0,
@@ -129,9 +143,8 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
           maxHp: number;
           x: number;
           dir: 1 | -1;
-          barrage: Barrage | null;
-          nextBarrageAt: number;
-          barragesCompleted: number;
+          nextBlastAt: number;
+          blastsCompleted: number;
           exploding: boolean;
           explodeAt: number;
         }
@@ -146,22 +159,24 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
   const briefingMountedAtRef = useRef<number | null>(performance.now());
   const draggingRef = useRef(false);
 
-  function moveToPointer(clientX: number) {
-    if (!arenaRef.current) return;
-    const rect = arenaRef.current.getBoundingClientRect();
-    const x = ((clientX - rect.left) / rect.width) * 100;
-    gameRef.current.playerX = Math.min(96, Math.max(4, x));
+  function moveToPointer(e: { clientX: number; clientY: number }) {
+    const rect = arenaRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    gameRef.current.player.x = Math.min(PLAYER_BOUNDS.xMax, Math.max(PLAYER_BOUNDS.xMin, x));
+    gameRef.current.player.y = Math.min(PLAYER_BOUNDS.yMax, Math.max(PLAYER_BOUNDS.yMin, y));
   }
 
   function handleArenaPointerDown(e: React.PointerEvent<HTMLDivElement>) {
     if (uiPhase !== 'playing') return;
     draggingRef.current = true;
     e.currentTarget.setPointerCapture(e.pointerId);
-    moveToPointer(e.clientX);
+    moveToPointer(e);
   }
   function handleArenaPointerMove(e: React.PointerEvent<HTMLDivElement>) {
     if (!draggingRef.current) return;
-    moveToPointer(e.clientX);
+    moveToPointer(e);
   }
   function handleArenaPointerUp() {
     draggingRef.current = false;
@@ -186,21 +201,27 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
     const now = performance.now();
     if (now - g.lastBolt < BOLT_COOLDOWN_MS) return;
     g.lastBolt = now;
-    g.bolts.push({ id: nextId++, x: g.playerX, y: PLAYER_Y - 4, vy: -BOLT_SPEED, dead: false });
+    g.bolts.push({ id: nextId++, x: g.player.x, y: g.player.y + 3, vy: BOLT_SPEED, dead: false });
     audio.shoot();
   }
 
   useEffect(() => {
     const keyMap: Record<string, string> = {
+      ArrowUp: 'up',
+      ArrowDown: 'down',
       ArrowLeft: 'left',
       ArrowRight: 'right',
+      w: 'up',
+      s: 'down',
       a: 'left',
       d: 'right',
+      W: 'up',
+      S: 'down',
       A: 'left',
       D: 'right',
     };
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === ' ' || e.key === 'x' || e.key === 'X' || e.key === 'ArrowUp') {
+      if (e.key === ' ' || e.key === 'x' || e.key === 'X') {
         e.preventDefault();
         shoot();
         return;
@@ -223,13 +244,15 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
       if (g.finished || g.paused) return;
       const now = performance.now();
 
-      if (g.keys.has('left')) g.playerX -= PLAYER_SPEED;
-      if (g.keys.has('right')) g.playerX += PLAYER_SPEED;
-      g.playerX = Math.min(96, Math.max(4, g.playerX));
+      if (g.keys.has('left')) g.player.x -= cfg.speed;
+      if (g.keys.has('right')) g.player.x += cfg.speed;
+      if (g.keys.has('up')) g.player.y -= cfg.speed;
+      if (g.keys.has('down')) g.player.y += cfg.speed;
+      g.player.x = Math.min(PLAYER_BOUNDS.xMax, Math.max(PLAYER_BOUNDS.xMin, g.player.x));
+      g.player.y = Math.min(PLAYER_BOUNDS.yMax, Math.max(PLAYER_BOUNDS.yMin, g.player.y));
 
       for (const b of g.bolts) b.y += b.vy;
-      g.bolts = g.bolts.filter((b) => !b.dead && b.y > -5);
-
+      g.bolts = g.bolts.filter((b) => !b.dead && b.y < 100);
       for (const s of g.enemyShots) s.y += s.vy;
 
       const currentWave = cfg.waves[g.waveIndex];
@@ -238,25 +261,17 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
         if (g.spawnedInWave < currentWave.count && now - g.lastSpawn > currentWave.spawnEvery) {
           g.lastSpawn = now;
           g.spawnedInWave += 1;
-          g.enemies.push(spawnEnemy(currentWave));
+          g.enemies.push(spawnFromWave(currentWave));
         }
 
         for (const e of g.enemies) {
           if (e.dead) continue;
-          e.y += e.speed;
-          if (e.kind === 'ballestero' && now - e.lastShot > 1800 && e.y > 15 && e.y < 70) {
+          e.x += e.speed * e.driftDir;
+          if (e.x < 4 || e.x > 96) e.driftDir = e.driftDir === 1 ? -1 : 1;
+          if (e.kind === 'ballestero' && now - e.lastShot > 1700) {
             e.lastShot = now;
-            g.enemyShots.push({ id: nextId++, x: e.x, y: e.y, vy: 2.2, dead: false });
+            g.enemyShots.push({ id: nextId++, x: e.x, y: e.y, vy: -ENEMY_BOLT_SPEED, dead: false });
             audio.enemyShoot();
-          }
-          if (e.y >= BREACH_Y) {
-            e.dead = true;
-            if (now > g.invulnerableUntil) {
-              g.health = Math.max(0, g.health - 10);
-              g.invulnerableUntil = now + 500;
-              onDamage(g.health);
-              audio.playerHurt();
-            }
           }
         }
 
@@ -289,9 +304,8 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
               maxHp: cfg.flagshipHp,
               x: 50,
               dir: 1,
-              barrage: null,
-              nextBarrageAt: now + 1500,
-              barragesCompleted: 0,
+              nextBlastAt: now + 1400,
+              blastsCompleted: 0,
               exploding: false,
               explodeAt: 0,
             };
@@ -299,36 +313,58 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
         }
       } else if (g.flagship) {
         const f = g.flagship;
-        f.x += f.dir * 0.35;
+        f.x += f.dir * 0.3;
         if (f.x > 82 || f.x < 18) f.dir = f.dir === 1 ? -1 : 1;
 
-        if (!f.barrage && now > f.nextBarrageAt) {
-          f.barrage = { id: nextId++, x: f.x, width: 26, telegraphUntil: now + 700, activeUntil: now + 700 + 1100, hit: false };
+        if (now > f.nextBlastAt && g.groundBlasts.every((gb) => gb.spent)) {
+          // Ataque en área dirigido a la posición del jugador en el
+          // momento del lanzamiento: como vuela libre en 2D, un único
+          // carril fijo no tendría sentido aquí.
+          g.groundBlasts.push({
+            id: nextId++,
+            x: g.player.x,
+            y: g.player.y,
+            width: 16,
+            telegraphUntil: now + 750,
+            activeUntil: now + 750 + 500,
+            hit: false,
+            spent: false,
+          });
           audio.fireBreath();
         }
-        if (f.barrage) {
-          if (now > f.barrage.activeUntil) {
-            f.barrage = null;
-            f.barragesCompleted += 1;
-            f.nextBarrageAt = now + 2200;
-          } else if (now > f.barrage.telegraphUntil && !f.barrage.hit && now > g.invulnerableUntil) {
-            if (Math.abs(g.playerX - f.barrage.x) < f.barrage.width / 2) {
-              f.barrage.hit = true;
-              g.health = Math.max(0, g.health - 15 * cfg.barrageDamageMult);
-              g.invulnerableUntil = now + 500;
+
+        for (const gb of g.groundBlasts) {
+          if (now > gb.activeUntil) {
+            gb.spent = true;
+            if (!gb.hit) {
+              f.blastsCompleted += 1;
+              f.nextBlastAt = now + 1900;
+            }
+            continue;
+          }
+          if (now > gb.telegraphUntil && !gb.hit && now > g.invulnerableUntil) {
+            const dx = g.player.x - gb.x;
+            const dy = g.player.y - gb.y;
+            if (Math.sqrt(dx * dx + dy * dy) < gb.width / 2) {
+              gb.hit = true;
+              g.health = Math.max(0, g.health - 15 * cfg.blastDamageMult);
+              g.invulnerableUntil = now + 900;
               onDamage(g.health);
               audio.playerHurt();
+              f.blastsCompleted += 1;
+              f.nextBlastAt = now + 1900;
             }
           }
         }
+        g.groundBlasts = g.groundBlasts.filter((gb) => !gb.spent);
 
-        // El buque insignia es invulnerable hasta completar su primera
-        // salva de proyectiles incendiarios: así el jugador siempre vive
-        // al menos un ataque real antes de poder hundirlo.
-        if (f.barragesCompleted >= 1 && !f.exploding) {
+        // El buque insignia es invulnerable hasta completar su primer
+        // ataque en área: así el jugador siempre lo vive antes de poder
+        // hundirlo a base de fuego.
+        if (f.blastsCompleted >= 1 && !f.exploding) {
           for (const bolt of g.bolts) {
             if (bolt.dead) continue;
-            if (Math.abs(bolt.x - f.x) < 15 && bolt.y < FLAGSHIP_Y + 13 && bolt.y > FLAGSHIP_Y - 8) {
+            if (Math.abs(bolt.x - f.x) < 15 && bolt.y > FLAGSHIP_Y - 10 && bolt.y < FLAGSHIP_Y + 10) {
               bolt.dead = true;
               f.hp = Math.max(0, f.hp - 6);
               if (f.hp > 0) audio.hitEnemy();
@@ -336,7 +372,7 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
           }
         }
 
-        if (f.hp <= 0 && f.barragesCompleted >= 1 && !g.finished) {
+        if (f.hp <= 0 && f.blastsCompleted >= 1 && !g.finished) {
           if (!f.exploding) {
             f.exploding = true;
             f.explodeAt = now;
@@ -350,7 +386,7 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
 
       for (const s of g.enemyShots) {
         if (s.dead) continue;
-        if (Math.abs(s.x - g.playerX) < 5 && Math.abs(s.y - PLAYER_Y) < 6 && now > g.invulnerableUntil) {
+        if (Math.abs(s.x - g.player.x) < 5 && Math.abs(s.y - g.player.y) < 6 && now > g.invulnerableUntil) {
           s.dead = true;
           g.health = Math.max(0, g.health - 8);
           g.invulnerableUntil = now + 500;
@@ -358,7 +394,7 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
           audio.playerHurt();
         }
       }
-      g.enemyShots = g.enemyShots.filter((s) => !s.dead && s.y < 100);
+      g.enemyShots = g.enemyShots.filter((s) => !s.dead && s.y > -5);
 
       if (g.health <= 0 && !g.finished) {
         g.finished = true;
@@ -418,18 +454,14 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
         onPointerCancel={handleArenaPointerUp}
         onPointerLeave={handleArenaPointerUp}
       >
+        <div className="flight-water" />
+
         {g.flagship && (
           <div
-            className={`flight-flagship ${g.flagship.barragesCompleted < 1 ? 'flight-flagship--shielded' : ''} ${g.flagship.exploding ? 'flight-flagship--exploding' : ''}`}
+            className={`flight-flagship ${g.flagship.blastsCompleted < 1 ? 'flight-flagship--shielded' : ''} ${g.flagship.exploding ? 'flight-flagship--exploding' : ''}`}
             style={{ left: `${g.flagship.x}%`, top: `${FLAGSHIP_Y}%` }}
           >
-            <PixelIcon icon="ship" size={100} />
-            {g.flagship.barrage && (
-              <div
-                className={`flight-barrage ${now > g.flagship.barrage.telegraphUntil ? 'flight-barrage--active' : 'flight-barrage--warn'}`}
-                style={{ left: `${g.flagship.barrage.x}%`, width: `${g.flagship.barrage.width}%` }}
-              />
-            )}
+            <PixelIcon icon="ship" size={90} />
             {g.flagship.exploding && (
               <>
                 <div className="flight-explosion flight-explosion--1" />
@@ -453,6 +485,17 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
           );
         })}
 
+        {g.groundBlasts.map((gb) => {
+          const telegraphing = now < gb.telegraphUntil;
+          return (
+            <div
+              key={gb.id}
+              className={`flight-groundblast ${telegraphing ? 'flight-groundblast--warn' : 'flight-groundblast--active'}`}
+              style={{ left: `${gb.x}%`, top: `${gb.y}%`, width: `${gb.width}%`, height: `${gb.width}%` }}
+            />
+          );
+        })}
+
         {g.bolts.map((b) => (
           <div key={b.id} className="flight-bolt" style={{ left: `${b.x}%`, top: `${b.y}%` }} />
         ))}
@@ -463,7 +506,7 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
 
         <div
           className={`flight-player ${flashHit ? 'flight-player--hit' : ''}`}
-          style={{ left: `${g.playerX}%`, top: `${PLAYER_Y}%` }}
+          style={{ left: `${g.player.x}%`, top: `${g.player.y}%` }}
         >
           <PixelIcon icon="dragon-black" size={38} />
         </div>
@@ -479,12 +522,12 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
             <div className="flight-briefing-box">
               <p className="flight-briefing-title">🐉 La Batalla de la Bahía</p>
               <p className="flight-briefing-text">
-                Muévete con ◀▶, escupe fuego con el botón de ataque. Hunde las naves de la flota
-                esclavista antes de que desembarquen junto a los muros de Meereen.
+                Drogon vuela libre por el cielo: muévete en cualquier dirección con ◀▶▲▼ (o arrastrando) y
+                escupe fuego hacia abajo con el botón de ataque.
               </p>
               <p className="flight-briefing-text">
-                El buque insignia esquiva tus llamas hasta lanzar su primera salva de proyectiles
-                incendiarios: sobrevive a la barrera de fuego y luego ataca sus flancos para hundirlo.
+                El buque insignia lanza salvas de pólvora dirigidas a tu posición: no tienen un carril fijo,
+                así que muévete en cuanto veas el círculo de aviso.
               </p>
               <p className="flight-briefing-tap">Toca para empezar</p>
             </div>
@@ -493,23 +536,41 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
       </div>
 
       <div className="flight-controls" aria-hidden="true">
-        <div className="flight-controls-move">
+        <div className="flight-dpad">
           <button
             className="flight-btn"
-            onPointerDown={() => gameRef.current.keys.add('left')}
-            onPointerUp={() => gameRef.current.keys.delete('left')}
-            onPointerLeave={() => gameRef.current.keys.delete('left')}
+            onPointerDown={() => gameRef.current.keys.add('up')}
+            onPointerUp={() => gameRef.current.keys.delete('up')}
+            onPointerLeave={() => gameRef.current.keys.delete('up')}
           >
-            ◀
+            ▲
           </button>
-          <button
-            className="flight-btn"
-            onPointerDown={() => gameRef.current.keys.add('right')}
-            onPointerUp={() => gameRef.current.keys.delete('right')}
-            onPointerLeave={() => gameRef.current.keys.delete('right')}
-          >
-            ▶
-          </button>
+          <div className="flight-dpad-row">
+            <button
+              className="flight-btn"
+              onPointerDown={() => gameRef.current.keys.add('left')}
+              onPointerUp={() => gameRef.current.keys.delete('left')}
+              onPointerLeave={() => gameRef.current.keys.delete('left')}
+            >
+              ◀
+            </button>
+            <button
+              className="flight-btn"
+              onPointerDown={() => gameRef.current.keys.add('down')}
+              onPointerUp={() => gameRef.current.keys.delete('down')}
+              onPointerLeave={() => gameRef.current.keys.delete('down')}
+            >
+              ▼
+            </button>
+            <button
+              className="flight-btn"
+              onPointerDown={() => gameRef.current.keys.add('right')}
+              onPointerUp={() => gameRef.current.keys.delete('right')}
+              onPointerLeave={() => gameRef.current.keys.delete('right')}
+            >
+              ▶
+            </button>
+          </div>
         </div>
         <button className="flight-btn flight-btn--shoot" onClick={shoot}>
           🔥

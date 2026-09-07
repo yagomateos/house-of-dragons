@@ -104,8 +104,19 @@
   position: relative;
   flex: 1;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 0%, #2a1a14 0%, #1a100c 60%, #0b0b0f 100%);
+  background: linear-gradient(180deg, #1a2a3a 0%, #142230 45%, #0d1820 70%, #0b0b0f 100%);
   touch-action: none;
+}
+
+.flight-water {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34%;
+  background: linear-gradient(180deg, rgba(30, 70, 90, 0.4) 0%, rgba(10, 30, 45, 0.85) 100%);
+  border-top: 1px solid rgba(120, 190, 210, 0.25);
+  z-index: 0;
 }
 
 .flight-arena--hit {
@@ -180,36 +191,31 @@
   100% { transform: translate(-50%, -50%) scale(4.5); opacity: 0; }
 }
 
-.flight-barrage {
+/* Ataque en área del buque insignia: un círculo de aviso que aparece
+ * justo donde estaba el jugador al lanzarse, y que detona poco
+ * después. Al volar en 2D libre, un carril fijo no encajaría aquí. */
+.flight-groundblast {
   position: absolute;
-  top: 92%;
-  height: 84%;
-  transform: translateX(-50%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
   pointer-events: none;
-  clip-path: polygon(38% 0%, 62% 0%, 100% 100%, 0% 100%);
 }
 
-.flight-barrage--warn {
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(168, 70, 40, 0.25),
-    rgba(168, 70, 40, 0.25) 6px,
-    rgba(168, 70, 40, 0.4) 6px,
-    rgba(168, 70, 40, 0.4) 12px
-  );
-  border-left: 2px dashed rgba(255, 140, 80, 0.6);
-  border-right: 2px dashed rgba(255, 140, 80, 0.6);
+.flight-groundblast--warn {
+  border: 3px dashed rgba(255, 140, 80, 0.75);
+  background: rgba(255, 140, 80, 0.1);
+  animation: flightWarnPulse 0.3s ease infinite;
 }
 
-.flight-barrage--active {
-  background: linear-gradient(180deg, #fff2b0 0%, #ffcf5c 20%, #ff7a30 55%, #c0392b 100%);
-  box-shadow: 0 0 28px rgba(255, 120, 40, 0.95);
-  animation: flightFlameFlicker 0.15s ease infinite alternate;
+@keyframes flightWarnPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.4); }
 }
 
-@keyframes flightFlameFlicker {
-  0% { filter: brightness(1); transform: translateX(-50%) scaleX(1); }
-  100% { filter: brightness(1.2); transform: translateX(-50%) scaleX(1.08); }
+.flight-groundblast--active {
+  background: radial-gradient(circle, #fff2b0 0%, #ff7a30 45%, #c0392b 70%, transparent 85%);
+  box-shadow: 0 0 26px rgba(255, 120, 40, 0.9);
 }
 
 .flight-enemy {
@@ -235,27 +241,27 @@
   filter: brightness(1.6);
 }
 
-/* Flecha con forma real (punta + astil), no una simple barra. Apunta
- * hacia arriba porque vuela del jugador hacia el buque insignia. */
+/* Fuego del jugador: apunta hacia abajo porque Drogon vuela por encima
+ * de la flota y escupe fuego hacia el agua. */
 .flight-bolt {
   position: absolute;
   width: 9px;
   height: 18px;
   transform: translate(-50%, -50%);
-  clip-path: polygon(50% 0%, 100% 42%, 70% 42%, 70% 100%, 30% 100%, 30% 42%, 0% 42%);
-  background: linear-gradient(180deg, #fff2b0, #ff7a30);
+  clip-path: polygon(50% 100%, 100% 58%, 70% 58%, 70% 0%, 30% 0%, 30% 58%, 0% 58%);
+  background: linear-gradient(0deg, #fff2b0, #ff7a30);
   box-shadow: 0 0 8px rgba(255, 122, 48, 0.9);
   z-index: 2;
 }
 
-/* Flecha enemiga, igual que la del jugador pero apuntando hacia abajo
- * (vuela del enemigo hacia el jugador) y en su color. */
+/* Flecha enemiga: apunta hacia arriba porque las naves disparan desde
+ * el agua hacia el dragón que vuela sobre ellas. */
 .flight-enemy-shot {
   position: absolute;
   width: 9px;
   height: 18px;
   transform: translate(-50%, -50%);
-  clip-path: polygon(50% 100%, 100% 58%, 70% 58%, 70% 0%, 30% 0%, 30% 58%, 0% 58%);
+  clip-path: polygon(50% 0%, 100% 42%, 70% 42%, 70% 100%, 30% 100%, 30% 42%, 0% 42%);
   background: #e05a48;
   box-shadow: 0 0 8px rgba(224, 60, 40, 0.9);
   z-index: 2;
@@ -332,25 +338,34 @@
   right: 0;
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
   padding: 0 12px;
   z-index: 6;
   pointer-events: none;
 }
 
-.flight-controls-move {
+.flight-dpad {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.85;
   pointer-events: auto;
 }
 
+.flight-dpad-row {
+  display: flex;
+  gap: 4px;
+}
+
 .flight-btn {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   background: rgba(20, 20, 26, 0.75);
   border: 2px solid var(--c-gold);
   color: var(--c-gold-bright);
-  font-size: 1.2rem;
-  touch-action: manipulation;
+  font-size: 1.1rem;
+  touch-action: none;
   pointer-events: auto;
 }
 
