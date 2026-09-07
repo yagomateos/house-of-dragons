@@ -135,6 +135,51 @@
   50% { opacity: 1; }
 }
 
+.archer-dragon--exploding > :first-child {
+  animation: archerDragonDie 0.75s ease forwards;
+}
+
+@keyframes archerDragonDie {
+  0% { opacity: 1; filter: brightness(1); }
+  40% { opacity: 1; filter: brightness(2.4) saturate(0); }
+  100% { opacity: 0; filter: brightness(3) saturate(0); }
+}
+
+.archer-explosion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.archer-explosion--1 {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #fff2b0 0%, #ff7a30 55%, transparent 75%);
+  animation: archerExplode 0.75s ease-out forwards;
+}
+
+.archer-explosion--2 {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #ffcf5c 0%, #e05a30 55%, transparent 75%);
+  animation: archerExplode 0.75s ease-out 0.08s forwards;
+}
+
+.archer-explosion--3 {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #ffffff 0%, #ffcf5c 45%, transparent 75%);
+  animation: archerExplode 0.6s ease-out 0.15s forwards;
+}
+
+@keyframes archerExplode {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(4.5); opacity: 0; }
+}
+
 .archer-fire {
   position: absolute;
   top: 92%;

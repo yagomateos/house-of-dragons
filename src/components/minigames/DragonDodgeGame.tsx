@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { PixelIcon } from '../PixelIcon';
+import { audio } from '../../utils/audio';
 import type { Difficulty, IconKey } from '../../types';
 import { DAMAGE_BOSS_HIT } from '../../state/GameContext';
 import './DragonDodgeGame.css';
@@ -175,6 +176,7 @@ export function DragonDodgeGame({
       if (now - g.lastSpawn > cfg.spawnEvery * (0.8 + Math.random() * 0.4)) {
         g.lastSpawn = now;
         g.attacks.push(spawnAttack(cfg, now));
+        audio.fireBreath();
       }
 
       for (const atk of g.attacks) {
@@ -203,6 +205,7 @@ export function DragonDodgeGame({
             g.health = Math.max(0, g.health - DAMAGE_BOSS_HIT);
             g.invulnerableUntil = now + 900;
             onDamage(g.health);
+            audio.playerHurt();
           }
         }
       }

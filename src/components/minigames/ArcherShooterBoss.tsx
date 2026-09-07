@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Difficulty, IconKey } from '../../types';
 import { PixelIcon } from '../PixelIcon';
+import { audio } from '../../utils/audio';
 import './ArcherShooterBoss.css';
 
 const CHARACTER_OPTIONS: { icon: IconKey; name: string }[] = [
@@ -134,7 +135,17 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
     waveIndex: 0,
     spawnedInWave: 0,
     dragon: null as
-      | { hp: number; maxHp: number; x: number; dir: 1 | -1; fire: FireBreath | null; nextFireAt: number; firesCompleted: number }
+      | {
+          hp: number;
+          maxHp: number;
+          x: number;
+          dir: 1 | -1;
+          fire: FireBreath | null;
+          nextFireAt: number;
+          firesCompleted: number;
+          exploding: boolean;
+          explodeAt: number;
+        }
       | null,
     invulnerableUntil: 0,
     finished: false,
@@ -173,6 +184,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
     if (now - g.lastArrow < ARROW_COOLDOWN_MS) return;
     g.lastArrow = now;
     g.arrows.push({ id: nextId++, x: g.playerX, y: PLAYER_Y - 4, vy: -ARROW_SPEED, dead: false });
+    audio.shoot();
   }
 
   useEffect(() => {
@@ -232,6 +244,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
           if (e.kind === 'arquero' && now - e.lastShot > 1800 && e.y > 15 && e.y < 70) {
             e.lastShot = now;
             g.enemyShots.push({ id: nextId++, x: e.x, y: e.y, vy: 2.2, dead: false });
+            audio.enemyShoot();
           }
           if (e.y >= BREACH_Y) {
             e.dead = true;
@@ -239,6 +252,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
               g.health = Math.max(0, g.health - 10);
               g.invulnerableUntil = now + 500;
               onDamage(g.health);
+              audio.playerHurt();
             }
           }
         }
@@ -250,7 +264,12 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
               arrow.dead = true;
               e.hp -= 1;
               e.hurtUntil = now + 150;
-              if (e.hp <= 0) e.dead = true;
+              if (e.hp <= 0) {
+                e.dead = true;
+                audio.enemyDeath();
+              } else {
+                audio.hitEnemy();
+              }
             }
           }
         }
@@ -270,6 +289,8 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
               fire: null,
               nextFireAt: now + 1500,
               firesCompleted: 0,
+              exploding: false,
+              explodeAt: 0,
             };
           }
         }
@@ -280,6 +301,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
 
         if (!d.fire && now > d.nextFireAt) {
           d.fire = { id: nextId++, x: d.x, width: 26, telegraphUntil: now + 700, activeUntil: now + 700 + 1100, hit: false };
+          audio.fireBreath();
         }
         if (d.fire) {
           if (now > d.fire.activeUntil) {
@@ -292,6 +314,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
               g.health = Math.max(0, g.health - 15 * cfg.fireDamageMult);
               g.invulnerableUntil = now + 500;
               onDamage(g.health);
+              audio.playerHurt();
             }
           }
         }
@@ -300,19 +323,26 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
         // fuego: así el jugador siempre vive al menos un ataque real
         // antes de poder derrotarlo, en vez de matarlo a flechazos antes
         // de que el patrón de fuego llegue a activarse.
-        if (d.firesCompleted >= 1) {
+        if (d.firesCompleted >= 1 && !d.exploding) {
           for (const arrow of g.arrows) {
             if (arrow.dead) continue;
             if (Math.abs(arrow.x - d.x) < 15 && arrow.y < DRAGON_Y + 13 && arrow.y > DRAGON_Y - 8) {
               arrow.dead = true;
               d.hp = Math.max(0, d.hp - 6);
+              if (d.hp > 0) audio.hitEnemy();
             }
           }
         }
 
         if (d.hp <= 0 && d.firesCompleted >= 1 && !g.finished) {
-          g.finished = true;
-          onWin();
+          if (!d.exploding) {
+            d.exploding = true;
+            d.explodeAt = now;
+            audio.explosion();
+          } else if (now - d.explodeAt > 750) {
+            g.finished = true;
+            onWin();
+          }
         }
       }
 
@@ -323,6 +353,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
           g.health = Math.max(0, g.health - 8);
           g.invulnerableUntil = now + 500;
           onDamage(g.health);
+          audio.playerHurt();
         }
       }
       g.enemyShots = g.enemyShots.filter((s) => !s.dead && s.y < 100);
@@ -379,7 +410,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
       <div className={`archer-arena ${flashHit ? 'archer-arena--hit' : ''}`} ref={arenaRef}>
         {g.dragon && (
           <div
-            className={`archer-dragon ${g.dragon.firesCompleted < 1 ? 'archer-dragon--shielded' : ''}`}
+            className={`archer-dragon ${g.dragon.firesCompleted < 1 ? 'archer-dragon--shielded' : ''} ${g.dragon.exploding ? 'archer-dragon--exploding' : ''}`}
             style={{ left: `${g.dragon.x}%`, top: `${DRAGON_Y}%` }}
           >
             <PixelIcon icon="dragon-crimson" size={104} />
@@ -388,6 +419,13 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
                 className={`archer-fire ${now > g.dragon.fire.telegraphUntil ? 'archer-fire--active' : 'archer-fire--warn'}`}
                 style={{ left: `${g.dragon.fire.x}%`, width: `${g.dragon.fire.width}%` }}
               />
+            )}
+            {g.dragon.exploding && (
+              <>
+                <div className="archer-explosion archer-explosion--1" />
+                <div className="archer-explosion archer-explosion--2" />
+                <div className="archer-explosion archer-explosion--3" />
+              </>
             )}
           </div>
         )}

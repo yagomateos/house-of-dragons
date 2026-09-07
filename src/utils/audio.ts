@@ -117,6 +117,31 @@ function noiseBurst(startOffset: number, duration: number, peakGain = 0.06) {
   src.start(t0);
 }
 
+/** Como noiseBurst, pero con paso bajo: para golpes graves/explosiones en vez de silbidos agudos. */
+function lowNoiseBurst(startOffset: number, duration: number, peakGain = 0.08, cutoff = 220) {
+  const c = getCtx();
+  if (!c) return;
+  const bufferSize = Math.floor(c.sampleRate * duration);
+  const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+  }
+  const src = c.createBufferSource();
+  src.buffer = buffer;
+  const filter = c.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = cutoff;
+  const gain = c.createGain();
+  const t0 = c.currentTime + startOffset;
+  gain.gain.setValueAtTime(peakGain, t0);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+  src.connect(filter);
+  filter.connect(gain);
+  gain.connect(c.destination);
+  src.start(t0);
+}
+
 function sfxEnabled(): boolean {
   return readPrefs().sfx;
 }
@@ -242,6 +267,51 @@ export const audio = {
   deny() {
     if (!sfxEnabled()) return;
     tone(160, 0, 0.16, 'square', 0.06);
+  },
+
+  // ---- Sonidos de combate para los minijuegos de jefe ----
+
+  /** El jugador dispara (flecha). */
+  shoot() {
+    if (!sfxEnabled()) return;
+    tone(880, 0, 0.045, 'square', 0.05);
+    tone(1100, 0.02, 0.04, 'square', 0.03);
+  },
+  /** Un enemigo dispara al jugador. */
+  enemyShoot() {
+    if (!sfxEnabled()) return;
+    tone(260, 0, 0.07, 'sawtooth', 0.05);
+  },
+  /** Un golpe conecta contra un enemigo (sin matarlo). */
+  hitEnemy() {
+    if (!sfxEnabled()) return;
+    noiseBurst(0, 0.05, 0.07);
+    tone(180, 0, 0.05, 'square', 0.05);
+  },
+  /** Un enemigo muere. */
+  enemyDeath() {
+    if (!sfxEnabled()) return;
+    tone(420, 0, 0.05, 'square', 0.06);
+    tone(210, 0.05, 0.09, 'square', 0.05);
+  },
+  /** El jugador recibe daño real (contacto, proyectil, fuego). */
+  playerHurt() {
+    if (!sfxEnabled()) return;
+    tone(200, 0, 0.09, 'sawtooth', 0.07);
+    tone(140, 0.06, 0.12, 'sawtooth', 0.06);
+  },
+  /** Aliento de fuego de un dragón. */
+  fireBreath() {
+    if (!sfxEnabled()) return;
+    lowNoiseBurst(0, 0.4, 0.1, 300);
+    tone(100, 0, 0.4, 'sawtooth', 0.05);
+  },
+  /** Explosión grande: el jefe final cae derrotado. */
+  explosion() {
+    if (!sfxEnabled()) return;
+    lowNoiseBurst(0, 0.7, 0.16, 220);
+    tone(90, 0, 0.55, 'sawtooth', 0.09);
+    tone(50, 0.08, 0.6, 'sawtooth', 0.08);
   },
   toggle() {
     if (!sfxEnabled()) return;

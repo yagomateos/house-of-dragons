@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Difficulty } from '../../types';
 import { PixelIcon } from '../PixelIcon';
+import { audio } from '../../utils/audio';
 import './StrategyBoss.css';
 
 // Una brecha en el castillo duele menos que un golpe directo de jefe:
@@ -202,6 +203,12 @@ export function StrategyBoss({ difficulty, startingHealth, onDamage, onWin, onLo
             unit.flashUntil = now + 150;
             nearestEnemy.hp = Math.max(0, nearestEnemy.hp - unit.dmg);
             nearestEnemy.flashUntil = now + 200;
+            if (unit.side === 'player') {
+              if (nearestEnemy.hp <= 0) audio.enemyDeath();
+              else audio.hitEnemy();
+            } else {
+              audio.playerHurt();
+            }
           }
           continue;
         }
@@ -242,6 +249,7 @@ export function StrategyBoss({ difficulty, startingHealth, onDamage, onWin, onLo
           unit.dead = true;
           g.health = Math.max(0, g.health - BREACH_DAMAGE);
           onDamage(g.health);
+          audio.playerHurt();
         }
       }
 
