@@ -242,6 +242,11 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
       if (g.finished || g.paused) return;
       const now = performance.now();
 
+      // Disparo automático: en móvil un solo dedo no puede arrastrar para
+      // moverse y pulsar un botón de disparo a la vez, así que el arquero
+      // dispara solo mientras el jugador se concentra en esquivar/moverse.
+      shoot();
+
       if (g.keys.has('left')) g.playerX -= PLAYER_SPEED;
       if (g.keys.has('right')) g.playerX += PLAYER_SPEED;
       g.playerX = Math.min(96, Math.max(4, g.playerX));
@@ -526,8 +531,8 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
             <div className="archer-briefing-box">
               <p className="archer-briefing-title">🏹 El Arquero de Harrenhal</p>
               <p className="archer-briefing-text">
-                Muévete con ◀▶, dispara flechas con el botón de ataque. Derrota las oleadas de soldados
-                y luego al dragón que ronda el castillo maldito.
+                Muévete arrastrando el dedo o con ◀▶: disparas flechas automáticamente. Derrota las
+                oleadas de soldados y luego al dragón que ronda el castillo maldito.
               </p>
               <p className="archer-briefing-text">
                 El dragón esquiva flechas hasta lanzar su primer aliento de fuego: sobrevívelo esquivando
@@ -558,9 +563,6 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
             ▶
           </button>
         </div>
-        <button className="archer-btn archer-btn--shoot" onClick={shoot}>
-          🏹
-        </button>
       </div>
     </div>
   );

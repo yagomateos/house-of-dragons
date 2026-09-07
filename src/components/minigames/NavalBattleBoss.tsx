@@ -237,6 +237,11 @@ export function NavalBattleBoss({ difficulty, startingHealth, onDamage, onWin, o
       if (g.finished || g.paused) return;
       const now = performance.now();
 
+      // Disparo automático: en móvil un solo dedo no puede arrastrar para
+      // moverse y pulsar un botón de disparo a la vez, así que se dispara
+      // solo mientras el jugador se concentra en esquivar/moverse.
+      shoot();
+
       if (g.keys.has('left')) g.playerX -= PLAYER_SPEED;
       if (g.keys.has('right')) g.playerX += PLAYER_SPEED;
       g.playerX = Math.min(96, Math.max(4, g.playerX));
@@ -520,8 +525,8 @@ export function NavalBattleBoss({ difficulty, startingHealth, onDamage, onWin, o
             <div className="naval-briefing-box">
               <p className="naval-briefing-title">🚢 La Batalla de Aguasnegras</p>
               <p className="naval-briefing-text">
-                Muévete con ◀▶, dispara flechas en llamas con el botón de ataque. Hunde las naves de la
-                flota de Stannis antes de que desembarquen junto a las murallas.
+                Muévete arrastrando el dedo o con ◀▶: disparas flechas en llamas automáticamente. Hunde
+                las naves de la flota de Stannis antes de que desembarquen junto a las murallas.
               </p>
               <p className="naval-briefing-text">
                 El buque insignia esquiva tus disparos hasta provocar su primera erupción de pólvora
@@ -552,9 +557,6 @@ export function NavalBattleBoss({ difficulty, startingHealth, onDamage, onWin, o
             ▶
           </button>
         </div>
-        <button className="naval-btn naval-btn--shoot" onClick={shoot}>
-          🏹
-        </button>
       </div>
     </div>
   );

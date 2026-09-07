@@ -244,6 +244,11 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
       if (g.finished || g.paused) return;
       const now = performance.now();
 
+      // Disparo automático: en móvil un solo dedo no puede arrastrar para
+      // moverse en 2D y pulsar un botón de disparo a la vez, así que
+      // Drogon escupe fuego solo mientras el jugador esquiva/se mueve.
+      shoot();
+
       if (g.keys.has('left')) g.player.x -= cfg.speed;
       if (g.keys.has('right')) g.player.x += cfg.speed;
       if (g.keys.has('up')) g.player.y -= cfg.speed;
@@ -522,8 +527,8 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
             <div className="flight-briefing-box">
               <p className="flight-briefing-title">🐉 La Batalla de la Bahía</p>
               <p className="flight-briefing-text">
-                Drogon vuela libre por el cielo: muévete en cualquier dirección con ◀▶▲▼ (o arrastrando) y
-                escupe fuego hacia abajo con el botón de ataque.
+                Drogon vuela libre por el cielo: muévete en cualquier dirección con ◀▶▲▼ o arrastrando el
+                dedo. Escupe fuego hacia abajo automáticamente mientras vuelas.
               </p>
               <p className="flight-briefing-text">
                 El buque insignia lanza salvas de pólvora dirigidas a tu posición: no tienen un carril fijo,
@@ -572,9 +577,6 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
             </button>
           </div>
         </div>
-        <button className="flight-btn flight-btn--shoot" onClick={shoot}>
-          🔥
-        </button>
       </div>
     </div>
   );

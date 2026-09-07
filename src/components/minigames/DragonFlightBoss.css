@@ -337,7 +337,7 @@
   left: 0;
   right: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-end;
   padding: 0 12px;
   z-index: 6;
@@ -371,13 +371,6 @@
 
 .flight-btn:active {
   background: rgba(201, 162, 39, 0.3);
-}
-
-.flight-btn--shoot {
-  border-color: #e07a7a;
-  color: #e07a7a;
-  width: 56px;
-  height: 56px;
 }
 
 @media (min-width: 900px) {
