@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { getBoss } from '../data/bosses';
 import { getCharacter } from '../data/characters';
@@ -32,6 +32,21 @@ export function BossScreen({ bossId }: { bossId: string }) {
   const [attempt, setAttempt] = useState(0);
   const [rewardApplied, setRewardApplied] = useState(false);
   const [wasAlreadyDefeated] = useState(() => state.save?.defeatedBossIds.includes(bossId) ?? false);
+
+  const bossMusicActive = phase === 'intro' || phase === 'playing';
+
+  useEffect(() => {
+    if (!boss) return;
+    if (bossMusicActive) {
+      audio.startBossTheme(boss.type);
+    } else {
+      audio.stopBossTheme();
+    }
+    return () => {
+      audio.stopBossTheme();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bossMusicActive, boss?.type]);
 
   if (!boss || !state.save) return null;
 

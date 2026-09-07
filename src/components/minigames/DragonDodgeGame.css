@@ -105,36 +105,128 @@
 
 .dodge-player {
   position: absolute;
-  width: 22px;
-  height: 22px;
   transform: translate(-50%, -50%);
-  background: var(--c-gold-bright);
-  border: 2px solid #000;
-  box-shadow: 0 0 8px rgba(230, 193, 79, 0.8);
   z-index: 4;
-  transition: background 0.1s ease;
+  border-radius: 50%;
+  border: 2px solid var(--c-gold-bright);
+  box-shadow: 0 0 8px rgba(230, 193, 79, 0.8);
+  background: rgba(230, 193, 79, 0.12);
+  padding: 2px;
+  line-height: 0;
+  transition: filter 0.1s ease, border-color 0.1s ease, box-shadow 0.1s ease;
 }
 
 .dodge-player--hit {
-  background: #ff5050;
+  border-color: #ff5050;
+  box-shadow: 0 0 14px rgba(255, 80, 80, 1);
+  filter: brightness(1.6);
 }
 
+.dodge-select {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.dodge-select-box {
+  max-width: 420px;
+  padding: 1.4rem;
+  background: rgba(20, 18, 26, 0.95);
+  border: 2px solid var(--c-gold);
+  text-align: center;
+}
+
+.dodge-select-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--c-gold-bright);
+  margin: 0 0 0.6rem;
+}
+
+.dodge-select-text {
+  color: var(--c-text);
+  line-height: 1.5;
+  margin: 0 0 0.8rem;
+}
+
+.dodge-select-grid {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dodge-select-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--c-stone-light);
+  color: var(--c-bone);
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  width: 110px;
+}
+
+.dodge-select-option:hover {
+  border-color: var(--c-gold);
+}
+
+/* Bola de fuego: llama en forma de gota cayendo, con núcleo brillante
+ * y una estela que se difumina detrás. */
 .dodge-fireball {
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 24px;
   transform: translate(-50%, -50%);
-  background: var(--c-ember);
-  border: 2px solid var(--c-flame, #f4b942);
-  box-shadow: 0 0 10px rgba(224, 122, 63, 0.9);
   z-index: 3;
+  clip-path: polygon(50% 0%, 78% 28%, 100% 68%, 72% 100%, 28% 100%, 0% 68%, 22% 28%);
+  background: linear-gradient(180deg, #fff2b0 0%, #ffcf5c 30%, #ff7a30 65%, #c0392b 100%);
+  box-shadow: 0 0 10px rgba(255, 120, 40, 0.9);
+  animation: dodgeFireFlicker 0.14s ease infinite alternate;
 }
 
+.dodge-fireball-core {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  width: 40%;
+  height: 40%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #fff2b0;
+  filter: blur(1px);
+}
+
+.dodge-fireball-trail {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 6px;
+  height: 14px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(255, 207, 92, 0.7), transparent);
+  filter: blur(1px);
+}
+
+@keyframes dodgeFireFlicker {
+  0% { filter: brightness(1); transform: translate(-50%, -50%) scale(1); }
+  100% { filter: brightness(1.25); transform: translate(-50%, -50%) scale(1.06); }
+}
+
+/* Columna de fuego: como el aliento de un dragón cayendo del cielo. */
 .dodge-beam {
   position: absolute;
   top: 0;
   bottom: 0;
   z-index: 1;
+  clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
 }
 
 .dodge-beam--warn {
@@ -150,17 +242,24 @@
 }
 
 .dodge-beam--active {
-  background: rgba(224, 60, 40, 0.75);
-  box-shadow: 0 0 20px rgba(224, 60, 40, 0.8);
+  background: linear-gradient(180deg, #fff2b0 0%, #ffcf5c 18%, #ff7a30 55%, #c0392b 100%);
+  box-shadow: 0 0 24px rgba(255, 120, 40, 0.9);
+  animation: dodgeFlameFlicker 0.15s ease infinite alternate;
 }
 
+/* Ola de fuego: barrido horizontal a ras de suelo. */
 .dodge-lateral {
   position: absolute;
   left: 0;
   right: 0;
-  height: 16px;
+  height: 18px;
   transform: translateY(-50%);
   z-index: 1;
+  clip-path: polygon(
+    0% 100%, 0% 40%, 5% 0%, 10% 40%, 15% 0%, 20% 40%, 25% 0%, 30% 40%,
+    35% 0%, 40% 40%, 45% 0%, 50% 40%, 55% 0%, 60% 40%, 65% 0%, 70% 40%,
+    75% 0%, 80% 40%, 85% 0%, 90% 40%, 95% 0%, 100% 40%, 100% 100%
+  );
 }
 
 .dodge-lateral--warn {
@@ -174,25 +273,62 @@
 }
 
 .dodge-lateral--active {
-  background: rgba(224, 60, 40, 0.8);
-  box-shadow: 0 0 16px rgba(224, 60, 40, 0.8);
+  background: linear-gradient(0deg, #c0392b 0%, #ff7a30 55%, #ffcf5c 85%, #fff2b0 100%);
+  box-shadow: 0 0 18px rgba(255, 120, 40, 0.9);
+  animation: dodgeFlameFlicker 0.15s ease infinite alternate;
 }
 
-.dodge-blast {
+@keyframes dodgeFlameFlicker {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.2); }
+}
+
+.dodge-blast-warn {
   position: absolute;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-}
-
-.dodge-blast--warn {
   border: 3px dashed rgba(255, 120, 60, 0.7);
   background: rgba(255, 120, 60, 0.08);
 }
 
-.dodge-blast--active {
-  background: radial-gradient(circle, rgba(255, 160, 60, 0.9), rgba(224, 60, 40, 0.6));
-  box-shadow: 0 0 24px rgba(255, 120, 60, 0.9);
+/* Explosión de fuego: mismo estallido de tres anillos usado en los
+ * jefes de otros capítulos, para mantener consistencia visual. */
+.dodge-blast {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.dodge-blast-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dodge-blast-ring--1 {
+  background: radial-gradient(circle, #fff2b0 0%, #ff7a30 55%, transparent 75%);
+  animation: dodgeBlastPulse 0.5s ease-out infinite;
+}
+
+.dodge-blast-ring--2 {
+  background: radial-gradient(circle, #ffcf5c 0%, #e05a30 55%, transparent 75%);
+  animation: dodgeBlastPulse 0.5s ease-out 0.08s infinite;
+}
+
+.dodge-blast-ring--3 {
+  background: radial-gradient(circle, #ffffff 0%, #ffcf5c 45%, transparent 75%);
+  animation: dodgeBlastPulse 0.4s ease-out 0.15s infinite;
+}
+
+@keyframes dodgeBlastPulse {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0.3; }
 }
 
 .dodge-controls {

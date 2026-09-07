@@ -7,7 +7,7 @@ import './StrategyBoss.css';
 // Una brecha en el castillo duele menos que un golpe directo de jefe:
 // aquí no hay ataques cuerpo a cuerpo contra el jugador, solo el coste
 // de no llegar a tiempo a defender un frente.
-const BREACH_DAMAGE = 8;
+const BREACH_DAMAGE = 10;
 
 interface StrategyBossProps {
   difficulty: Difficulty;
@@ -69,9 +69,9 @@ interface DifficultyConfig {
 }
 
 const CONFIG: Record<Difficulty, DifficultyConfig> = {
-  facil: { duration: 32, spawnEvery: 4600, enemySpeed: 0.18, archerChance: 0.08 },
-  normal: { duration: 45, spawnEvery: 3800, enemySpeed: 0.25, archerChance: 0.14 },
-  dificil: { duration: 60, spawnEvery: 3000, enemySpeed: 0.34, archerChance: 0.2 },
+  facil: { duration: 34, spawnEvery: 4100, enemySpeed: 0.2, archerChance: 0.1 },
+  normal: { duration: 46, spawnEvery: 3300, enemySpeed: 0.29, archerChance: 0.18 },
+  dificil: { duration: 60, spawnEvery: 2600, enemySpeed: 0.39, archerChance: 0.25 },
 };
 
 const TICK_MS = 60;
@@ -107,8 +107,8 @@ function makePlayerUnit(kind: 'soldado' | 'arquero' | 'caballeria', x: number, y
 function spawnEnemy(cfg: DifficultyConfig): Unit {
   const isArcher = Math.random() < cfg.archerChance;
   const kind: UnitKind = isArcher ? 'asaltante_arco' : 'asaltante';
-  const hp = isArcher ? 14 : 20;
-  const dmg = isArcher ? 6 : 5;
+  const hp = isArcher ? 16 : 23;
+  const dmg = isArcher ? 7 : 6;
   const range = isArcher ? 22 : 7;
   const atkCooldownMs = isArcher ? 1000 : 800;
   return {

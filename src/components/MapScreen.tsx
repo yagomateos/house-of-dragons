@@ -29,6 +29,23 @@ function getBossesAvailableAtLocation(locationId: string, save: GameSaveState): 
   return result;
 }
 
+/** Varios capítulos pueden compartir una misma localización (p. ej.
+ * Desembarco del Rey, usada en los capítulos 2 y 5). Antes de que el
+ * jugador llegue realmente a un capítulo posterior, sus acontecimientos
+ * en esa localización no deben aparecer en la lista — se verían como
+ * "bloqueados" junto a lo que sí toca jugar ahora, dando la falsa
+ * impresión de que la historia se ha detenido ahí. */
+function getReachableEventIds(eventIds: string[], save: GameSaveState): string[] {
+  const currentChapter = chapters.find((c) => c.id === save.currentChapterId);
+  const currentOrder = currentChapter?.order ?? Infinity;
+  return eventIds.filter((id) => {
+    const ev = getEvent(id);
+    if (!ev) return false;
+    const evChapter = chapters.find((c) => c.id === ev.chapterId);
+    return !evChapter || evChapter.order <= currentOrder;
+  });
+}
+
 type PinStatus = 'locked' | 'available' | 'done' | 'empty';
 
 export function MapScreen() {
@@ -63,6 +80,7 @@ export function MapScreen() {
 
   const openLocation = locations.find((l) => l.id === openLocationId);
   const availableBosses = openLocation && save ? getBossesAvailableAtLocation(openLocation.id, save) : [];
+  const reachableEventIds = openLocation && save ? getReachableEventIds(openLocation.eventIds, save) : [];
 
   return (
     <div className="map-screen fade-in">
@@ -106,7 +124,8 @@ export function MapScreen() {
         </div>
 
         {locations.map((loc) => {
-          const status = getStatus(loc.id, loc.eventIds);
+          const reachableIds = save ? getReachableEventIds(loc.eventIds, save) : loc.eventIds;
+          const status = getStatus(loc.id, reachableIds);
           return (
             <button
               key={loc.id}
@@ -140,10 +159,10 @@ export function MapScreen() {
 
             <p className="location-modal-subtitle">Acontecimientos disponibles</p>
             <div className="location-events-list">
-              {openLocation.eventIds.length === 0 && (
+              {reachableEventIds.length === 0 && (
                 <p className="location-empty-note">Aún no hay acontecimientos registrados en este lugar.</p>
               )}
-              {openLocation.eventIds.map((eid) => {
+              {reachableEventIds.map((eid) => {
                 const ev = getEvent(eid);
                 if (!ev) return null;
                 const completed = save.completedEventIds.includes(eid);

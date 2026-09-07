@@ -34,6 +34,8 @@ export function setAudioPrefs(next: Prefs): void {
 
 let ctx: AudioContext | null = null;
 let theme: { stop: () => void } | null = null;
+let bossTheme: { stop: () => void } | null = null;
+let bossThemeKey: string | null = null;
 
 // Los navegadores bloquean el audio hasta el primer gesto del usuario
 // (clic, toque o tecla). Exponemos ese estado para poder avisar en la
@@ -215,8 +217,220 @@ const THEME_LEAD: (number | null)[] = [
   // Cadencia (la melodía se apaga y deja resolver al bajo)
   440, null, 392, null, 349.23, null, 329.63, null, 293.66, null, null, null, null, null, null, null,
 ];
-const THEME_LOOP_SECONDS = THEME_BASS.length * THEME_EIGHTH;
-const THEME_PHRASE_STEPS = 16;
+// Voz de armonía añadida: una quinta sostenida sobre el bajo cada 4
+// pasos, para dar cuerpo de "coro/cuerdas" 8-bit al tema y que suene
+// más legendario sin dejar de ser chiptune.
+const THEME_HARMONY: (number | null)[] = THEME_BASS.map((freq, i) => (i % 4 === 0 ? freq * 1.5 : null));
+const THEME_LOOP_STEPS = THEME_BASS.length;
+
+// ------------------------------------------------------------------
+// Motor genérico de temas multi-voz (bajo + melodía + armonía +
+// percusión) reutilizado tanto por el tema principal como por los
+// temas de cada jefe final. Todo sintetizado, sin archivos externos.
+// ------------------------------------------------------------------
+
+interface ThemeVoice {
+  notes: (number | null)[];
+  type: OscillatorType;
+  peakGain: number;
+  /** Duración de cada nota como múltiplo de la corchea del tema. */
+  sustain: number;
+}
+
+interface ThemeDef {
+  eighth: number;
+  loopSteps: number;
+  masterGain: number;
+  voices: ThemeVoice[];
+  /** Pasos (dentro de un bucle) en los que suena un golpe de tambor grave. */
+  drumSteps: number[];
+}
+
+const MODE_HARMONIC_MINOR = [0, 2, 3, 5, 7, 8, 11];
+const MODE_PHRYGIAN = [0, 1, 3, 5, 7, 8, 10];
+const MODE_DORIAN = [0, 2, 3, 5, 7, 9, 10];
+
+/** Convierte un grado de escala (puede superar la octava) a frecuencia. */
+function degreeToFreq(root: number, mode: number[], degree: number): number {
+  const len = mode.length;
+  const octave = Math.floor(degree / len);
+  const idx = ((degree % len) + len) % len;
+  const semitone = mode[idx] + 12 * octave;
+  return root * Math.pow(2, semitone / 12);
+}
+
+function buildVoice(
+  root: number,
+  mode: number[],
+  pattern: (number | null)[],
+  type: OscillatorType,
+  peakGain: number,
+  sustain: number
+): ThemeVoice {
+  return {
+    notes: pattern.map((d) => (d === null ? null : degreeToFreq(root, mode, d))),
+    type,
+    peakGain,
+    sustain,
+  };
+}
+
+function playThemeDef(def: ThemeDef): { stop: () => void } {
+  const c = getCtx();
+  if (!c) return { stop() {} };
+  const master = c.createGain();
+  master.gain.value = def.masterGain;
+  master.connect(c.destination);
+
+  let stopped = false;
+  let timer = 0;
+  const loopSeconds = def.loopSteps * def.eighth;
+
+  function scheduleLoop(startAt: number) {
+    if (stopped || !c) return;
+    for (const voice of def.voices) {
+      voice.notes.forEach((freq, i) => {
+        if (freq) scheduleNoteAt(c, master, freq, startAt + i * def.eighth, def.eighth * voice.sustain, voice.type, voice.peakGain);
+      });
+    }
+    for (const step of def.drumSteps) {
+      scheduleDrumAt(c, master, startAt + step * def.eighth);
+    }
+    const nextStart = startAt + loopSeconds;
+    const delayMs = (nextStart - c.currentTime - 0.2) * 1000;
+    timer = window.setTimeout(() => scheduleLoop(nextStart), Math.max(50, delayMs));
+  }
+
+  scheduleLoop(c.currentTime + 0.05);
+
+  return {
+    stop() {
+      stopped = true;
+      window.clearTimeout(timer);
+      try {
+        master.disconnect();
+      } catch {
+        // ya desconectado
+      }
+    },
+  };
+}
+
+const MAIN_THEME_DEF: ThemeDef = {
+  eighth: THEME_EIGHTH,
+  loopSteps: THEME_LOOP_STEPS,
+  masterGain: 0.066,
+  voices: [
+    { notes: THEME_BASS, type: 'triangle', peakGain: 0.07, sustain: 0.95 },
+    { notes: THEME_LEAD, type: 'triangle', peakGain: 0.055, sustain: 1.9 },
+    { notes: THEME_HARMONY, type: 'triangle', peakGain: 0.03, sustain: 3.8 },
+  ],
+  // Pulso de tambor cada media frase (no solo al inicio de cada una),
+  // para un compás más firme y "legendario".
+  drumSteps: [0, 8, 16, 24, 32, 40, 48, 56],
+};
+
+// ------------------------------------------------------------------
+// Temas de jefe: una composición original distinta por cada tipo de
+// combate final, con su propio tono, modo y timbre — pensados para
+// sonar épicos ("legendarios") dentro del lenguaje 8-bit del resto
+// del juego, no como una imitación de ninguna banda sonora existente.
+// ------------------------------------------------------------------
+
+const BOSS_THEME_DEFS: Partial<Record<string, ThemeDef>> = {
+  // Capítulo 1 — dragón: feroz y caótico, modo menor armónico con
+  // séptima elevada para tensión, ritmo rápido y percusión constante.
+  dragon: {
+    eighth: 0.2,
+    loopSteps: 16,
+    masterGain: 0.072,
+    voices: [
+      buildVoice(164.81, MODE_HARMONIC_MINOR, [0, 0, 2, 2, 4, 4, 3, 3, 0, 0, 4, 4, 5, 5, 4, 4], 'sawtooth', 0.08, 0.9),
+      buildVoice(164.81, MODE_HARMONIC_MINOR, [null, 7, null, 6, null, 7, null, 9, null, 7, null, 6, null, 4, null, 6], 'sawtooth', 0.06, 1.6),
+      buildVoice(164.81, MODE_HARMONIC_MINOR, [4, null, null, null, null, null, null, null, 4, null, null, null, null, null, null, null], 'triangle', 0.035, 7.5),
+    ],
+    drumSteps: [0, 4, 8, 12],
+  },
+  // Capítulo 2 — estrategia: marcha militar en modo dorio, fanfarria
+  // de corte cuadrado y percusión firme a cada tiempo.
+  strategy: {
+    eighth: 0.26,
+    loopSteps: 16,
+    masterGain: 0.07,
+    voices: [
+      buildVoice(146.83, MODE_DORIAN, [0, 0, 0, 0, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 0, 0], 'square', 0.075, 0.9),
+      buildVoice(146.83, MODE_DORIAN, [7, null, 9, null, 7, null, 4, null, 9, null, 11, null, 9, null, 7, null], 'square', 0.06, 1.7),
+      buildVoice(146.83, MODE_DORIAN, [4, null, null, null, 4, null, null, null, 4, null, null, null, 4, null, null, null], 'triangle', 0.03, 3.8),
+    ],
+    drumSteps: [0, 2, 4, 6, 8, 10, 12, 14],
+  },
+  // Capítulo 3 — política/arquero: misterioso y maldito, modo frigio
+  // (segunda bemol) para el color de castillo encantado, muy espaciado.
+  politics: {
+    eighth: 0.32,
+    loopSteps: 16,
+    masterGain: 0.065,
+    voices: [
+      buildVoice(195.998, MODE_PHRYGIAN, [0, null, null, 0, null, 1, null, null, 0, null, null, 5, null, null, 1, null], 'triangle', 0.07, 2.2),
+      buildVoice(195.998, MODE_PHRYGIAN, [null, null, 7, null, null, null, 6, null, null, null, 8, null, null, null, 7, null], 'triangle', 0.05, 2.4),
+      buildVoice(195.998, MODE_PHRYGIAN, [0, null, null, null, null, null, null, null, 0, null, null, null, null, null, null, null], 'sawtooth', 0.025, 7.8),
+    ],
+    drumSteps: [0, 8],
+  },
+  // Capítulo 4 — batalla/pólvora: frenético, modo menor armónico a
+  // gran velocidad, percusión constante evocando el caos del incendio.
+  battle: {
+    eighth: 0.16,
+    loopSteps: 16,
+    masterGain: 0.07,
+    voices: [
+      buildVoice(130.81, MODE_HARMONIC_MINOR, [0, 2, 0, 2, 3, 5, 3, 5, 0, 2, 0, 2, 4, 6, 4, 6], 'sawtooth', 0.08, 0.85),
+      buildVoice(130.81, MODE_HARMONIC_MINOR, [7, null, 9, 7, null, 6, 9, null, 7, 11, null, 9, 7, null, 6, null], 'sawtooth', 0.055, 0.7),
+      buildVoice(130.81, MODE_HARMONIC_MINOR, [4, null, null, null, null, null, null, 4, null, null, null, null, 4, null, null, null], 'triangle', 0.03, 1.5),
+    ],
+    drumSteps: [0, 2, 4, 6, 8, 10, 12, 14],
+  },
+  // Capítulo 5 — naval: heroico y marinero, modo dorio con bajo que
+  // "rueda" como el oleaje y fanfarria cuadrada de corte de bronce.
+  naval: {
+    eighth: 0.28,
+    loopSteps: 16,
+    masterGain: 0.07,
+    voices: [
+      buildVoice(110, MODE_DORIAN, [0, 0, 4, 4, 3, 3, 4, 4, 0, 0, 5, 5, 4, 4, 3, 3], 'triangle', 0.075, 1.4),
+      buildVoice(110, MODE_DORIAN, [7, null, 4, null, 9, null, 7, null, 11, null, 9, null, 7, null, 4, null], 'square', 0.06, 1.7),
+      buildVoice(110, MODE_DORIAN, [4, null, null, null, 4, null, null, null, 4, null, null, null, 4, null, null, null], 'triangle', 0.032, 3.9),
+    ],
+    drumSteps: [0, 4, 8, 12],
+  },
+  // Capítulo 6 — vuelo de dragón: triunfal y ascendente, arpegios que
+  // "elevan el vuelo" sobre un modo dorio más brillante.
+  flight: {
+    eighth: 0.22,
+    loopSteps: 16,
+    masterGain: 0.072,
+    voices: [
+      buildVoice(123.47, MODE_DORIAN, [0, 0, 4, 4, 3, 3, 4, 4, 0, 0, 5, 5, 4, 4, 3, 3], 'sawtooth', 0.075, 0.9),
+      buildVoice(123.47, MODE_DORIAN, [0, 2, 4, 7, 9, 7, 4, 2, 0, 4, 7, 9, 11, 9, 7, 4], 'sawtooth', 0.06, 1.1),
+      buildVoice(123.47, MODE_DORIAN, [4, null, null, null, null, null, null, null, 4, null, null, null, null, null, null, null], 'triangle', 0.03, 7.5),
+    ],
+    drumSteps: [0, 4, 8, 12],
+  },
+  // Capítulo 7 — el jefe final: el tema más oscuro y grandioso del
+  // juego, modo frigio para el máximo pavor, bajo pesado y pulso lento
+  // e inexorable.
+  survival: {
+    eighth: 0.3,
+    loopSteps: 16,
+    masterGain: 0.076,
+    voices: [
+      buildVoice(138.59, MODE_PHRYGIAN, [0, 0, null, 0, 1, 1, null, 1, 0, 0, null, 0, 5, 5, null, 5], 'sawtooth', 0.09, 1.3),
+      buildVoice(138.59, MODE_PHRYGIAN, [null, 7, null, null, 8, null, null, 7, null, null, 9, null, null, 8, null, 7], 'sawtooth', 0.05, 1.6),
+      buildVoice(138.59, MODE_PHRYGIAN, [0, null, null, null, null, null, null, null, 0, null, null, null, null, null, null, null], 'triangle', 0.028, 7.8),
+    ],
+    drumSteps: [0, 4, 8, 12],
+  },
+};
 
 export const audio = {
   /** Blip audible siempre, incluso si los efectos están desactivados (feedback de los propios interruptores de Ajustes). */
@@ -321,50 +535,13 @@ export const audio = {
   /**
    * Tema principal en 8-bit (composición original), en bucle continuo.
    * Suena desde que se abre la página (en cuanto el navegador permite
-   * audio) y no se detiene al navegar por el juego.
+   * audio). Se detiene automáticamente mientras hay un combate de jefe
+   * activo (ver startBossTheme/stopBossTheme) y se retoma al salir.
    */
   startTheme() {
     if (!readPrefs().music) return;
-    const c = getCtx();
-    if (!c || theme) return;
-
-    const master = c.createGain();
-    master.gain.value = 0.06;
-    master.connect(c.destination);
-
-    let stopped = false;
-    let timer = 0;
-
-    function scheduleLoop(startAt: number) {
-      if (stopped || !c) return;
-      THEME_BASS.forEach((freq, i) => {
-        scheduleNoteAt(c, master, freq, startAt + i * THEME_EIGHTH, THEME_EIGHTH * 0.95, 'triangle', 0.07);
-      });
-      THEME_LEAD.forEach((freq, i) => {
-        if (freq) scheduleNoteAt(c, master, freq, startAt + i * THEME_EIGHTH, THEME_EIGHTH * 1.9, 'triangle', 0.055);
-      });
-      for (let phrase = 0; phrase < THEME_BASS.length / THEME_PHRASE_STEPS; phrase++) {
-        scheduleDrumAt(c, master, startAt + phrase * THEME_PHRASE_STEPS * THEME_EIGHTH);
-      }
-
-      const nextStart = startAt + THEME_LOOP_SECONDS;
-      const delayMs = (nextStart - c.currentTime - 0.2) * 1000;
-      timer = window.setTimeout(() => scheduleLoop(nextStart), Math.max(50, delayMs));
-    }
-
-    scheduleLoop(c.currentTime + 0.05);
-
-    theme = {
-      stop() {
-        stopped = true;
-        window.clearTimeout(timer);
-        try {
-          master.disconnect();
-        } catch {
-          // ya desconectado
-        }
-      },
-    };
+    if (theme) return;
+    theme = playThemeDef(MAIN_THEME_DEF);
   },
 
   stopTheme() {
@@ -374,8 +551,58 @@ export const audio = {
     }
   },
 
+  /**
+   * Sustituye el tema principal por la composición específica del
+   * combate de jefe indicado (una por cada BossType) mientras dure el
+   * enfrentamiento. Es idempotente: llamarlo de nuevo con el mismo
+   * tipo de jefe no reinicia la composición en curso.
+   */
+  startBossTheme(bossType: string) {
+    if (!readPrefs().music) {
+      bossThemeKey = bossType;
+      return;
+    }
+    if (bossThemeKey === bossType && bossTheme) return;
+    if (theme) {
+      theme.stop();
+      theme = null;
+    }
+    if (bossTheme) {
+      bossTheme.stop();
+      bossTheme = null;
+    }
+    bossThemeKey = bossType;
+    const def = BOSS_THEME_DEFS[bossType];
+    if (!def) return;
+    bossTheme = playThemeDef(def);
+  },
+
+  /** Detiene el tema de jefe activo (si lo hay) y retoma el tema principal. */
+  stopBossTheme() {
+    if (bossTheme) {
+      bossTheme.stop();
+      bossTheme = null;
+    }
+    bossThemeKey = null;
+    if (readPrefs().music && !theme) {
+      this.startTheme();
+    }
+  },
+
   setMusicEnabled(on: boolean) {
-    if (on) this.startTheme();
-    else this.stopTheme();
+    if (on) {
+      if (bossThemeKey) {
+        const def = BOSS_THEME_DEFS[bossThemeKey];
+        if (def) bossTheme = playThemeDef(def);
+      } else {
+        this.startTheme();
+      }
+    } else {
+      this.stopTheme();
+      if (bossTheme) {
+        bossTheme.stop();
+        bossTheme = null;
+      }
+    }
   },
 };

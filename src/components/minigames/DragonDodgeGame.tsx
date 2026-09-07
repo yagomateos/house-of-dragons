@@ -16,6 +16,12 @@ interface DragonDodgeGameProps {
   onLose: () => void;
 }
 
+const CHARACTER_OPTIONS: { icon: IconKey; name: string }[] = [
+  { icon: 'portrait-female-silver', name: 'Rhaenyra Targaryen' },
+  { icon: 'portrait-male-dark', name: 'Daemon Targaryen' },
+  { icon: 'portrait-aemond', name: 'Aemond Targaryen' },
+];
+
 type AttackKind = 'fireball' | 'beam' | 'lateral' | 'blast';
 
 interface Attack {
@@ -126,11 +132,19 @@ export function DragonDodgeGame({
     lastSpawn: 0,
     invulnerableUntil: 0,
     finished: false,
+    paused: true,
   });
 
   const [, setTick] = useState(0);
+  const [selectedIcon, setSelectedIcon] = useState<IconKey | null>(null);
   const arenaRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
+
+  function chooseCharacter(icon: IconKey) {
+    setSelectedIcon(icon);
+    gameRef.current.paused = false;
+    gameRef.current.lastSpawn = performance.now();
+  }
 
   function moveToPointer(e: { clientX: number; clientY: number }) {
     const rect = arenaRef.current?.getBoundingClientRect();
@@ -142,6 +156,7 @@ export function DragonDodgeGame({
   }
 
   function handleArenaPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    if (!selectedIcon) return;
     draggingRef.current = true;
     e.currentTarget.setPointerCapture(e.pointerId);
     moveToPointer(e);
@@ -186,7 +201,7 @@ export function DragonDodgeGame({
 
     const interval = window.setInterval(() => {
       const g = gameRef.current;
-      if (g.finished) return;
+      if (g.finished || g.paused) return;
       const now = performance.now();
 
       const speed = cfg.speed;
@@ -304,11 +319,10 @@ export function DragonDodgeGame({
           const telegraphing = now < atk.telegraphUntil;
           if (atk.kind === 'fireball') {
             return (
-              <div
-                key={atk.id}
-                className="dodge-fireball"
-                style={{ left: `${atk.x}%`, top: `${atk.y}%` }}
-              />
+              <div key={atk.id} className="dodge-fireball" style={{ left: `${atk.x}%`, top: `${atk.y}%` }}>
+                <span className="dodge-fireball-core" />
+                <span className="dodge-fireball-trail" />
+              </div>
             );
           }
           if (atk.kind === 'beam') {
@@ -329,24 +343,47 @@ export function DragonDodgeGame({
               />
             );
           }
+          if (telegraphing) {
+            return (
+              <div
+                key={atk.id}
+                className="dodge-blast-warn"
+                style={{ left: `${atk.x}%`, top: `${atk.y}%`, width: `${atk.width}%`, height: `${atk.width * 1.6}%` }}
+              />
+            );
+          }
           return (
-            <div
-              key={atk.id}
-              className={`dodge-blast ${telegraphing ? 'dodge-blast--warn' : 'dodge-blast--active'}`}
-              style={{
-                left: `${atk.x}%`,
-                top: `${atk.y}%`,
-                width: `${atk.width}%`,
-                height: `${atk.width * 1.6}%`,
-              }}
-            />
+            <div key={atk.id} className="dodge-blast" style={{ left: `${atk.x}%`, top: `${atk.y}%` }}>
+              <span className="dodge-blast-ring dodge-blast-ring--1" />
+              <span className="dodge-blast-ring dodge-blast-ring--2" />
+              <span className="dodge-blast-ring dodge-blast-ring--3" />
+            </div>
           );
         })}
 
         <div
           className={`dodge-player ${flashHit ? 'dodge-player--hit' : ''}`}
           style={{ left: `${g.player.x}%`, top: `${g.player.y}%` }}
-        />
+        >
+          {selectedIcon && <PixelIcon icon={selectedIcon} size={26} />}
+        </div>
+
+        {!selectedIcon && (
+          <div className="dodge-select">
+            <div className="dodge-select-box">
+              <p className="dodge-select-title">Elige a tu jinete</p>
+              <p className="dodge-select-text">Esquiva la furia del dragón y sobrevive hasta que amaine.</p>
+              <div className="dodge-select-grid">
+                {CHARACTER_OPTIONS.map((opt) => (
+                  <button key={opt.icon} className="dodge-select-option" onClick={() => chooseCharacter(opt.icon)}>
+                    <PixelIcon icon={opt.icon} size={56} />
+                    <span>{opt.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="dodge-controls" aria-hidden="true">
