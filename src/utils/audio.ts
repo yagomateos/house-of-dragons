@@ -165,16 +165,33 @@ function scheduleDrumAt(c: AudioContext, dest: AudioNode, atTime: number) {
   src.start(atTime);
 }
 
-// Composición original de ambientación (8-bit, tono oscuro medieval),
-// inspirada en el género pero sin reproducir ninguna melodía existente.
-const THEME_EIGHTH = 0.29;
+// Composición original de ambientación (8-bit, modo menor natural de La,
+// tono oscuro medieval), inspirada en el género pero sin reproducir
+// ninguna melodía existente. Cuatro frases de 8 compases (A-B-A'-cadencia)
+// para que el bucle dure ~20s en vez de repetirse cada pocos segundos.
+const THEME_EIGHTH = 0.32;
 const THEME_BASS = [
-  110, 110, 130.81, 130.81, 110, 110, 98, 98, 87.31, 87.31, 110, 110, 98, 98, 82.41, 82.41,
+  // Frase A (La menor)
+  110, 110, 164.81, 164.81, 174.61, 174.61, 164.81, 164.81, 110, 110, 196, 196, 174.61, 174.61, 164.81, 164.81,
+  // Frase B (Do mayor / Sol, más luminosa)
+  130.81, 130.81, 196, 196, 220, 220, 196, 196, 146.83, 146.83, 220, 220, 196, 196, 174.61, 174.61,
+  // Frase A' (variación descendente de la frase A)
+  110, 110, 130.81, 130.81, 164.81, 164.81, 146.83, 146.83, 110, 110, 174.61, 174.61, 164.81, 164.81, 146.83, 146.83,
+  // Cadencia (resuelve de vuelta a La)
+  196, 196, 174.61, 174.61, 164.81, 164.81, 146.83, 146.83, 130.81, 130.81, 123.47, 123.47, 110, 110, 110, 110,
 ];
 const THEME_LEAD: (number | null)[] = [
-  440, null, 659.25, null, 523.25, null, 880, null, 783.99, null, 659.25, null, 587.33, null, 440, null,
+  // Frase A
+  329.63, null, 293.66, null, 261.63, null, 293.66, null, 329.63, null, 349.23, null, 329.63, null, 293.66, null,
+  // Frase B
+  392, null, 349.23, null, 329.63, null, 349.23, null, 440, null, 392, null, 349.23, null, 329.63, null,
+  // Frase A'
+  523.25, null, 493.88, null, 440, null, 392, null, 329.63, null, 293.66, null, 261.63, null, 246.94, null,
+  // Cadencia (la melodía se apaga y deja resolver al bajo)
+  440, null, 392, null, 349.23, null, 329.63, null, 293.66, null, null, null, null, null, null, null,
 ];
 const THEME_LOOP_SECONDS = THEME_BASS.length * THEME_EIGHTH;
+const THEME_PHRASE_STEPS = 16;
 
 export const audio = {
   /** Blip audible siempre, incluso si los efectos están desactivados (feedback de los propios interruptores de Ajustes). */
@@ -254,10 +271,11 @@ export const audio = {
         scheduleNoteAt(c, master, freq, startAt + i * THEME_EIGHTH, THEME_EIGHTH * 0.95, 'triangle', 0.07);
       });
       THEME_LEAD.forEach((freq, i) => {
-        if (freq) scheduleNoteAt(c, master, freq, startAt + i * THEME_EIGHTH, THEME_EIGHTH * 1.9, 'square', 0.05);
+        if (freq) scheduleNoteAt(c, master, freq, startAt + i * THEME_EIGHTH, THEME_EIGHTH * 1.9, 'triangle', 0.055);
       });
-      scheduleDrumAt(c, master, startAt);
-      scheduleDrumAt(c, master, startAt + 8 * THEME_EIGHTH);
+      for (let phrase = 0; phrase < THEME_BASS.length / THEME_PHRASE_STEPS; phrase++) {
+        scheduleDrumAt(c, master, startAt + phrase * THEME_PHRASE_STEPS * THEME_EIGHTH);
+      }
 
       const nextStart = startAt + THEME_LOOP_SECONDS;
       const delayMs = (nextStart - c.currentTime - 0.2) * 1000;

@@ -24,6 +24,7 @@ import { getBoss, getBossForChapter } from '../data/bosses';
 // ============================================================
 
 const DAMAGE_WRONG_ANSWER = 10;
+const HEAL_CORRECT_ANSWER = 10;
 const DAMAGE_BOSS_HIT = 20;
 const MAX_HEALTH = 100;
 
@@ -193,8 +194,10 @@ function reducer(state: AppState, action: Action): AppState {
       // si permite reintentar la pregunta o si lleva a la derrota,
       // una vez el jugador haya visto el resultado.
       let sessionHealth = state.sessionHealth;
-      if (!action.correct && sessionHealth !== null) {
-        sessionHealth = clampHealth(sessionHealth - DAMAGE_WRONG_ANSWER);
+      if (sessionHealth !== null) {
+        sessionHealth = clampHealth(
+          sessionHealth + (action.correct ? HEAL_CORRECT_ANSWER : -DAMAGE_WRONG_ANSWER)
+        );
       }
 
       return { ...state, save: withAch.save, sessionHealth, newlyUnlockedAchievements: withAch.newly };
@@ -311,4 +314,4 @@ export function useGame(): GameContextValue {
   return ctx;
 }
 
-export { DAMAGE_WRONG_ANSWER, DAMAGE_BOSS_HIT, MAX_HEALTH };
+export { DAMAGE_WRONG_ANSWER, HEAL_CORRECT_ANSWER, DAMAGE_BOSS_HIT, MAX_HEALTH };

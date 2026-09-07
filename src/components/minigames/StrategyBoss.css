@@ -1,0 +1,281 @@
+.war-game {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+.war-hud {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem 0.9rem;
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 2px solid var(--c-gold);
+  z-index: 5;
+}
+
+.war-health {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  min-width: 0;
+  width: 40%;
+  max-width: 180px;
+}
+
+.war-health-icon {
+  color: #d97a7a;
+  flex-shrink: 0;
+}
+
+.war-health-track {
+  flex: 1;
+  height: 12px;
+  min-width: 40px;
+  background: #14141a;
+  border: 1px solid var(--c-stone-light);
+  overflow: hidden;
+}
+
+.war-health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7fb562, #a8d878);
+  transition: width 0.2s ease;
+}
+
+.war-health-fill--mid {
+  background: linear-gradient(90deg, #d0a13a, #e6c14f);
+}
+
+.war-health-fill--low {
+  background: linear-gradient(90deg, #a83232, #e07a7a);
+}
+
+.war-health-value {
+  font-family: var(--font-title);
+  font-size: 0.55rem;
+  color: var(--c-bone);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.war-timer-track {
+  flex: 1;
+  height: 14px;
+  background: #14141a;
+  border: 2px solid var(--c-gold);
+  overflow: hidden;
+}
+
+.war-timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--c-gold), var(--c-gold-bright));
+  transition: width 0.1s linear;
+}
+
+.war-objective {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.72rem;
+  color: var(--c-text);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.55);
+  border-bottom: 1px solid var(--c-stone-light);
+}
+
+.war-objective-you {
+  color: #a8d878;
+  font-weight: bold;
+}
+
+.war-objective-enemy {
+  color: #e07a7a;
+  font-weight: bold;
+}
+
+.war-arena {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 32px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 32px
+    ),
+    radial-gradient(ellipse at 50% 40%, #3a5230 0%, #263a1e 55%, #172013 100%);
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.war-base {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.war-base-icon {
+  font-size: 2.1rem;
+  filter: drop-shadow(0 0 12px rgba(201, 162, 39, 0.7));
+}
+
+.war-base-label {
+  font-family: var(--font-ui);
+  font-size: 0.55rem;
+  color: var(--c-gold-bright);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+.war-breach-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 2px dashed rgba(230, 193, 79, 0.5);
+  pointer-events: none;
+}
+
+.war-unit {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.war-unit-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(127, 181, 98, 0.35), rgba(127, 181, 98, 0.08));
+  border: 2px solid #7fb562;
+  box-shadow: 0 0 8px rgba(127, 181, 98, 0.6);
+}
+
+.war-unit--enemy .war-unit-badge {
+  background: radial-gradient(circle, rgba(224, 60, 40, 0.4), rgba(224, 60, 40, 0.1));
+  border-color: #e05a48;
+  box-shadow: 0 0 8px rgba(224, 60, 40, 0.7);
+}
+
+.war-unit--hit .war-unit-badge {
+  box-shadow: 0 0 14px rgba(255, 80, 80, 1);
+}
+
+.war-unit--selected .war-unit-badge {
+  border-color: var(--c-gold-bright);
+  box-shadow: 0 0 14px rgba(230, 193, 79, 1);
+}
+
+.war-unit-icon {
+  font-size: 1.15rem;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.9));
+}
+
+.war-unit-label {
+  font-family: var(--font-ui);
+  font-size: 0.5rem;
+  color: var(--c-bone);
+  background: rgba(0, 0, 0, 0.65);
+  padding: 0 3px;
+  white-space: nowrap;
+}
+
+.war-unit--enemy .war-unit-label {
+  color: #f0a8a0;
+}
+
+.war-unit-hp-track {
+  width: 24px;
+  height: 4px;
+  background: #14141a;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+.war-unit-hp-fill {
+  height: 100%;
+  background: #7fb562;
+}
+
+.war-unit-hp-fill--enemy {
+  background: #e05a48;
+}
+
+.war-briefing {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+}
+
+.war-briefing-box {
+  max-width: 420px;
+  padding: 1.4rem;
+  background: rgba(20, 18, 26, 0.95);
+  border: 2px solid var(--c-gold);
+  text-align: center;
+}
+
+.war-briefing-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--c-gold-bright);
+  margin: 0 0 0.8rem;
+}
+
+.war-briefing-text {
+  color: var(--c-text);
+  line-height: 1.5;
+  margin: 0 0 0.6rem;
+}
+
+.war-briefing-tap {
+  margin: 1rem 0 0;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--c-gold);
+  animation: warBriefingPulse 1.2s ease infinite;
+}
+
+@keyframes warBriefingPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.war-hint {
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.7rem;
+  color: var(--c-text-dim);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6);
+  border-top: 1px solid var(--c-stone-light);
+}

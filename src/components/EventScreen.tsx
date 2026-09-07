@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { getEvent } from '../data/events';
 import { getCharacter } from '../data/characters';
@@ -8,7 +8,7 @@ import { SceneBackground, type SceneBg } from './SceneBackground';
 import { PixelIcon } from './PixelIcon';
 import { audio } from '../utils/audio';
 import { getBossForChapter } from '../data/bosses';
-import { DAMAGE_WRONG_ANSWER } from '../state/GameContext';
+import { DAMAGE_WRONG_ANSWER, HEAL_CORRECT_ANSWER } from '../state/GameContext';
 import type { DecisionOption } from '../types';
 import './EventScreen.css';
 
@@ -23,6 +23,14 @@ export function EventScreen({ eventId }: { eventId: string }) {
   const [background, setBackground] = useState<SceneBg>('castle');
 
   const step = event?.steps[stepIndex];
+
+  // Cerrojo síncrono contra doble disparo (doble-tap táctil, doble
+  // evento de click, etc.): sin esto una sola pulsación podría aplicar
+  // el daño o la recompensa de una decisión/pregunta dos veces.
+  const actionLockRef = useRef(false);
+  useEffect(() => {
+    actionLockRef.current = false;
+  }, [stepIndex]);
 
   useEffect(() => {
     if (step?.type === 'narration' && step.background) {
@@ -107,6 +115,8 @@ export function EventScreen({ eventId }: { eventId: string }) {
                   key={opt.id}
                   className="btn btn-small decision-btn"
                   onClick={() => {
+                    if (actionLockRef.current) return;
+                    actionLockRef.current = true;
                     audio.select();
                     setDecisionResult(opt);
                     dispatch({
@@ -145,6 +155,8 @@ export function EventScreen({ eventId }: { eventId: string }) {
                   key={i}
                   className="btn btn-small question-btn"
                   onClick={() => {
+                    if (actionLockRef.current) return;
+                    actionLockRef.current = true;
                     const correct = i === step.correctIndex;
                     setAnswered({ index: i, correct });
                     dispatch({ type: 'RECORD_ANSWER', correct });
@@ -162,7 +174,9 @@ export function EventScreen({ eventId }: { eventId: string }) {
 
         {step.type === 'question' && answered && answered.correct && (
           <div className="rpg-panel event-box slide-up">
-            <p className="question-verdict question-verdict--ok">CORRECTO · +10 Conocimiento</p>
+            <p className="question-verdict question-verdict--ok">
+              CORRECTO · +10 Conocimiento · +{HEAL_CORRECT_ANSWER} <span className="heart-icon">❤</span>
+            </p>
             <p className="event-narration-text">{step.explanation}</p>
             <button className="btn btn-small event-continue" onClick={goNext}>
               Continuar
@@ -184,6 +198,7 @@ export function EventScreen({ eventId }: { eventId: string }) {
                 className="btn btn-small event-continue"
                 onClick={() => {
                   audio.click();
+                  actionLockRef.current = false;
                   setAnswered(null);
                 }}
               >

@@ -6,6 +6,9 @@ import { getLocation } from '../data/locations';
 import { chapters } from '../data/chapters';
 import { PixelIcon } from './PixelIcon';
 import { DragonDodgeGame } from './minigames/DragonDodgeGame';
+import { StrategyBoss } from './minigames/StrategyBoss';
+import { PoliticsBoss } from './minigames/PoliticsBoss';
+import { BattleBoss } from './minigames/BattleBoss';
 import { audio } from '../utils/audio';
 import type { Difficulty } from '../types';
 import './BossScreen.css';
@@ -123,11 +126,44 @@ export function BossScreen({ bossId }: { bossId: string }) {
         </div>
       )}
 
-      {phase === 'playing' && (
+      {phase === 'playing' && boss.type === 'dragon' && (
         <DragonDodgeGame
           key={attempt}
           difficulty={difficulty}
           dragonIcon={boss.icon}
+          startingHealth={currentHealth}
+          onDamage={(value) => dispatch({ type: 'SET_SESSION_HEALTH', value })}
+          onWin={handleWin}
+          onLose={handleLose}
+        />
+      )}
+
+      {phase === 'playing' && boss.type === 'strategy' && (
+        <StrategyBoss
+          key={attempt}
+          difficulty={difficulty}
+          startingHealth={currentHealth}
+          onDamage={(value) => dispatch({ type: 'SET_SESSION_HEALTH', value })}
+          onWin={handleWin}
+          onLose={handleLose}
+        />
+      )}
+
+      {phase === 'playing' && boss.type === 'politics' && (
+        <PoliticsBoss
+          key={attempt}
+          difficulty={difficulty}
+          startingHealth={currentHealth}
+          onDamage={(value) => dispatch({ type: 'SET_SESSION_HEALTH', value })}
+          onWin={handleWin}
+          onLose={handleLose}
+        />
+      )}
+
+      {phase === 'playing' && boss.type === 'battle' && (
+        <BattleBoss
+          key={attempt}
+          difficulty={difficulty}
           startingHealth={currentHealth}
           onDamage={(value) => dispatch({ type: 'SET_SESSION_HEALTH', value })}
           onWin={handleWin}

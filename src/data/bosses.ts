@@ -1,8 +1,9 @@
 import type { BossData } from '../types';
 
 // Un jefe por capítulo, cada uno con un minijuego distinto (ver
-// src/components/minigames/). De momento solo el Capítulo 1 tiene jefe;
-// el resto se añadirá capítulo a capítulo sobre esta misma estructura.
+// src/components/minigames/). Los capítulos 5-7 aún no tienen
+// acontecimientos narrativos, así que sus jefes se añadirán cuando esos
+// capítulos tengan contenido jugable que lleve hasta ellos.
 export const bosses: BossData[] = [
   {
     id: 'boss_ch1_dragon',
@@ -17,6 +18,51 @@ export const bosses: BossData[] = [
     rewards: {
       knowledge: 50,
       experience: 100,
+    },
+  },
+  {
+    id: 'boss_ch2_guerra',
+    chapterId: 'ch2_cenizas',
+    name: 'Las Fronteras en Llamas',
+    type: 'strategy',
+    title: 'LA GUERRA',
+    tagline: 'Sin dragones que impongan orden, el reino se sostiene a base de decisiones militares.',
+    icon: 'crown',
+    victoryText:
+      'Cada frente recibe la respuesta que necesitaba a tiempo. El reino, todavía convaleciente de la Danza, aguanta sin fracturarse de nuevo.',
+    rewards: {
+      knowledge: 40,
+      experience: 70,
+    },
+  },
+  {
+    id: 'boss_ch3_consejo',
+    chapterId: 'ch3_targaryen',
+    name: 'Los Rumores de Harrenhal',
+    type: 'politics',
+    title: 'EL CONSEJO',
+    tagline: 'Bajo las banderas y la música del torneo, no todas las palabras son sinceras.',
+    icon: 'tower',
+    victoryText:
+      'Separas la verdad de la manipulación antes de que la corte se deje engañar. El Consejo ha sido superado.',
+    rewards: {
+      knowledge: 45,
+      experience: 80,
+    },
+  },
+  {
+    id: 'boss_ch4_rebelion',
+    chapterId: 'ch4_rebelion',
+    name: 'La Marcha hacia el Trono',
+    type: 'battle',
+    title: 'LA REBELIÓN',
+    tagline: 'Cada paso hacia Desembarco del Rey exige la decisión correcta.',
+    icon: 'skull',
+    victoryText:
+      'El ejército rebelde alcanza las puertas de Desembarco del Rey. La dinastía Targaryen está a punto de llegar a su fin.',
+    rewards: {
+      knowledge: 50,
+      experience: 90,
     },
   },
 ];
