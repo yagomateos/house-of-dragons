@@ -183,7 +183,7 @@ export interface HistoricalEvent {
 
 // ---------- JEFES DE CAPÍTULO ----------
 
-export type BossType = 'dragon' | 'strategy' | 'politics' | 'battle' | 'resources' | 'flight' | 'survival';
+export type BossType = 'dragon' | 'strategy' | 'politics' | 'battle' | 'naval' | 'resources' | 'flight' | 'survival';
 
 export type Difficulty = 'facil' | 'normal' | 'dificil';
 

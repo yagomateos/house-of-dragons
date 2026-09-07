@@ -11,8 +11,12 @@ import './MapScreen.css';
 
 /** El jefe de un capítulo se ofrece en la localización de su último
  * acontecimiento, una vez completado — y sigue disponible para siempre
- * después, se haya superado ya o no, para poder volver a enfrentarlo. */
-function getBossAvailableAtLocation(locationId: string, save: GameSaveState): BossData | null {
+ * después, se haya superado ya o no, para poder volver a enfrentarlo.
+ * Varios capítulos pueden compartir una misma localización (p. ej.
+ * Desembarco del Rey), así que se devuelven todos los jefes que
+ * correspondan, no solo el primero encontrado. */
+function getBossesAvailableAtLocation(locationId: string, save: GameSaveState): BossData[] {
+  const result: BossData[] = [];
   for (const boss of bosses) {
     const chapter = chapters.find((c) => c.id === boss.chapterId);
     if (!chapter || chapter.eventIds.length === 0) continue;
@@ -20,9 +24,9 @@ function getBossAvailableAtLocation(locationId: string, save: GameSaveState): Bo
     const lastEvent = getEvent(lastEventId);
     if (!lastEvent || lastEvent.locationId !== locationId) continue;
     if (!save.completedEventIds.includes(lastEventId)) continue;
-    return boss;
+    result.push(boss);
   }
-  return null;
+  return result;
 }
 
 type PinStatus = 'locked' | 'available' | 'done' | 'empty';
@@ -58,8 +62,7 @@ export function MapScreen() {
   }
 
   const openLocation = locations.find((l) => l.id === openLocationId);
-  const availableBoss = openLocation && save ? getBossAvailableAtLocation(openLocation.id, save) : null;
-  const bossDefeated = availableBoss ? (save?.defeatedBossIds.includes(availableBoss.id) ?? false) : false;
+  const availableBosses = openLocation && save ? getBossesAvailableAtLocation(openLocation.id, save) : [];
 
   return (
     <div className="map-screen fade-in">
@@ -168,22 +171,28 @@ export function MapScreen() {
               })}
             </div>
 
-            {availableBoss && (
+            {availableBosses.length > 0 && (
               <div className="location-boss-block">
                 <p className="location-modal-subtitle">Jefe del capítulo</p>
-                <button
-                  className="btn btn-primary location-boss-btn"
-                  onClick={() => {
-                    audio.click();
-                    dispatch({ type: 'PLAY_BOSS', bossId: availableBoss.id });
-                    setOpenLocationId(null);
-                  }}
-                >
-                  <span>{availableBoss.name}</span>
-                  <span className="location-boss-btn-status">
-                    {bossDefeated ? '✓ Superado · Volver a enfrentar' : 'Enfrentar'}
-                  </span>
-                </button>
+                {availableBosses.map((boss) => {
+                  const bossDefeated = save.defeatedBossIds.includes(boss.id);
+                  return (
+                    <button
+                      key={boss.id}
+                      className="btn btn-primary location-boss-btn"
+                      onClick={() => {
+                        audio.click();
+                        dispatch({ type: 'PLAY_BOSS', bossId: boss.id });
+                        setOpenLocationId(null);
+                      }}
+                    >
+                      <span>{boss.name}</span>
+                      <span className="location-boss-btn-status">
+                        {bossDefeated ? '✓ Superado · Volver a enfrentar' : 'Enfrentar'}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             )}
 

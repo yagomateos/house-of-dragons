@@ -65,6 +65,21 @@ export const bosses: BossData[] = [
       experience: 90,
     },
   },
+  {
+    id: 'boss_ch5_aguasnegras',
+    chapterId: 'ch5_juego',
+    name: 'La Flota de Stannis',
+    type: 'naval',
+    title: 'LA BATALLA DE AGUASNEGRAS',
+    tagline: '"Ganaremos con fuego." La flota de Stannis Baratheon entra en la bahía dispuesta a tomarlo todo.',
+    icon: 'ship',
+    victoryText:
+      'La pólvora líquida devora la flota de Stannis entre llamas verdes, y los estandartes dorados de Tywin Lannister deciden lo que quedaba de la batalla. Desembarco del Rey sobrevive una noche más, aunque el precio en vidas es incalculable.',
+    rewards: {
+      knowledge: 55,
+      experience: 100,
+    },
+  },
 ];
 
 export function getBossForChapter(chapterId: string): BossData | undefined {

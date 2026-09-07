@@ -881,6 +881,299 @@ export const events: HistoricalEvent[] = [
       },
     ],
   },
+
+  // =========================================================
+  // CAPÍTULO 5 — EL JUEGO DE TRONOS
+  // =========================================================
+
+  {
+    id: 'ev_mano_del_rey',
+    chapterId: 'ch5_juego',
+    locationId: 'kings_landing',
+    order: 1,
+    year: '298 d.C.',
+    title: 'La Mano del Rey',
+    characterIds: ['char_eddard', 'char_robert', 'char_cersei', 'char_jaime'],
+    summary:
+      'Robert Baratheon nombra a Eddard Stark su Mano; el descubrimiento de un secreto de los Lannister y la muerte del propio rey en una cacería desatan la crisis.',
+    nextEventId: 'ev_caida_stark',
+    steps: [
+      {
+        type: 'narration',
+        background: 'hall',
+        text: 'Años después de la rebelión, Eddard Stark llega a Desembarco del Rey convocado por su viejo amigo Robert, ahora rey, para ocupar el puesto de Mano tras la muerte del anterior, Jon Arryn, en circunstancias sospechosas.',
+      },
+      { type: 'dialogue', speakerId: 'char_robert', text: 'Necesito que gobiernes el reino mientras yo cazo y bebo, Ned. Siempre se te dio mejor que a mí.' },
+      {
+        type: 'narration',
+        background: 'castle',
+        text: 'Investigando la muerte de Arryn, Ned descubre un secreto oculto entre los hijos de la reina Cersei: ninguno de ellos es en realidad hijo biológico de Robert, sino de su propio hermano gemelo, Jaime Lannister.',
+      },
+      {
+        type: 'decision',
+        prompt: 'Ned descubre la verdad sobre el origen de los hijos de Cersei. ¿Qué hace con esa información?',
+        options: [
+          {
+            id: 'advertir',
+            label: 'SE LO ADVIERTE A CERSEI ANTES DE ACTUAR',
+            resultText: 'Le da la oportunidad de huir con sus hijos antes de que la verdad llegue al rey, una decisión que se demostrará fatal.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'contar_robert',
+            label: 'SE LO CUENTA DIRECTAMENTE A ROBERT',
+            resultText: 'Decide que el rey merece conocer la verdad, sin medir todavía las consecuencias de revelarla sin apoyo suficiente.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'esperar',
+            label: 'ESPERA A TENER MÁS PRUEBAS',
+            resultText: 'Su honor le impide actuar precipitadamente, pero la espera le costará un tiempo que no tiene.',
+            knowledgeBonus: 4,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'Antes de que Ned pueda actuar del todo, el rey Robert muere durante una cacería, herido mortalmente por un jabalí mientras estaba ebrio, aunque algunos sospechan que el vino que bebió esa tarde no era del todo inocente.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Cómo murió el rey Robert Baratheon?',
+        options: ['Envenenado en un banquete', 'Herido por un jabalí durante una cacería', 'En batalla contra Stannis', 'De una enfermedad repentina'],
+        correctIndex: 1,
+        explanation:
+          'Robert murió por las heridas de un jabalí durante una cacería, aunque el vino que había bebido esa tarde, servido por indicación de Cersei, pudo nublar su instinto de supervivencia.',
+      },
+      {
+        type: 'reward',
+        knowledge: 20,
+        experience: 20,
+        unlockCharacterIds: ['char_cersei'],
+        text: 'Con el rey muerto, la corona, y el secreto que Ned descubrió, penden de un hilo.',
+      },
+    ],
+  },
+
+  {
+    id: 'ev_caida_stark',
+    chapterId: 'ch5_juego',
+    locationId: 'kings_landing',
+    order: 2,
+    year: '298 d.C.',
+    title: 'La Caída de Ned Stark',
+    characterIds: ['char_eddard', 'char_cersei', 'char_joffrey'],
+    summary:
+      'Ned intenta impedir la coronación de Joffrey revelando la verdad, pero es traicionado y ejecutado como traidor ante la Fortaleza Roja.',
+    nextEventId: 'ev_rey_en_el_norte',
+    steps: [
+      {
+        type: 'narration',
+        background: 'throne',
+        text: 'Con Robert muerto, Ned confronta a Cersei con la verdad que descubrió, dándole la oportunidad de huir con sus hijos antes de que la sucesión se decida.',
+      },
+      { type: 'dialogue', speakerId: 'char_cersei', text: 'Cuando juegas al juego de tronos, solo hay dos posibilidades: ganar... o morir. No hay término medio.' },
+      {
+        type: 'narration',
+        background: 'throne',
+        text: 'Cersei no huye. En su lugar, se asegura de que su hijo mayor, Joffrey, sea coronado antes de que Ned pueda reunir apoyos suficientes para impedirlo.',
+      },
+      {
+        type: 'narration',
+        background: 'throne',
+        text: 'Traicionado por hombres en los que confiaba, Ned es capturado y acusado de traición. Con su hija Sansa como rehén y la promesa de que le perdonarían la vida si confesaba, Ned se declara culpable ante toda la corte.',
+      },
+      {
+        type: 'decision',
+        prompt: 'El joven rey Joffrey debe decidir el destino de Ned Stark, que ya ha confesado. ¿Qué hace?',
+        options: [
+          {
+            id: 'perdon',
+            label: 'LE PERDONA LA VIDA Y LO ENVÍA AL MURO',
+            resultText: 'Esta habría sido la decisión acordada, respetando el trato ofrecido a cambio de la confesión.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'ejecucion',
+            label: 'ORDENA SU EJECUCIÓN INMEDIATA',
+            resultText: 'Ignorando los consejos de su propio Consejo Privado, Joffrey exige la cabeza de Ned ante la multitud reunida.',
+            knowledgeBonus: 4,
+          },
+          {
+            id: 'carcel',
+            label: 'LO ENCARCELA INDEFINIDAMENTE',
+            resultText: 'Una tercera vía que nadie en la corte había contemplado seriamente.',
+            knowledgeBonus: 3,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'throne',
+        text: 'A pesar del trato acordado, Joffrey ordena la ejecución de Ned Stark en los escalones del Gran Sept de Baelor, ante los gritos de su hija Sansa. El honor de Ned no fue suficiente para salvarlo del juego de tronos.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Quién ordenó la ejecución de Eddard Stark, rompiendo el trato que le habría perdonado la vida?',
+        options: ['Cersei Lannister', 'Tywin Lannister', 'El rey Joffrey Baratheon', 'Tyrion Lannister'],
+        correctIndex: 2,
+        explanation:
+          'Joffrey ordenó la ejecución por impulso propio, ignorando tanto el trato acordado como los consejos de quienes le rodeaban.',
+      },
+      {
+        type: 'reward',
+        knowledge: 22,
+        experience: 25,
+        unlockCharacterIds: ['char_joffrey'],
+        text: 'La noticia de la muerte de Ned llega al Norte. Sus banderizos no tardan en responder.',
+      },
+    ],
+  },
+
+  {
+    id: 'ev_rey_en_el_norte',
+    chapterId: 'ch5_juego',
+    locationId: 'kings_landing',
+    order: 3,
+    year: '298 d.C. — 299 d.C.',
+    title: 'El Rey en el Norte',
+    characterIds: ['char_robb', 'char_catelyn'],
+    summary:
+      'Robb Stark reúne a los banderizos del Norte y es proclamado Rey en el Norte, dando comienzo abierto a la Guerra de los Cinco Reyes.',
+    nextEventId: 'ev_aguasnegras',
+    steps: [
+      {
+        type: 'narration',
+        background: 'hall',
+        text: 'Al conocer la ejecución de su padre, Robb Stark, apenas un muchacho, reúne a los señores del Norte y de las Tierras de los Ríos en Aguasdulces, la fortaleza de su madre, Catelyn Tully.',
+      },
+      { type: 'dialogue', speakerId: 'char_catelyn', text: 'Mi hijo no es un niño jugando a la guerra. Es el Señor de Invernalia, y muy pronto también su rey.' },
+      {
+        type: 'narration',
+        background: 'hall',
+        text: 'Los señores norteños, indignados por la ejecución de Ned y la coronación del "usurpador" Joffrey, se niegan a reconocer al Trono de Hierro. En su lugar, proclaman a Robb como Rey en el Norte, restaurando el antiguo reino independiente.',
+      },
+      {
+        type: 'decision',
+        prompt: '¿Qué motivo principal crees que llevó a los norteños a declarar la independencia bajo Robb?',
+        options: [
+          {
+            id: 'venganza',
+            label: 'VENGAR LA MUERTE DE NED STARK',
+            resultText: 'Para muchos banderizos, esto es ante todo una cuestión de honor familiar y sangre por sangre.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'legitimidad',
+            label: 'RECHAZAR LA LEGITIMIDAD DE JOFFREY',
+            resultText: 'Los rumores sobre el verdadero origen de Joffrey ya circulan por el reino, minando su reclamación al trono.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'independencia',
+            label: 'RESTAURAR LA INDEPENDENCIA DEL NORTE',
+            resultText: 'Para otros, esta guerra es la oportunidad de deshacer siglos de sumisión al Trono de Hierro.',
+            knowledgeBonus: 4,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'No son los únicos en alzarse. Stannis y Renly Baratheon, ambos hermanos del difunto Robert, también reclaman el Trono de Hierro para sí, mientras Balon Greyjoy aprovecha el caos para declarar su propia independencia en las Islas de Hierro. El reino se fragmenta en la Guerra de los Cinco Reyes.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Cuántos reyes reclaman el Trono de Hierro o su propia independencia durante esta guerra, dando nombre al conflicto?',
+        options: ['Tres', 'Cuatro', 'Cinco', 'Seis'],
+        correctIndex: 2,
+        explanation:
+          'Robb Stark, Joffrey Baratheon, Stannis Baratheon, Renly Baratheon y Balon Greyjoy reclaman sendas coronas, dando nombre a la Guerra de los Cinco Reyes.',
+      },
+      {
+        type: 'reward',
+        knowledge: 22,
+        experience: 25,
+        unlockCharacterIds: ['char_robb', 'char_catelyn'],
+        text: 'Con el reino fracturado en cinco bandos, todas las miradas se vuelven hacia Desembarco del Rey, donde se librará la batalla que decidirá el curso de la guerra.',
+      },
+    ],
+  },
+
+  {
+    id: 'ev_aguasnegras',
+    chapterId: 'ch5_juego',
+    locationId: 'kings_landing',
+    order: 4,
+    year: '299 d.C.',
+    title: 'La Batalla de Aguasnegras',
+    characterIds: ['char_tyrion', 'char_stannis', 'char_tywin'],
+    summary:
+      'Tyrion Lannister organiza la defensa de Desembarco del Rey con pólvora líquida contra la flota invasora de Stannis Baratheon.',
+    steps: [
+      {
+        type: 'narration',
+        background: 'sea',
+        text: 'Con Tywin lejos del frente y Joffrey demasiado joven e imprudente para liderar, es Tyrion Lannister, nombrado Mano del Rey en funciones, quien asume la defensa de la capital ante la enorme flota de Stannis Baratheon, que navega bahía arriba dispuesta a tomar el Trono de Hierro por la fuerza.',
+      },
+      { type: 'dialogue', speakerId: 'char_tyrion', text: 'No tenemos hombres suficientes para ganar esta batalla con acero. Tendremos que ganarla con fuego.' },
+      {
+        type: 'narration',
+        background: 'sea',
+        text: 'Tyrion ordena esconder cientos de barriles de pólvora líquida, sustancia alquímica más volátil que el propio fuego, en un único barco señuelo, en el corazón de la flota de Stannis que entra en la bahía de Aguasnegras.',
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'Cuando la flota enemiga rodea el barco cebo, una única flecha en llamas basta para encenderlo. La pólvora líquida estalla en una columna de fuego verde que consume decenas de naves en un instante, tiñendo el cielo nocturno de un verde infernal.',
+      },
+      {
+        type: 'decision',
+        prompt: '¿Cómo describes el efecto de la pólvora líquida en la batalla?',
+        options: [
+          {
+            id: 'necesaria',
+            label: 'UNA MASACRE NECESARIA',
+            resultText: 'Sin ella, la ciudad habría caído esa misma noche ante una flota muy superior en número.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'horror',
+            label: 'UN HORROR DESATADO POR AMBICIÓN',
+            resultText: 'Miles de hombres arden en un instante por una guerra de sucesión entre parientes.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'genio',
+            label: 'EL GENIO TÁCTICO DE TYRION',
+            resultText: 'Con recursos limitados, Tyrion convierte la debilidad numérica en una trampa mortal.',
+            knowledgeBonus: 4,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'A pesar de la devastación, la flota superviviente de Stannis sigue desembarcando tropas junto a las murallas, y Desembarco del Rey está a punto de caer... hasta que los estandartes dorados de Tywin Lannister aparecen por la retaguardia enemiga, decidiendo la batalla en el último instante.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Qué sustancia alquímica utilizó Tyrion para destruir gran parte de la flota de Stannis en la Batalla de Aguasnegras?',
+        options: ['Fuego valyrio', 'Pólvora líquida (fuego valyrio verde)', 'Aceite hirviendo', 'Veneno de los Hombres sin Rostro'],
+        correctIndex: 1,
+        explanation:
+          'La pólvora líquida, también llamada fuego valyrio verde por los piromantes, es una sustancia alquímica extremadamente volátil e inextinguible con agua.',
+      },
+      {
+        type: 'reward',
+        knowledge: 28,
+        experience: 35,
+        unlockCharacterIds: ['char_tyrion', 'char_stannis'],
+        text: 'Capítulo completado. Desembarco del Rey sobrevive, pero la Guerra de los Cinco Reyes está lejos de terminar, y el juego de tronos se cobrará muchas más vidas antes del invierno.',
+      },
+    ],
+  },
 ];
 
 export function getEvent(id: string): HistoricalEvent | undefined {

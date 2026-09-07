@@ -21,6 +21,15 @@ export function loadGame(): GameSaveState | null {
     if (parsed.version !== SAVE_VERSION) return null;
     // Migración leve: partidas guardadas antes de añadir el sistema de jefes.
     if (!parsed.defeatedBossIds) parsed.defeatedBossIds = [];
+    // Reconciliación: si una partida avanzó a un capítulo que entonces
+    // estaba vacío de acontecimientos y ese capítulo ya tiene contenido
+    // nuevo, reapunta currentEventId a su primer acontecimiento en vez de
+    // dejarlo bloqueado apuntando al capítulo anterior.
+    const chapter = chapters.find((c) => c.id === parsed.currentChapterId);
+    const chapterStarted = chapter?.eventIds.some((id) => parsed.completedEventIds.includes(id)) ?? false;
+    if (chapter && chapter.eventIds.length > 0 && !chapterStarted && !chapter.eventIds.includes(parsed.currentEventId)) {
+      parsed.currentEventId = chapter.eventIds[0];
+    }
     return parsed;
   } catch {
     return null;

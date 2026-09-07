@@ -22,12 +22,12 @@ export const locations: LocationData[] = [
   {
     id: 'kings_landing',
     name: 'Desembarco del Rey',
-    periodLabel: '131 d.C. — 153 d.C. (fecha aproximada)',
+    periodLabel: '131 d.C. — 299 d.C. (fecha aproximada)',
     x: 58,
     y: 52,
     icon: 'iron-throne',
     description: 'Capital de los Siete Reinos, sede del Trono de Hierro.',
-    eventIds: ['ev_regencia_cenizas', 'ev_ultimo_dragon'],
+    eventIds: ['ev_regencia_cenizas', 'ev_ultimo_dragon', 'ev_mano_del_rey', 'ev_caida_stark', 'ev_rey_en_el_norte', 'ev_aguasnegras'],
     unlockedFromStart: false,
   },
   {

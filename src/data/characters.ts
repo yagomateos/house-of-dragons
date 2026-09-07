@@ -253,6 +253,85 @@ export const characters: CharacterData[] = [
     status: 'muerto',
   },
 
+  // --- Capítulo 5: El Juego de Tronos ---
+  {
+    id: 'char_cersei',
+    name: 'Cersei Lannister',
+    house: 'Lannister',
+    portrait: 'portrait-female',
+    description:
+      'Reina consorte de Robert Baratheon e hija de Tywin Lannister. Sus hijos son en realidad fruto de su relación con su hermano gemelo Jaime, un secreto que desató la Guerra de los Cinco Reyes al salir a la luz.',
+    periodLabel: '266 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_mano_del_rey', 'ev_caida_stark'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_joffrey',
+    name: 'Joffrey Baratheon',
+    house: 'Baratheon / Lannister',
+    portrait: 'portrait-male-blonde',
+    description:
+      'Hijo mayor de Cersei y heredero oficial de Robert, aunque en realidad hijo de Jaime Lannister. Su coronación y su crueldad precipitaron la caída de Eddard Stark.',
+    periodLabel: '286 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_caida_stark'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_tyrion',
+    name: 'Tyrion Lannister',
+    house: 'Lannister',
+    portrait: 'portrait-male-blonde',
+    description:
+      'Hijo menor de Tywin, apodado "el Gnomo" por su estatura. Nombrado Mano del Rey en funciones, organizó la defensa de Desembarco del Rey con pólvora líquida durante la Batalla de Aguasnegras.',
+    periodLabel: '273 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_aguasnegras'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_robb',
+    name: 'Robb Stark',
+    house: 'Stark',
+    portrait: 'portrait-knight',
+    description:
+      'Hijo mayor de Eddard Stark. Tras la ejecución de su padre, fue proclamado Rey en el Norte por sus banderizos, iniciando la Guerra de los Cinco Reyes.',
+    periodLabel: '283 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_rey_en_el_norte'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_catelyn',
+    name: 'Catelyn Stark',
+    house: 'Tully / Stark',
+    portrait: 'portrait-female-dark',
+    description:
+      'Esposa de Eddard Stark y señora de Aguasdulces. Reunió a los banderizos del Norte y las Tierras de los Ríos en apoyo de su hijo Robb.',
+    periodLabel: '264 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_rey_en_el_norte'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_stannis',
+    name: 'Stannis Baratheon',
+    house: 'Baratheon',
+    portrait: 'portrait-male-dark',
+    description:
+      'Hermano menor de Robert, severo y de estricta rectitud. Reclamó el Trono de Hierro para sí y estuvo a punto de tomar Desembarco del Rey en la Batalla de Aguasnegras.',
+    periodLabel: '260 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_rey_en_el_norte', 'ev_aguasnegras'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_hound',
+    name: 'Sandor Clegane, "El Perro"',
+    house: 'Clegane',
+    portrait: 'portrait-knight',
+    description:
+      'Guardaespaldas de Joffrey, curtido y desfigurado por el fuego desde niño. Su terror al fuego lo puso a prueba durante la Batalla de Aguasnegras.',
+    periodLabel: '270 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_aguasnegras'],
+    status: 'vivo',
+  },
+
   // --- Personajes de capítulos futuros (aparecerán bloqueados) ---
   { id: 'char_daenerys', name: 'Daenerys Targaryen', house: 'Targaryen', portrait: 'portrait-female', description: 'Última Targaryen conocida, madre de dragones.', periodLabel: '284 d.C. — 300 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
   { id: 'char_jon_snow', name: 'Jon Nieve', house: 'Stark / Targaryen', portrait: 'portrait-male', description: 'Hijo criado como bastardo en Invernalia, figura central del conflicto final.', periodLabel: '283 d.C. — 300 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },

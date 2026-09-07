@@ -129,6 +129,30 @@ export function DragonDodgeGame({
   });
 
   const [, setTick] = useState(0);
+  const arenaRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
+
+  function moveToPointer(e: { clientX: number; clientY: number }) {
+    const rect = arenaRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    gameRef.current.player.x = Math.min(PLAYER_BOUNDS.xMax, Math.max(PLAYER_BOUNDS.xMin, x));
+    gameRef.current.player.y = Math.min(PLAYER_BOUNDS.yMax, Math.max(PLAYER_BOUNDS.yMin, y));
+  }
+
+  function handleArenaPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    draggingRef.current = true;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    moveToPointer(e);
+  }
+  function handleArenaPointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!draggingRef.current) return;
+    moveToPointer(e);
+  }
+  function handleArenaPointerUp() {
+    draggingRef.current = false;
+  }
 
   useEffect(() => {
     const keyMap: Record<string, string> = {
@@ -263,7 +287,15 @@ export function DragonDodgeGame({
         </div>
       </div>
 
-      <div className={`dodge-arena ${flashHit ? 'dodge-arena--hit' : ''}`}>
+      <div
+        className={`dodge-arena ${flashHit ? 'dodge-arena--hit' : ''}`}
+        ref={arenaRef}
+        onPointerDown={handleArenaPointerDown}
+        onPointerMove={handleArenaPointerMove}
+        onPointerUp={handleArenaPointerUp}
+        onPointerCancel={handleArenaPointerUp}
+        onPointerLeave={handleArenaPointerUp}
+      >
         <div className="dodge-dragon">
           <PixelIcon icon={dragonIcon} size={90} />
         </div>

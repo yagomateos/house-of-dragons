@@ -126,11 +126,36 @@ export function WildfireEscapeBoss({ difficulty, startingHealth, onDamage, onWin
 
   const [, setTick] = useState(0);
   const [selectedIcon, setSelectedIcon] = useState<IconKey | null>(null);
+  const arenaRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
 
   function chooseCharacter(icon: IconKey) {
     setSelectedIcon(icon);
     gameRef.current.paused = false;
     gameRef.current.lastSpawn = performance.now();
+  }
+
+  function moveToPointer(e: { clientX: number; clientY: number }) {
+    const rect = arenaRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    gameRef.current.player.x = Math.min(PLAYER_BOUNDS.xMax, Math.max(PLAYER_BOUNDS.xMin, x));
+    gameRef.current.player.y = Math.min(PLAYER_BOUNDS.yMax, Math.max(PLAYER_BOUNDS.yMin, y));
+  }
+
+  function handleArenaPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    if (!selectedIcon) return;
+    draggingRef.current = true;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    moveToPointer(e);
+  }
+  function handleArenaPointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!draggingRef.current) return;
+    moveToPointer(e);
+  }
+  function handleArenaPointerUp() {
+    draggingRef.current = false;
   }
 
   useEffect(() => {
@@ -266,7 +291,15 @@ export function WildfireEscapeBoss({ difficulty, startingHealth, onDamage, onWin
         </div>
       </div>
 
-      <div className={`wildfire-arena ${flashHit ? 'wildfire-arena--hit' : ''}`}>
+      <div
+        className={`wildfire-arena ${flashHit ? 'wildfire-arena--hit' : ''}`}
+        ref={arenaRef}
+        onPointerDown={handleArenaPointerDown}
+        onPointerMove={handleArenaPointerMove}
+        onPointerUp={handleArenaPointerUp}
+        onPointerCancel={handleArenaPointerUp}
+        onPointerLeave={handleArenaPointerUp}
+      >
         <div className="wildfire-king">
           <PixelIcon icon="portrait-old-silver" size={90} />
         </div>

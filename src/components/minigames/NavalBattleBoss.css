@@ -1,0 +1,393 @@
+.naval-game {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+.naval-hud {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.9rem;
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 2px solid var(--c-gold);
+  z-index: 5;
+}
+
+.naval-health {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  min-width: 0;
+  width: 40%;
+  max-width: 170px;
+}
+
+.naval-health-icon {
+  color: #d97a7a;
+  flex-shrink: 0;
+}
+
+.naval-health-track {
+  flex: 1;
+  height: 12px;
+  min-width: 40px;
+  background: #14141a;
+  border: 1px solid var(--c-stone-light);
+  overflow: hidden;
+}
+
+.naval-health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7fb562, #a8d878);
+  transition: width 0.2s ease;
+}
+
+.naval-health-fill--mid {
+  background: linear-gradient(90deg, #d0a13a, #e6c14f);
+}
+
+.naval-health-fill--low {
+  background: linear-gradient(90deg, #a83232, #e07a7a);
+}
+
+.naval-health-value {
+  font-family: var(--font-title);
+  font-size: 0.55rem;
+  color: var(--c-bone);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.naval-wave-label {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--c-gold);
+  white-space: nowrap;
+}
+
+.naval-boss-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.naval-boss-label {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  color: #6fd1c0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.naval-boss-track {
+  flex: 1;
+  height: 12px;
+  background: #14141a;
+  border: 2px solid #2f7a6f;
+  overflow: hidden;
+}
+
+.naval-boss-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2f7a6f, #54d1b1);
+  transition: width 0.15s ease;
+}
+
+.naval-arena {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 0%, #142a34 0%, #0c1a20 60%, #0b0b0f 100%);
+  touch-action: none;
+}
+
+.naval-arena--hit {
+  animation: navalFlash 0.25s ease;
+}
+
+@keyframes navalFlash {
+  0%, 100% { background-color: transparent; }
+  40% { background-color: rgba(60, 168, 120, 0.35); }
+}
+
+.naval-flagship {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  filter: drop-shadow(0 0 14px rgba(84, 209, 177, 0.7)) hue-rotate(150deg);
+  transition: filter 0.2s ease;
+}
+
+.naval-flagship--shielded {
+  filter: drop-shadow(0 0 18px rgba(120, 200, 255, 0.9)) hue-rotate(150deg);
+  animation: navalShieldPulse 0.9s ease infinite;
+}
+
+@keyframes navalShieldPulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+.naval-flagship--exploding > :first-child {
+  animation: navalFlagshipDie 0.75s ease forwards;
+}
+
+@keyframes navalFlagshipDie {
+  0% { opacity: 1; filter: brightness(1); }
+  40% { opacity: 1; filter: brightness(2.4) saturate(0); }
+  100% { opacity: 0; filter: brightness(3) saturate(0); }
+}
+
+.naval-explosion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.naval-explosion--1 {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #d8ffb0 0%, #3ca85a 55%, transparent 75%);
+  animation: navalExplode 0.75s ease-out forwards;
+}
+
+.naval-explosion--2 {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #a8f0a0 0%, #2e8f6f 55%, transparent 75%);
+  animation: navalExplode 0.75s ease-out 0.08s forwards;
+}
+
+.naval-explosion--3 {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #ffffff 0%, #d8ffb0 45%, transparent 75%);
+  animation: navalExplode 0.6s ease-out 0.15s forwards;
+}
+
+@keyframes navalExplode {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(4.5); opacity: 0; }
+}
+
+.naval-wildfire {
+  position: absolute;
+  top: 92%;
+  height: 84%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  clip-path: polygon(38% 0%, 62% 0%, 100% 100%, 0% 100%);
+}
+
+.naval-wildfire--warn {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(60, 168, 120, 0.25),
+    rgba(60, 168, 120, 0.25) 6px,
+    rgba(60, 168, 120, 0.4) 6px,
+    rgba(60, 168, 120, 0.4) 12px
+  );
+  border-left: 2px dashed rgba(120, 230, 180, 0.6);
+  border-right: 2px dashed rgba(120, 230, 180, 0.6);
+}
+
+.naval-wildfire--active {
+  background: linear-gradient(180deg, #e8ffc0 0%, #a8f070 20%, #3ca85a 55%, #1a5c3a 100%);
+  box-shadow: 0 0 28px rgba(80, 220, 130, 0.95);
+  animation: navalFlameFlicker 0.15s ease infinite alternate;
+}
+
+@keyframes navalFlameFlicker {
+  0% { filter: brightness(1); transform: translateX(-50%) scaleX(1); }
+  100% { filter: brightness(1.2); transform: translateX(-50%) scaleX(1.08); }
+}
+
+.naval-enemy {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  padding: 2px;
+  border-radius: 50%;
+  border: 2px solid #e05a48;
+  box-shadow: 0 0 6px rgba(224, 60, 40, 0.7);
+  background: rgba(224, 60, 40, 0.12);
+  line-height: 0;
+}
+
+.naval-enemy--ballestero {
+  border-color: #d6a23a;
+  box-shadow: 0 0 6px rgba(214, 162, 58, 0.7);
+  background: rgba(214, 162, 58, 0.12);
+}
+
+.naval-enemy--hit {
+  box-shadow: 0 0 14px rgba(255, 80, 80, 1);
+  filter: brightness(1.6);
+}
+
+.naval-bolt {
+  position: absolute;
+  width: 3px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  background: #ff8a4a;
+  box-shadow: 0 0 6px rgba(255, 138, 74, 0.9);
+  z-index: 2;
+}
+
+.naval-enemy-shot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #e05a48;
+  box-shadow: 0 0 8px rgba(224, 60, 40, 0.9);
+  z-index: 2;
+}
+
+.naval-player {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  padding: 2px;
+  border-radius: 50%;
+  border: 2px solid var(--c-gold-bright);
+  box-shadow: 0 0 8px rgba(230, 193, 79, 0.8);
+  background: rgba(230, 193, 79, 0.12);
+  line-height: 0;
+  transition: filter 0.1s ease;
+}
+
+.naval-player--hit {
+  border-color: #ff5050;
+  box-shadow: 0 0 14px rgba(255, 80, 80, 1);
+  filter: brightness(1.6);
+}
+
+.naval-briefing {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.78);
+  cursor: pointer;
+}
+
+.naval-briefing-box {
+  max-width: 440px;
+  padding: 1.4rem;
+  background: rgba(20, 18, 26, 0.95);
+  border: 2px solid var(--c-gold);
+  text-align: center;
+}
+
+.naval-briefing-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--c-gold-bright);
+  margin: 0 0 0.8rem;
+}
+
+.naval-briefing-text {
+  color: var(--c-text);
+  line-height: 1.5;
+  margin: 0 0 0.6rem;
+}
+
+.naval-briefing-tap {
+  margin: 1rem 0 0;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--c-gold);
+  animation: navalBriefingPulse 1.2s ease infinite;
+}
+
+@keyframes navalBriefingPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.naval-select-grid {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+
+.naval-select-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--c-stone-light);
+  color: var(--c-bone);
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  width: 100px;
+}
+
+.naval-select-option:hover {
+  border-color: var(--c-gold);
+}
+
+.naval-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.naval-controls-move {
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.naval-btn {
+  width: 48px;
+  height: 48px;
+  background: rgba(20, 20, 26, 0.75);
+  border: 2px solid var(--c-gold);
+  color: var(--c-gold-bright);
+  font-size: 1.2rem;
+  touch-action: manipulation;
+  pointer-events: auto;
+}
+
+.naval-btn:active {
+  background: rgba(201, 162, 39, 0.3);
+}
+
+.naval-btn--shoot {
+  border-color: #e07a7a;
+  color: #e07a7a;
+  width: 56px;
+  height: 56px;
+}
+
+@media (min-width: 900px) {
+  .naval-controls {
+    opacity: 0.55;
+  }
+}

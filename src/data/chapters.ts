@@ -45,7 +45,7 @@ export const chapters: ChapterData[] = [
     title: 'El Juego de Tronos',
     subtitle: 'La guerra de los Cinco Reyes',
     yearRangeLabel: '298 d.C. — 299 d.C.',
-    eventIds: [],
+    eventIds: ['ev_mano_del_rey', 'ev_caida_stark', 'ev_rey_en_el_norte', 'ev_aguasnegras'],
   },
   {
     id: 'ch6_madre_dragones',

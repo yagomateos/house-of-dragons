@@ -2,20 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import type { Difficulty, IconKey } from '../../types';
 import { PixelIcon } from '../PixelIcon';
 import { audio } from '../../utils/audio';
-import './ArcherShooterBoss.css';
+import './NavalBattleBoss.css';
 
 const CHARACTER_OPTIONS: { icon: IconKey; name: string }[] = [
-  { icon: 'portrait-male-gold', name: 'Ser Aldric' },
-  { icon: 'portrait-female-silver', name: 'Lyra de Plata' },
-  { icon: 'portrait-knight', name: 'El Caballero Errante' },
+  { icon: 'portrait-male-blonde', name: 'Tyrion Lannister' },
+  { icon: 'portrait-knight', name: 'Sandor Clegane, "El Perro"' },
+  { icon: 'portrait-male-dark', name: 'Un Ballestero de la Guardia' },
 ];
 
-const ENEMY_ICON: Record<EnemyKind, IconKey> = {
-  soldado: 'portrait-male-dark',
-  arquero: 'portrait-aemond',
-};
-
-interface ArcherShooterBossProps {
+interface NavalBattleBossProps {
   difficulty: Difficulty;
   startingHealth: number;
   onDamage: (newHealth: number) => void;
@@ -23,7 +18,7 @@ interface ArcherShooterBossProps {
   onLose: () => void;
 }
 
-type EnemyKind = 'soldado' | 'arquero';
+type EnemyKind = 'galera' | 'ballestero';
 
 interface Enemy {
   id: number;
@@ -45,7 +40,7 @@ interface Projectile {
   dead: boolean;
 }
 
-interface FireBreath {
+interface Wildfire {
   id: number;
   x: number;
   width: number;
@@ -57,69 +52,69 @@ interface FireBreath {
 interface WaveDef {
   count: number;
   spawnEvery: number;
-  archerRatio: number;
+  ballesteroRatio: number;
   enemySpeed: number;
 }
 
 interface DifficultyConfig {
   waves: WaveDef[];
-  dragonHp: number;
-  fireDamageMult: number;
+  flagshipHp: number;
+  wildfireDamageMult: number;
 }
 
 const CONFIG: Record<Difficulty, DifficultyConfig> = {
   facil: {
     waves: [
-      { count: 5, spawnEvery: 1100, archerRatio: 0, enemySpeed: 0.32 },
-      { count: 6, spawnEvery: 950, archerRatio: 0.2, enemySpeed: 0.36 },
+      { count: 5, spawnEvery: 1100, ballesteroRatio: 0, enemySpeed: 0.32 },
+      { count: 6, spawnEvery: 950, ballesteroRatio: 0.2, enemySpeed: 0.36 },
     ],
-    dragonHp: 160,
-    fireDamageMult: 0.8,
+    flagshipHp: 160,
+    wildfireDamageMult: 0.8,
   },
   normal: {
     waves: [
-      { count: 6, spawnEvery: 950, archerRatio: 0, enemySpeed: 0.4 },
-      { count: 8, spawnEvery: 800, archerRatio: 0.3, enemySpeed: 0.45 },
+      { count: 6, spawnEvery: 950, ballesteroRatio: 0, enemySpeed: 0.4 },
+      { count: 8, spawnEvery: 800, ballesteroRatio: 0.3, enemySpeed: 0.45 },
     ],
-    dragonHp: 220,
-    fireDamageMult: 1,
+    flagshipHp: 220,
+    wildfireDamageMult: 1,
   },
   dificil: {
     waves: [
-      { count: 7, spawnEvery: 800, archerRatio: 0, enemySpeed: 0.48 },
-      { count: 10, spawnEvery: 650, archerRatio: 0.4, enemySpeed: 0.55 },
+      { count: 7, spawnEvery: 800, ballesteroRatio: 0, enemySpeed: 0.48 },
+      { count: 10, spawnEvery: 650, ballesteroRatio: 0.4, enemySpeed: 0.55 },
     ],
-    dragonHp: 290,
-    fireDamageMult: 1.2,
+    flagshipHp: 290,
+    wildfireDamageMult: 1.2,
   },
 };
 
 const TICK_MS = 50;
 const PLAYER_Y = 88;
 const PLAYER_SPEED = 3.4;
-const ARROW_SPEED = 3.4;
-const ARROW_COOLDOWN_MS = 260;
+const BOLT_SPEED = 3.4;
+const BOLT_COOLDOWN_MS = 260;
 const BREACH_Y = 90;
-const DRAGON_Y = 16;
+const FLAGSHIP_Y = 16;
 
 let nextId = 1;
 
 function spawnEnemy(wave: WaveDef): Enemy {
-  const isArcher = Math.random() < wave.archerRatio;
+  const isBallestero = Math.random() < wave.ballesteroRatio;
   return {
     id: nextId++,
-    kind: isArcher ? 'arquero' : 'soldado',
+    kind: isBallestero ? 'ballestero' : 'galera',
     x: 8 + Math.random() * 84,
     y: 4,
-    hp: isArcher ? 2 : 1,
-    speed: wave.enemySpeed * (isArcher ? 0.8 : 1),
+    hp: isBallestero ? 2 : 1,
+    speed: wave.enemySpeed * (isBallestero ? 0.8 : 1),
     lastShot: 0,
     hurtUntil: 0,
     dead: false,
   };
 }
 
-export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin, onLose }: ArcherShooterBossProps) {
+export function NavalBattleBoss({ difficulty, startingHealth, onDamage, onWin, onLose }: NavalBattleBossProps) {
   const cfg = CONFIG[difficulty];
   const arenaRef = useRef<HTMLDivElement>(null);
 
@@ -127,22 +122,22 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
     playerX: 50,
     keys: new Set<string>(),
     health: startingHealth,
-    arrows: [] as Projectile[],
+    bolts: [] as Projectile[],
     enemyShots: [] as Projectile[],
     enemies: [] as Enemy[],
-    lastArrow: 0,
+    lastBolt: 0,
     lastSpawn: 0,
     waveIndex: 0,
     spawnedInWave: 0,
-    dragon: null as
+    flagship: null as
       | {
           hp: number;
           maxHp: number;
           x: number;
           dir: 1 | -1;
-          fire: FireBreath | null;
-          nextFireAt: number;
-          firesCompleted: number;
+          wildfire: Wildfire | null;
+          nextWildfireAt: number;
+          eruptionsCompleted: number;
           exploding: boolean;
           explodeAt: number;
         }
@@ -203,9 +198,9 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
     const g = gameRef.current;
     if (g.finished || g.paused) return;
     const now = performance.now();
-    if (now - g.lastArrow < ARROW_COOLDOWN_MS) return;
-    g.lastArrow = now;
-    g.arrows.push({ id: nextId++, x: g.playerX, y: PLAYER_Y - 4, vy: -ARROW_SPEED, dead: false });
+    if (now - g.lastBolt < BOLT_COOLDOWN_MS) return;
+    g.lastBolt = now;
+    g.bolts.push({ id: nextId++, x: g.playerX, y: PLAYER_Y - 4, vy: -BOLT_SPEED, dead: false });
     audio.shoot();
   }
 
@@ -246,14 +241,14 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
       if (g.keys.has('right')) g.playerX += PLAYER_SPEED;
       g.playerX = Math.min(96, Math.max(4, g.playerX));
 
-      for (const a of g.arrows) a.y += a.vy;
-      g.arrows = g.arrows.filter((a) => !a.dead && a.y > -5);
+      for (const b of g.bolts) b.y += b.vy;
+      g.bolts = g.bolts.filter((b) => !b.dead && b.y > -5);
 
       for (const s of g.enemyShots) s.y += s.vy;
 
       const currentWave = cfg.waves[g.waveIndex];
 
-      if (currentWave && !g.dragon) {
+      if (currentWave && !g.flagship) {
         if (g.spawnedInWave < currentWave.count && now - g.lastSpawn > currentWave.spawnEvery) {
           g.lastSpawn = now;
           g.spawnedInWave += 1;
@@ -263,7 +258,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
         for (const e of g.enemies) {
           if (e.dead) continue;
           e.y += e.speed;
-          if (e.kind === 'arquero' && now - e.lastShot > 1800 && e.y > 15 && e.y < 70) {
+          if (e.kind === 'ballestero' && now - e.lastShot > 1800 && e.y > 15 && e.y < 70) {
             e.lastShot = now;
             g.enemyShots.push({ id: nextId++, x: e.x, y: e.y, vy: 2.2, dead: false });
             audio.enemyShoot();
@@ -279,11 +274,11 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
           }
         }
 
-        for (const arrow of g.arrows) {
+        for (const bolt of g.bolts) {
           for (const e of g.enemies) {
-            if (e.dead || arrow.dead) continue;
-            if (Math.abs(arrow.x - e.x) < 5 && Math.abs(arrow.y - e.y) < 6) {
-              arrow.dead = true;
+            if (e.dead || bolt.dead) continue;
+            if (Math.abs(bolt.x - e.x) < 5 && Math.abs(bolt.y - e.y) < 6) {
+              bolt.dead = true;
               e.hp -= 1;
               e.hurtUntil = now + 150;
               if (e.hp <= 0) {
@@ -303,37 +298,37 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
           g.spawnedInWave = 0;
           g.lastSpawn = now;
           if (g.waveIndex >= cfg.waves.length) {
-            g.dragon = {
-              hp: cfg.dragonHp,
-              maxHp: cfg.dragonHp,
+            g.flagship = {
+              hp: cfg.flagshipHp,
+              maxHp: cfg.flagshipHp,
               x: 50,
               dir: 1,
-              fire: null,
-              nextFireAt: now + 1500,
-              firesCompleted: 0,
+              wildfire: null,
+              nextWildfireAt: now + 1500,
+              eruptionsCompleted: 0,
               exploding: false,
               explodeAt: 0,
             };
           }
         }
-      } else if (g.dragon) {
-        const d = g.dragon;
-        d.x += d.dir * 0.35;
-        if (d.x > 82 || d.x < 18) d.dir = d.dir === 1 ? -1 : 1;
+      } else if (g.flagship) {
+        const f = g.flagship;
+        f.x += f.dir * 0.35;
+        if (f.x > 82 || f.x < 18) f.dir = f.dir === 1 ? -1 : 1;
 
-        if (!d.fire && now > d.nextFireAt) {
-          d.fire = { id: nextId++, x: d.x, width: 26, telegraphUntil: now + 700, activeUntil: now + 700 + 1100, hit: false };
+        if (!f.wildfire && now > f.nextWildfireAt) {
+          f.wildfire = { id: nextId++, x: f.x, width: 26, telegraphUntil: now + 700, activeUntil: now + 700 + 1100, hit: false };
           audio.fireBreath();
         }
-        if (d.fire) {
-          if (now > d.fire.activeUntil) {
-            d.fire = null;
-            d.firesCompleted += 1;
-            d.nextFireAt = now + 2200;
-          } else if (now > d.fire.telegraphUntil && !d.fire.hit && now > g.invulnerableUntil) {
-            if (Math.abs(g.playerX - d.fire.x) < d.fire.width / 2) {
-              d.fire.hit = true;
-              g.health = Math.max(0, g.health - 15 * cfg.fireDamageMult);
+        if (f.wildfire) {
+          if (now > f.wildfire.activeUntil) {
+            f.wildfire = null;
+            f.eruptionsCompleted += 1;
+            f.nextWildfireAt = now + 2200;
+          } else if (now > f.wildfire.telegraphUntil && !f.wildfire.hit && now > g.invulnerableUntil) {
+            if (Math.abs(g.playerX - f.wildfire.x) < f.wildfire.width / 2) {
+              f.wildfire.hit = true;
+              g.health = Math.max(0, g.health - 15 * cfg.wildfireDamageMult);
               g.invulnerableUntil = now + 500;
               onDamage(g.health);
               audio.playerHurt();
@@ -341,27 +336,26 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
           }
         }
 
-        // El dragón es invulnerable hasta completar su primer aliento de
-        // fuego: así el jugador siempre vive al menos un ataque real
-        // antes de poder derrotarlo, en vez de matarlo a flechazos antes
-        // de que el patrón de fuego llegue a activarse.
-        if (d.firesCompleted >= 1 && !d.exploding) {
-          for (const arrow of g.arrows) {
-            if (arrow.dead) continue;
-            if (Math.abs(arrow.x - d.x) < 15 && arrow.y < DRAGON_Y + 13 && arrow.y > DRAGON_Y - 8) {
-              arrow.dead = true;
-              d.hp = Math.max(0, d.hp - 6);
-              if (d.hp > 0) audio.hitEnemy();
+        // El buque insignia es invulnerable hasta completar su primera
+        // erupción de pólvora líquida: así el jugador siempre vive al
+        // menos un ataque real antes de poder hundirlo.
+        if (f.eruptionsCompleted >= 1 && !f.exploding) {
+          for (const bolt of g.bolts) {
+            if (bolt.dead) continue;
+            if (Math.abs(bolt.x - f.x) < 15 && bolt.y < FLAGSHIP_Y + 13 && bolt.y > FLAGSHIP_Y - 8) {
+              bolt.dead = true;
+              f.hp = Math.max(0, f.hp - 6);
+              if (f.hp > 0) audio.hitEnemy();
             }
           }
         }
 
-        if (d.hp <= 0 && d.firesCompleted >= 1 && !g.finished) {
-          if (!d.exploding) {
-            d.exploding = true;
-            d.explodeAt = now;
+        if (f.hp <= 0 && f.eruptionsCompleted >= 1 && !g.finished) {
+          if (!f.exploding) {
+            f.exploding = true;
+            f.explodeAt = now;
             audio.explosion();
-          } else if (now - d.explodeAt > 750) {
+          } else if (now - f.explodeAt > 750) {
             g.finished = true;
             onWin();
           }
@@ -401,36 +395,36 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
   const healthPct = Math.max(0, Math.min(100, g.health));
   const flashHit = now < g.invulnerableUntil;
   const currentWave = cfg.waves[g.waveIndex];
-  const waveLabel = g.dragon ? null : currentWave ? `Oleada ${g.waveIndex + 1}/${cfg.waves.length}` : null;
-  const dragonPct = g.dragon ? Math.max(0, (g.dragon.hp / g.dragon.maxHp) * 100) : 0;
+  const waveLabel = g.flagship ? null : currentWave ? `Oleada ${g.waveIndex + 1}/${cfg.waves.length}` : null;
+  const flagshipPct = g.flagship ? Math.max(0, (g.flagship.hp / g.flagship.maxHp) * 100) : 0;
 
   return (
-    <div className="archer-game">
-      <div className="archer-hud">
-        <div className="archer-health">
-          <span className="archer-health-icon">❤</span>
-          <div className="archer-health-track">
+    <div className="naval-game">
+      <div className="naval-hud">
+        <div className="naval-health">
+          <span className="naval-health-icon">❤</span>
+          <div className="naval-health-track">
             <div
-              className={`archer-health-fill ${healthPct <= 25 ? 'archer-health-fill--low' : healthPct <= 55 ? 'archer-health-fill--mid' : ''}`}
+              className={`naval-health-fill ${healthPct <= 25 ? 'naval-health-fill--low' : healthPct <= 55 ? 'naval-health-fill--mid' : ''}`}
               style={{ width: `${healthPct}%` }}
             />
           </div>
-          <span className="archer-health-value">{Math.round(healthPct)}/100</span>
+          <span className="naval-health-value">{Math.round(healthPct)}/100</span>
         </div>
-        {g.dragon ? (
-          <div className="archer-boss-bar">
-            <span className="archer-boss-label">Dragón</span>
-            <div className="archer-boss-track">
-              <div className="archer-boss-fill" style={{ width: `${dragonPct}%` }} />
+        {g.flagship ? (
+          <div className="naval-boss-bar">
+            <span className="naval-boss-label">Buque Insignia</span>
+            <div className="naval-boss-track">
+              <div className="naval-boss-fill" style={{ width: `${flagshipPct}%` }} />
             </div>
           </div>
         ) : (
-          <div className="archer-wave-label">{waveLabel}</div>
+          <div className="naval-wave-label">{waveLabel}</div>
         )}
       </div>
 
       <div
-        className={`archer-arena ${flashHit ? 'archer-arena--hit' : ''}`}
+        className={`naval-arena ${flashHit ? 'naval-arena--hit' : ''}`}
         ref={arenaRef}
         onPointerDown={handleArenaPointerDown}
         onPointerMove={handleArenaPointerMove}
@@ -438,23 +432,23 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
         onPointerCancel={handleArenaPointerUp}
         onPointerLeave={handleArenaPointerUp}
       >
-        {g.dragon && (
+        {g.flagship && (
           <div
-            className={`archer-dragon ${g.dragon.firesCompleted < 1 ? 'archer-dragon--shielded' : ''} ${g.dragon.exploding ? 'archer-dragon--exploding' : ''}`}
-            style={{ left: `${g.dragon.x}%`, top: `${DRAGON_Y}%` }}
+            className={`naval-flagship ${g.flagship.eruptionsCompleted < 1 ? 'naval-flagship--shielded' : ''} ${g.flagship.exploding ? 'naval-flagship--exploding' : ''}`}
+            style={{ left: `${g.flagship.x}%`, top: `${FLAGSHIP_Y}%` }}
           >
-            <PixelIcon icon="dragon-crimson" size={104} />
-            {g.dragon.fire && (
+            <PixelIcon icon="ship" size={100} />
+            {g.flagship.wildfire && (
               <div
-                className={`archer-fire ${now > g.dragon.fire.telegraphUntil ? 'archer-fire--active' : 'archer-fire--warn'}`}
-                style={{ left: `${g.dragon.fire.x}%`, width: `${g.dragon.fire.width}%` }}
+                className={`naval-wildfire ${now > g.flagship.wildfire.telegraphUntil ? 'naval-wildfire--active' : 'naval-wildfire--warn'}`}
+                style={{ left: `${g.flagship.wildfire.x}%`, width: `${g.flagship.wildfire.width}%` }}
               />
             )}
-            {g.dragon.exploding && (
+            {g.flagship.exploding && (
               <>
-                <div className="archer-explosion archer-explosion--1" />
-                <div className="archer-explosion archer-explosion--2" />
-                <div className="archer-explosion archer-explosion--3" />
+                <div className="naval-explosion naval-explosion--1" />
+                <div className="naval-explosion naval-explosion--2" />
+                <div className="naval-explosion naval-explosion--3" />
               </>
             )}
           </div>
@@ -465,36 +459,36 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
           return (
             <div
               key={e.id}
-              className={`archer-enemy archer-enemy--${e.kind} ${hit ? 'archer-enemy--hit' : ''}`}
+              className={`naval-enemy naval-enemy--${e.kind} ${hit ? 'naval-enemy--hit' : ''}`}
               style={{ left: `${e.x}%`, top: `${e.y}%` }}
             >
-              <PixelIcon icon={ENEMY_ICON[e.kind]} size={26} />
+              <PixelIcon icon="ship" size={24} />
             </div>
           );
         })}
 
-        {g.arrows.map((a) => (
-          <div key={a.id} className="archer-arrow" style={{ left: `${a.x}%`, top: `${a.y}%` }} />
+        {g.bolts.map((b) => (
+          <div key={b.id} className="naval-bolt" style={{ left: `${b.x}%`, top: `${b.y}%` }} />
         ))}
 
         {g.enemyShots.map((s) => (
-          <div key={s.id} className="archer-enemy-shot" style={{ left: `${s.x}%`, top: `${s.y}%` }} />
+          <div key={s.id} className="naval-enemy-shot" style={{ left: `${s.x}%`, top: `${s.y}%` }} />
         ))}
 
         <div
-          className={`archer-player ${flashHit ? 'archer-player--hit' : ''}`}
+          className={`naval-player ${flashHit ? 'naval-player--hit' : ''}`}
           style={{ left: `${g.playerX}%`, top: `${PLAYER_Y}%` }}
         >
           <PixelIcon icon={selectedIcon} size={30} />
         </div>
 
         {uiPhase === 'select' && (
-          <div className="archer-briefing">
-            <div className="archer-briefing-box">
-              <p className="archer-briefing-title">Elige a tu arquero</p>
-              <div className="archer-select-grid">
+          <div className="naval-briefing">
+            <div className="naval-briefing-box">
+              <p className="naval-briefing-title">Elige a tu defensor</p>
+              <div className="naval-select-grid">
                 {CHARACTER_OPTIONS.map((opt) => (
-                  <button key={opt.icon} className="archer-select-option" onClick={() => chooseCharacter(opt.icon)}>
+                  <button key={opt.icon} className="naval-select-option" onClick={() => chooseCharacter(opt.icon)}>
                     <PixelIcon icon={opt.icon} size={56} />
                     <span>{opt.name}</span>
                   </button>
@@ -506,32 +500,32 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
 
         {uiPhase === 'briefing' && (
           <div
-            className="archer-briefing"
+            className="naval-briefing"
             onClick={(e) => {
               e.stopPropagation();
               dismissBriefing();
             }}
           >
-            <div className="archer-briefing-box">
-              <p className="archer-briefing-title">🏹 El Arquero de Harrenhal</p>
-              <p className="archer-briefing-text">
-                Muévete con ◀▶, dispara flechas con el botón de ataque. Derrota las oleadas de soldados
-                y luego al dragón que ronda el castillo maldito.
+            <div className="naval-briefing-box">
+              <p className="naval-briefing-title">🚢 La Batalla de Aguasnegras</p>
+              <p className="naval-briefing-text">
+                Muévete con ◀▶, dispara flechas en llamas con el botón de ataque. Hunde las naves de la
+                flota de Stannis antes de que desembarquen junto a las murallas.
               </p>
-              <p className="archer-briefing-text">
-                El dragón esquiva flechas hasta lanzar su primer aliento de fuego: sobrevívelo esquivando
-                la columna de llamas y luego dispárale para hacerle daño real.
+              <p className="naval-briefing-text">
+                El buque insignia esquiva tus disparos hasta provocar su primera erupción de pólvora
+                líquida: sobrevive a la columna de fuego verde y luego ataca sus flancos para hundirlo.
               </p>
-              <p className="archer-briefing-tap">Toca para empezar</p>
+              <p className="naval-briefing-tap">Toca para empezar</p>
             </div>
           </div>
         )}
       </div>
 
-      <div className="archer-controls" aria-hidden="true">
-        <div className="archer-controls-move">
+      <div className="naval-controls" aria-hidden="true">
+        <div className="naval-controls-move">
           <button
-            className="archer-btn"
+            className="naval-btn"
             onPointerDown={() => gameRef.current.keys.add('left')}
             onPointerUp={() => gameRef.current.keys.delete('left')}
             onPointerLeave={() => gameRef.current.keys.delete('left')}
@@ -539,7 +533,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
             ◀
           </button>
           <button
-            className="archer-btn"
+            className="naval-btn"
             onPointerDown={() => gameRef.current.keys.add('right')}
             onPointerUp={() => gameRef.current.keys.delete('right')}
             onPointerLeave={() => gameRef.current.keys.delete('right')}
@@ -547,7 +541,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
             ▶
           </button>
         </div>
-        <button className="archer-btn archer-btn--shoot" onClick={shoot}>
+        <button className="naval-btn naval-btn--shoot" onClick={shoot}>
           🏹
         </button>
       </div>
