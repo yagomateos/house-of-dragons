@@ -52,7 +52,17 @@
   margin: 0 auto;
   padding: 1rem 1.2rem;
   max-height: 46vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Toda la lectura (narración, opciones, desbloqueos...) vive aquí, y
+   solo esta zona hace scroll si no cabe. El botón de acción, al ser un
+   hermano fuera de este contenedor en vez de su último hijo, queda
+   siempre visible sin necesidad de desplazarse para encontrarlo. */
+.event-box-scroll {
   overflow-y: auto;
+  min-height: 0;
 }
 
 .event-narration-text {
@@ -78,21 +88,13 @@
 }
 
 .event-continue {
-  /* Siempre visible sin necesidad de hacer scroll: se pega al fondo
-     del panel (que sí puede desplazarse) en vez de quedar al final
-     del contenido, donde podía quedar oculto tras textos largos o
-     varios desbloqueos. */
-  position: sticky;
-  bottom: -1rem;
-  left: 0;
   display: block;
-  width: calc(100% + 2.4rem);
-  margin: 0.8rem -1.2rem -1rem;
-  padding: 0.65rem 1.2rem calc(0.65rem + 1rem);
-  background: linear-gradient(180deg, rgba(18, 20, 31, 0) 0%, #14141f 35%, #14141f 100%);
-  border-top: 1px solid rgba(201, 162, 39, 0.35);
-  z-index: 3;
-  text-align: right;
+  flex-shrink: 0;
+  margin: 0.8rem 0 0 auto;
+}
+
+.event-reward-box .event-continue {
+  margin: 0.8rem auto 0;
 }
 
 .event-prompt {

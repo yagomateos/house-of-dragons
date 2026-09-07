@@ -235,22 +235,27 @@
   filter: brightness(1.6);
 }
 
+/* Flecha con forma real (punta + astil), no una simple barra. Apunta
+ * hacia arriba porque vuela del jugador hacia el buque insignia. */
 .flight-bolt {
   position: absolute;
-  width: 4px;
-  height: 16px;
+  width: 9px;
+  height: 18px;
   transform: translate(-50%, -50%);
+  clip-path: polygon(50% 0%, 100% 42%, 70% 42%, 70% 100%, 30% 100%, 30% 42%, 0% 42%);
   background: linear-gradient(180deg, #fff2b0, #ff7a30);
   box-shadow: 0 0 8px rgba(255, 122, 48, 0.9);
   z-index: 2;
 }
 
+/* Flecha enemiga, igual que la del jugador pero apuntando hacia abajo
+ * (vuela del enemigo hacia el jugador) y en su color. */
 .flight-enemy-shot {
   position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 9px;
+  height: 18px;
   transform: translate(-50%, -50%);
+  clip-path: polygon(50% 100%, 100% 58%, 70% 58%, 70% 0%, 30% 0%, 30% 58%, 0% 58%);
   background: #e05a48;
   box-shadow: 0 0 8px rgba(224, 60, 40, 0.9);
   z-index: 2;
