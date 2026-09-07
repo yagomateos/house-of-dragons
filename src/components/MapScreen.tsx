@@ -25,7 +25,7 @@ function getBossAvailableAtLocation(locationId: string, save: GameSaveState): Bo
   return null;
 }
 
-type PinStatus = 'locked' | 'available' | 'done';
+type PinStatus = 'locked' | 'available' | 'done' | 'empty';
 
 export function MapScreen() {
   const { state, dispatch } = useGame();
@@ -37,7 +37,10 @@ export function MapScreen() {
 
   function getStatus(locationId: string, eventIds: string[]): PinStatus {
     if (!unlockedIds.includes(locationId)) return 'locked';
-    if (eventIds.length === 0) return 'available';
+    // Un lugar sin acontecimientos todavía no es "disponible" — no hay
+    // nada que hacer ahí, así que no debe invitar al jugador con el
+    // mismo brillo dorado que un lugar con historia real que jugar.
+    if (eventIds.length === 0) return 'empty';
     const allDone = eventIds.every((id) => save?.completedEventIds.includes(id));
     if (allDone) return 'done';
     return 'available';

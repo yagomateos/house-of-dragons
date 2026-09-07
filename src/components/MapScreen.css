@@ -175,6 +175,11 @@
   background: radial-gradient(circle at 35% 30%, #3a2f14, #1a1508);
 }
 
+.map-pin--empty .map-pin-badge {
+  border-color: var(--c-stone-light);
+  opacity: 0.55;
+}
+
 .map-pin-check {
   position: absolute;
   bottom: -3px;

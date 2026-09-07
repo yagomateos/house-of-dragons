@@ -8,7 +8,7 @@ import { PixelIcon } from './PixelIcon';
 import { DragonDodgeGame } from './minigames/DragonDodgeGame';
 import { StrategyBoss } from './minigames/StrategyBoss';
 import { ArcherShooterBoss } from './minigames/ArcherShooterBoss';
-import { BattleBoss } from './minigames/BattleBoss';
+import { WaveBrawlerBoss } from './minigames/WaveBrawlerBoss';
 import { audio } from '../utils/audio';
 import type { Difficulty } from '../types';
 import './BossScreen.css';
@@ -162,7 +162,7 @@ export function BossScreen({ bossId }: { bossId: string }) {
       )}
 
       {phase === 'playing' && boss.type === 'battle' && (
-        <BattleBoss
+        <WaveBrawlerBoss
           key={attempt}
           difficulty={difficulty}
           startingHealth={currentHealth}
