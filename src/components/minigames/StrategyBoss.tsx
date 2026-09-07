@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Difficulty } from '../../types';
-import { DAMAGE_BOSS_HIT } from '../../state/GameContext';
 import './StrategyBoss.css';
+
+// Una brecha en el castillo duele menos que un golpe directo de jefe:
+// aquí no hay ataques cuerpo a cuerpo contra el jugador, solo el coste
+// de no llegar a tiempo a defender un frente.
+const BREACH_DAMAGE = 8;
 
 interface StrategyBossProps {
   difficulty: Difficulty;
@@ -58,9 +62,9 @@ interface UnitBase {
 }
 
 const PLAYER_STATS: Record<'soldado' | 'arquero' | 'caballeria', UnitBase> = {
-  soldado: { hp: 40, dmg: 8, range: 7, speed: 1.2, atkCooldownMs: 700 },
-  arquero: { hp: 25, dmg: 9, range: 24, speed: 1.0, atkCooldownMs: 900 },
-  caballeria: { hp: 55, dmg: 12, range: 8, speed: 2.0, atkCooldownMs: 650 },
+  soldado: { hp: 40, dmg: 8, range: 7, speed: 1.7, atkCooldownMs: 700 },
+  arquero: { hp: 25, dmg: 9, range: 26, speed: 1.4, atkCooldownMs: 900 },
+  caballeria: { hp: 55, dmg: 12, range: 8, speed: 2.6, atkCooldownMs: 650 },
 };
 
 interface DifficultyConfig {
@@ -71,15 +75,16 @@ interface DifficultyConfig {
 }
 
 const CONFIG: Record<Difficulty, DifficultyConfig> = {
-  facil: { duration: 45, spawnEvery: 2600, enemySpeed: 0.5, archerChance: 0.18 },
-  normal: { duration: 60, spawnEvery: 2000, enemySpeed: 0.65, archerChance: 0.26 },
-  dificil: { duration: 75, spawnEvery: 1500, enemySpeed: 0.8, archerChance: 0.34 },
+  facil: { duration: 32, spawnEvery: 4600, enemySpeed: 0.18, archerChance: 0.08 },
+  normal: { duration: 45, spawnEvery: 3800, enemySpeed: 0.25, archerChance: 0.14 },
+  dificil: { duration: 60, spawnEvery: 3000, enemySpeed: 0.34, archerChance: 0.2 },
 };
 
 const TICK_MS = 60;
 const BASE = { x: 50, y: 92 };
 const BREACH_Y = 89;
 const ARENA_BOUNDS = { xMin: 4, xMax: 96, yMin: 6, yMax: 90 };
+const ALERT_RADIUS = 38;
 
 let nextUnitId = 1;
 
@@ -108,8 +113,8 @@ function makePlayerUnit(kind: 'soldado' | 'arquero' | 'caballeria', x: number, y
 function spawnEnemy(cfg: DifficultyConfig): Unit {
   const isArcher = Math.random() < cfg.archerChance;
   const kind: UnitKind = isArcher ? 'asaltante_arco' : 'asaltante';
-  const hp = isArcher ? 18 : 26;
-  const dmg = isArcher ? 8 : 7;
+  const hp = isArcher ? 14 : 20;
+  const dmg = isArcher ? 6 : 5;
   const range = isArcher ? 22 : 7;
   const atkCooldownMs = isArcher ? 1000 : 800;
   return {
@@ -153,8 +158,13 @@ export function StrategyBoss({ difficulty, startingHealth, onDamage, onWin, onLo
 
   const [, setTick] = useState(0);
   const [briefingVisible, setBriefingVisible] = useState(true);
+  // Evita que un tap que coincide en la misma posición que el botón
+  // "Comenzar" del jefe cierre la explicación al instante sin dar
+  // tiempo a leerla.
+  const briefingMountedAtRef = useRef(performance.now());
 
   function dismissBriefing() {
+    if (performance.now() - briefingMountedAtRef.current < 500) return;
     gameRef.current.paused = false;
     gameRef.current.lastSpawn = performance.now();
     setBriefingVisible(false);
@@ -220,6 +230,16 @@ export function StrategyBoss({ difficulty, startingHealth, onDamage, onWin, onLo
             unit.x += (dx / dist) * unit.speed;
             unit.y += (dy / dist) * unit.speed;
           }
+        } else if (nearestEnemy && nearestDist <= ALERT_RADIUS) {
+          // Postura "agresiva": sin orden manual, una unidad se acerca
+          // sola a la amenaza más cercana en vez de quedarse quieta. El
+          // jugador solo necesita intervenir para reforzar o priorizar,
+          // no para que cada unidad sobreviva.
+          const dx = nearestEnemy.x - unit.x;
+          const dy = nearestEnemy.y - unit.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          unit.x += (dx / dist) * unit.speed;
+          unit.y += (dy / dist) * unit.speed;
         }
 
         unit.x = Math.min(ARENA_BOUNDS.xMax, Math.max(ARENA_BOUNDS.xMin, unit.x));
@@ -227,7 +247,7 @@ export function StrategyBoss({ difficulty, startingHealth, onDamage, onWin, onLo
 
         if (unit.side === 'enemy' && unit.y >= BREACH_Y) {
           unit.dead = true;
-          g.health = Math.max(0, g.health - DAMAGE_BOSS_HIT);
+          g.health = Math.max(0, g.health - BREACH_DAMAGE);
           onDamage(g.health);
         }
       }
