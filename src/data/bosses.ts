@@ -38,13 +38,13 @@ export const bosses: BossData[] = [
   {
     id: 'boss_ch3_consejo',
     chapterId: 'ch3_targaryen',
-    name: 'El Campeón de Harrenhal',
+    name: 'El Dragón de Harren el Negro',
     type: 'politics',
-    title: 'ASALTO AL CASTILLO',
-    tagline: 'El torneo se abre paso entre guardias, arqueros y caballeros hasta el campeón del castillo.',
-    icon: 'tower',
+    title: 'EL ARQUERO DE HARRENHAL',
+    tagline: 'Harrenhal ardió una vez bajo fuego de dragón. Durante el torneo, algunos juran que las llamas nunca se apagaron del todo.',
+    icon: 'dragon-crimson',
     victoryText:
-      'El campeón cae en el patio de armas de Harrenhal. El nombre del vencedor del torneo se añadirá a las canciones... aunque nadie aún sospecha lo que esa corona de amor y belleza desatará.',
+      'El fuego se apaga entre las ruinas ennegrecidas del castillo maldito. Sea leyenda o advertencia, el torneo continúa como si nada hubiera pasado... aunque los guardias no dejan de mirar hacia las torres quemadas.',
     rewards: {
       knowledge: 45,
       experience: 80,

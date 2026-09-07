@@ -7,7 +7,7 @@ import { chapters } from '../data/chapters';
 import { PixelIcon } from './PixelIcon';
 import { DragonDodgeGame } from './minigames/DragonDodgeGame';
 import { StrategyBoss } from './minigames/StrategyBoss';
-import { CastleAssaultBoss } from './minigames/CastleAssaultBoss';
+import { ArcherShooterBoss } from './minigames/ArcherShooterBoss';
 import { BattleBoss } from './minigames/BattleBoss';
 import { audio } from '../utils/audio';
 import type { Difficulty } from '../types';
@@ -151,7 +151,7 @@ export function BossScreen({ bossId }: { bossId: string }) {
       )}
 
       {phase === 'playing' && boss.type === 'politics' && (
-        <CastleAssaultBoss
+        <ArcherShooterBoss
           key={attempt}
           difficulty={difficulty}
           startingHealth={currentHealth}
