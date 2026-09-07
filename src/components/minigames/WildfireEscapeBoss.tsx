@@ -274,7 +274,13 @@ export function WildfireEscapeBoss({ difficulty, startingHealth, onDamage, onWin
         {g.attacks.map((atk) => {
           const telegraphing = now < atk.telegraphUntil;
           if (atk.kind === 'orb') {
-            return <div key={atk.id} className="wildfire-orb" style={{ left: `${atk.x}%`, top: `${atk.y}%` }} />;
+            return (
+              <div key={atk.id} className="wildfire-barrel wildfire-barrel--falling" style={{ left: `${atk.x}%`, top: `${atk.y}%` }}>
+                <span className="wildfire-barrel-band" />
+                <span className="wildfire-barrel-band" />
+                <span className="wildfire-barrel-spark" />
+              </div>
+            );
           }
           if (atk.kind === 'jet') {
             return (
@@ -294,17 +300,21 @@ export function WildfireEscapeBoss({ difficulty, startingHealth, onDamage, onWin
               />
             );
           }
+          if (telegraphing) {
+            return (
+              <div key={atk.id} className="wildfire-barrel wildfire-barrel--warn" style={{ left: `${atk.x}%`, top: `${atk.y}%` }}>
+                <span className="wildfire-barrel-band" />
+                <span className="wildfire-barrel-band" />
+                <span className="wildfire-barrel-spark" />
+              </div>
+            );
+          }
           return (
-            <div
-              key={atk.id}
-              className={`wildfire-cache ${telegraphing ? 'wildfire-cache--warn' : 'wildfire-cache--active'}`}
-              style={{
-                left: `${atk.x}%`,
-                top: `${atk.y}%`,
-                width: `${atk.width}%`,
-                height: `${atk.width * 1.6}%`,
-              }}
-            />
+            <div key={atk.id} className="wildfire-cache-blast" style={{ left: `${atk.x}%`, top: `${atk.y}%` }}>
+              <span className="wildfire-blast-ring wildfire-blast-ring--1" />
+              <span className="wildfire-blast-ring wildfire-blast-ring--2" />
+              <span className="wildfire-blast-ring wildfire-blast-ring--3" />
+            </div>
           );
         })}
 
