@@ -229,6 +229,7 @@ export interface GameSaveState {
   unlockedAchievementIds: string[];
   defeatedBossIds: string[];
   decisionsMade: Record<string, string>; // eventId -> optionId
+  questionsAnswered: Record<string, boolean>; // eventId -> ya se otorgó la recompensa de su pregunta
   knowledge: number;
   experience: number;
   health: number;

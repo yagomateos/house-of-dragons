@@ -51,7 +51,7 @@ type Action =
   | { type: 'EXIT_BOSS' }
   | { type: 'DEFEAT_BOSS'; bossId: string }
   | { type: 'RECORD_DECISION'; eventId: string; optionId: string; knowledgeBonus: number }
-  | { type: 'RECORD_ANSWER'; correct: boolean }
+  | { type: 'RECORD_ANSWER'; eventId: string; correct: boolean }
   | { type: 'APPLY_REWARD'; reward: SceneStepReward; eventId: string }
   | { type: 'RESTART_BOSS_ATTEMPT' }
   | { type: 'DISCARD_BOSS_ATTEMPT' }
@@ -178,21 +178,39 @@ function reducer(state: AppState, action: Action): AppState {
     }
     case 'RECORD_DECISION': {
       if (!state.save) return state;
+      // Ya se otorgó la recompensa de esta decisión antes (bien porque el
+      // acontecimiento ya estaba completado, bien porque se registró en un
+      // intento previo del mismo acontecimiento antes de morir): no se
+      // vuelve a sumar conocimiento al reintentar o al repetir la historia.
+      const alreadyRewarded =
+        state.save.completedEventIds.includes(action.eventId) ||
+        Object.prototype.hasOwnProperty.call(state.save.decisionsMade, action.eventId);
       let save: GameSaveState = {
         ...state.save,
         decisionsMade: { ...state.save.decisionsMade, [action.eventId]: action.optionId },
-        knowledge: state.save.knowledge + action.knowledgeBonus,
+        knowledge: state.save.knowledge + (alreadyRewarded ? 0 : action.knowledgeBonus),
       };
       saveGame(save);
       return { ...state, save };
     }
     case 'RECORD_ANSWER': {
       if (!state.save) return state;
+      // Misma protección que en RECORD_DECISION: una pregunta ya
+      // recompensada (acontecimiento completado o pregunta ya acertada en
+      // un intento previo) no vuelve a dar conocimiento ni cuenta para el
+      // logro de aciertos al reintentar.
+      const alreadyRewarded =
+        state.save.completedEventIds.includes(action.eventId) ||
+        Boolean(state.save.questionsAnswered[action.eventId]);
+      const grantsReward = action.correct && !alreadyRewarded;
       let save: GameSaveState = {
         ...state.save,
         totalAnswers: state.save.totalAnswers + 1,
-        correctAnswers: state.save.correctAnswers + (action.correct ? 1 : 0),
-        knowledge: state.save.knowledge + (action.correct ? 10 : 0),
+        correctAnswers: state.save.correctAnswers + (grantsReward ? 1 : 0),
+        knowledge: state.save.knowledge + (grantsReward ? 10 : 0),
+        questionsAnswered: action.correct
+          ? { ...state.save.questionsAnswered, [action.eventId]: true }
+          : state.save.questionsAnswered,
       };
       const withAch = withAchievements(save);
       saveGame(withAch.save);
@@ -231,7 +249,14 @@ function reducer(state: AppState, action: Action): AppState {
     case 'APPLY_REWARD': {
       if (!state.save) return state;
       const r = action.reward;
-      const completedEventIds = state.save.completedEventIds.includes(action.eventId)
+      // Un acontecimiento ya completado se puede volver a leer desde el
+      // mapa (por gusto de repasar la historia), pero no debe volver a dar
+      // conocimiento/experiencia ni mover el puntero de progreso real: solo
+      // el acontecimiento que de verdad es el siguiente pendiente
+      // (save.currentEventId) hace avanzar la partida.
+      const alreadyCompleted = state.save.completedEventIds.includes(action.eventId);
+      const isCurrentEvent = state.save.currentEventId === action.eventId;
+      const completedEventIds = alreadyCompleted
         ? state.save.completedEventIds
         : [...state.save.completedEventIds, action.eventId];
       const discoveredCharacterIds = Array.from(
@@ -253,16 +278,16 @@ function reducer(state: AppState, action: Action): AppState {
         // de la que tenías al empezar el acontecimiento tiene coste
         // real de cara al siguiente.
         health: clampHealth(state.sessionHealth ?? state.save.health),
-        knowledge: state.save.knowledge + r.knowledge,
-        experience: state.save.experience + r.experience,
+        knowledge: state.save.knowledge + (alreadyCompleted ? 0 : r.knowledge),
+        experience: state.save.experience + (alreadyCompleted ? 0 : r.experience),
         completedEventIds,
         discoveredCharacterIds,
         discoveredDragonIds,
         unlockedLocationIds,
-        currentEventId: nextEventId,
-        currentYear: nextYear,
+        currentEventId: isCurrentEvent ? nextEventId : state.save.currentEventId,
+        currentYear: isCurrentEvent ? nextYear : state.save.currentYear,
       };
-      save = advanceChapterIfNeeded(save);
+      if (isCurrentEvent) save = advanceChapterIfNeeded(save);
       const withAch = withAchievements(save);
       saveGame(withAch.save);
       return { ...state, save: withAch.save, sessionHealth: null, newlyUnlockedAchievements: withAch.newly };

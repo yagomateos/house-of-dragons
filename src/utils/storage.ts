@@ -21,6 +21,9 @@ export function loadGame(): GameSaveState | null {
     if (parsed.version !== SAVE_VERSION) return null;
     // Migración leve: partidas guardadas antes de añadir el sistema de jefes.
     if (!parsed.defeatedBossIds) parsed.defeatedBossIds = [];
+    // Migración leve: partidas guardadas antes de añadir el guardado de
+    // preguntas ya recompensadas (evita farmear conocimiento reintentando).
+    if (!parsed.questionsAnswered) parsed.questionsAnswered = {};
     // Reconciliación: si una partida avanzó a un capítulo que entonces
     // estaba vacío de acontecimientos y ese capítulo ya tiene contenido
     // nuevo, reapunta currentEventId a su primer acontecimiento en vez de
@@ -71,6 +74,7 @@ export function createNewSave(player: PlayerCharacter): GameSaveState {
     unlockedAchievementIds: [],
     defeatedBossIds: [],
     decisionsMade: {},
+    questionsAnswered: {},
     knowledge: 0,
     experience: 0,
     health: 100,

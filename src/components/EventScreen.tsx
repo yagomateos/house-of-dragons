@@ -168,7 +168,7 @@ export function EventScreen({ eventId }: { eventId: string }) {
                       actionLockRef.current = true;
                       const correct = i === step.correctIndex;
                       setAnswered({ index: i, correct });
-                      dispatch({ type: 'RECORD_ANSWER', correct });
+                      dispatch({ type: 'RECORD_ANSWER', eventId: event.id, correct });
                       if (correct) audio.success();
                       else audio.error();
                     }}
