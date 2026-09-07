@@ -71,32 +71,42 @@ function dragonSprite(body: string, wing: string): Sprite {
   );
 }
 
-/** Silueta de dragón volando de cuerpo completo (cabeza, cuello, alas
- * bien extendidas, cola y patas), pensada para verse a distancia como
- * un dragón real y no como un simple emblema/retrato. Mira a la
- * izquierda; el contenedor que lo anima lo voltea según la dirección
- * de vuelo. */
-function flyingDragonSprite(body: string, wing: string): Sprite {
+/** Silueta de dragón volando de cuerpo completo (cabeza, cuello, dos
+ * planos de ala con sombreado, vientre más oscuro, cola y patas, y un
+ * contorno que recorre todo el borde de la silueta), pensada para
+ * verse a distancia como un dragón real y no como un simple emblema
+ * plano. Mira a la izquierda; el contenedor que lo anima lo voltea
+ * según la dirección de vuelo. La boca abierta (para el aliento de
+ * fuego) queda en la fila 15 de 19, columna 0 — ver SceneBackground.css. */
+function flyingDragonSprite(): Sprite {
+  const O = '#101d0a'; // contorno
+  const B = '#3a5228'; // cuerpo
+  const S = '#26350f'; // vientre / sombra
+  const F = '#3d5a2c'; // ala lejana
+  const N = '#5a7a44'; // ala cercana
   return sprite(
     [
-      '..........WW....WW....WW..........',
-      '.........WWWWW.WWWWW.WWWWW........',
-      '........WWWWWWWWWWWWWWWWWWW.......',
-      '.......WWWWWWWWWWWWWWWWWWWWW......',
-      '......WWWWWWWWWWWWWWWWWWWWWWW.....',
-      '......WWWWWWWWWWWWWWWWWWWWWWW.....',
-      '.......WWW..BBBBBBB.WWWWWWWW......',
-      '......BBBBBBBBBBBBBB..............',
-      '...BBBBBBBBBBBBBBBBBB.............',
-      '.BBBBBB..BBBBBBBBBBBBB............',
-      'BBBBBEBB.BBBBBBBBBBBBB............',
-      '..BBBBBB..BBBBBBBBBBBBBBB.........',
-      '...........BBBBBBBBB.BBBBBB.......',
-      '............BBBBBB.....BBBBBB.....',
-      '............BB..BB.......BBBBBB...',
-      '...........BB....BB........BBBBB..',
+      '........................................',
+      '................OO....OO....OO..........',
+      '...............OFFOO.OFFOO.OFFOO........',
+      '..............OFFFFFOFFFFFOFFFFFO.......',
+      '........OO..OOFFFFFFFFFFFFFFFFFFFO......',
+      '.......ONNOONNNNFFFFFFFFFFFFFFFFFO......',
+      '......ONNNNNNNNNNNFFFFFFFFFFFFFOO.......',
+      '......ONNNNNNNNNNNNNOOOOOOOOOOO.........',
+      '.......ONNNNNNNNNNNO....................',
+      '........ONNNNNNBBBBBOOO.................',
+      '.....OO.OBBBBBBBBBBBBBBOO...............',
+      '....OBBO.OBBBBBBBBBBBBBBBO..............',
+      '.OOOBBBBOBBOOOOBBBBBBBBBBBO.............',
+      'OBBBBBEBBBO....OSSSSSSSSSSSOOOO.........',
+      '.OBBBBBBBBO.....OSSSSSSSSSBBBBBOO.......',
+      '..OOOOOOOO.......OSSSSSSBBBBBBBBBOO.....',
+      '................OBOOBBOOOOOOOOSSSSSOO...',
+      '................OO..OO........OOOBBBBOOO',
+      '...............OOO..OOO..........OOOOOOO',
     ],
-    { W: wing, B: body, E: C.flame }
+    { O, B, S, F, N, E: C.flame }
   );
 }
 
@@ -455,7 +465,7 @@ const sprites: Record<IconKey, Sprite> = {
   'dragon-silver': dragonSprite(C.silver, C.stone),
   'dragon-gold-bright': dragonSprite(C.gold, C.ember),
   'dragon-crimson': dragonSprite('#c2434f', C.red),
-  'dragon-flying': flyingDragonSprite(C.darkGreen, C.green),
+  'dragon-flying': flyingDragonSprite(),
 
   // Retratos: cada personaje descubrible tiene su propia combinación de
   // plantilla (hombre/mujer/anciano/nudillo) y color, para que ninguno
