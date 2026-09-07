@@ -107,11 +107,14 @@ export const dragons: DragonData[] = [
     id: 'drag_viserion',
     name: 'Viserion',
     rider: 'Sin jinete',
-    periodLabel: 'Nacido en Qarth, 298 d.C.',
-    description: 'Dragón de escamas color crema y ojos dorados, nombrado en honor al difunto hermano de Daenerys, Viserys.',
+    periodLabel: 'Nacido en Qarth, 298 d.C. — muerto y resucitado como dragón de hielo, 300 d.C.',
+    description:
+      'Dragón de escamas color crema y ojos dorados, nombrado en honor al difunto hermano de Daenerys, Viserys. Derribado por una lanza de hielo del Rey de la Noche más allá del Muro, fue resucitado como un dragón de hielo no-muerto capaz de destruir el propio Muro con su aliento helado.',
     sizeLabel: 'Grande (adulto)',
-    status: 'vivo',
+    status: 'muerto',
     portrait: 'dragon-pale',
+    tvOnlyNote:
+      'La muerte y resurrección de Viserion como dragón de hielo es contenido exclusivo de la adaptación televisiva; las novelas aún no han alcanzado este punto de la historia.',
   },
 ];
 

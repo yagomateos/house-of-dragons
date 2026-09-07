@@ -391,9 +391,72 @@ export const characters: CharacterData[] = [
     status: 'vivo',
   },
 
-  // --- Personajes de capítulos futuros (aparecerán bloqueados) ---
-  { id: 'char_jon_snow', name: 'Jon Nieve', house: 'Stark / Targaryen', portrait: 'portrait-male', description: 'Hijo criado como bastardo en Invernalia, figura central del conflicto final.', periodLabel: '283 d.C. — 300 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
-  { id: 'char_night_king', name: 'El Rey de la Noche', house: 'Desconocida', portrait: 'skull', description: 'Líder de los Caminantes Blancos.', periodLabel: 'Fecha desconocida', eventIds: [], status: 'desconocido', tvOnlyNote: 'Este personaje y su rol final proceden de la adaptación televisiva; su desarrollo en las novelas aún no se ha publicado.' },
+  // --- Capítulo 7: El Invierno ---
+  {
+    id: 'char_jon_snow',
+    name: 'Jon Nieve',
+    house: 'Stark / Targaryen',
+    portrait: 'portrait-male',
+    description:
+      'Criado como el hijo bastardo de Eddard Stark en Invernalia, se convirtió en Lord Comandante de la Guardia de la Noche y lideró la defensa de Poniente contra el ejército de los muertos.',
+    periodLabel: '283 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_mas_alla_muro', 'ev_alianza_libres', 'ev_dragon_caido', 'ev_batalla_invernalia'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_sam',
+    name: 'Samwell Tarly',
+    house: 'Tarly',
+    portrait: 'portrait-male-grey',
+    description: 'Hermano jurado de la Guardia de la Noche y amigo más cercano de Jon Nieve, de gran erudición sobre la historia olvidada de los Caminantes Blancos.',
+    periodLabel: '283 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_mas_alla_muro'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_melisandre',
+    name: 'Melisandre',
+    house: 'Sin casa (Asshai)',
+    portrait: 'portrait-female-silver',
+    description: 'Sacerdotisa roja del Señor de Luz, célebre por sus visiones en el fuego y por devolver la vida a Jon Nieve tras su asesinato en el Castillo Negro.',
+    periodLabel: 'Fecha de nacimiento desconocida — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_alianza_libres'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_bran',
+    name: 'Brandon Stark',
+    house: 'Stark',
+    portrait: 'portrait-male',
+    description:
+      'Hijo menor de Eddard Stark, convertido en el Cuervo de Tres Ojos: un vidente capaz de observar el pasado, el presente y fragmentos del futuro a través de la magia de los antiguos hombres verdes.',
+    periodLabel: '286 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_batalla_invernalia'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_arya',
+    name: 'Arya Stark',
+    house: 'Stark',
+    portrait: 'portrait-female-dark',
+    description:
+      'Hija menor de Eddard Stark, entrenada como asesina por los Hombres sin Rostro de Braavos. Su golpe final en la Batalla de Invernalia decidió el destino de todo Poniente.',
+    periodLabel: '289 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_batalla_invernalia'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_night_king',
+    name: 'El Rey de la Noche',
+    house: 'Desconocida',
+    portrait: 'skull',
+    description:
+      'El más antiguo y poderoso de los Caminantes Blancos, creado hace ocho mil años por los primeros Hijos del Bosque. Comandó el ejército de los muertos hasta la Batalla de Invernalia.',
+    periodLabel: 'Fecha desconocida — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_mas_alla_muro', 'ev_dragon_caido', 'ev_batalla_invernalia'],
+    status: 'muerto',
+    tvOnlyNote: 'Este personaje y su rol final proceden de la adaptación televisiva; su desarrollo en las novelas aún no se ha publicado.',
+  },
 ];
 
 export function getCharacter(id: string): CharacterData | undefined {

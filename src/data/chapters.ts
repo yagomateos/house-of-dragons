@@ -61,7 +61,7 @@ export const chapters: ChapterData[] = [
     title: 'El Invierno',
     subtitle: 'La larga noche',
     yearRangeLabel: '300 d.C. (fecha aproximada)',
-    eventIds: [],
+    eventIds: ['ev_mas_alla_muro', 'ev_alianza_libres', 'ev_dragon_caido', 'ev_batalla_invernalia'],
   },
 ];
 

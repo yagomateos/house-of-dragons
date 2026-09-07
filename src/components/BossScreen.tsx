@@ -11,6 +11,7 @@ import { ArcherShooterBoss } from './minigames/ArcherShooterBoss';
 import { WildfireEscapeBoss } from './minigames/WildfireEscapeBoss';
 import { NavalBattleBoss } from './minigames/NavalBattleBoss';
 import { DragonFlightBoss } from './minigames/DragonFlightBoss';
+import { NightKingBoss } from './minigames/NightKingBoss';
 import { audio } from '../utils/audio';
 import type { Difficulty } from '../types';
 import './BossScreen.css';
@@ -187,6 +188,17 @@ export function BossScreen({ bossId }: { bossId: string }) {
 
       {phase === 'playing' && boss.type === 'flight' && (
         <DragonFlightBoss
+          key={attempt}
+          difficulty={difficulty}
+          startingHealth={currentHealth}
+          onDamage={(value) => dispatch({ type: 'SET_SESSION_HEALTH', value })}
+          onWin={handleWin}
+          onLose={handleLose}
+        />
+      )}
+
+      {phase === 'playing' && boss.type === 'survival' && (
+        <NightKingBoss
           key={attempt}
           difficulty={difficulty}
           startingHealth={currentHealth}

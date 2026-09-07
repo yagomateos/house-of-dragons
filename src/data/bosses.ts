@@ -1,9 +1,7 @@
 import type { BossData } from '../types';
 
 // Un jefe por capítulo, cada uno con un minijuego distinto (ver
-// src/components/minigames/). El capítulo 7 aún no tiene acontecimientos
-// narrativos, así que su jefe se añadirá cuando tenga contenido jugable
-// que lleve hasta él.
+// src/components/minigames/).
 export const bosses: BossData[] = [
   {
     id: 'boss_ch1_dragon',
@@ -93,6 +91,21 @@ export const bosses: BossData[] = [
     rewards: {
       knowledge: 60,
       experience: 110,
+    },
+  },
+  {
+    id: 'boss_ch7_invernalia',
+    chapterId: 'ch7_invierno',
+    name: 'El Rey de la Noche',
+    type: 'survival',
+    title: 'LA LARGA NOCHE',
+    tagline: 'Ocho mil años de espera terminan esta noche, en el bosque de dioses de Invernalia.',
+    icon: 'skull',
+    victoryText:
+      'Mientras el Rey de la Noche avanza hacia Bran, una sombra se mueve entre los árboles. La daga de acero valyrio de Arya Stark encuentra su corazón de hielo, y él, junto a todo su ejército, se hace añicos como cristal. La Larga Noche, después de ocho mil años, por fin ha terminado.',
+    rewards: {
+      knowledge: 65,
+      experience: 120,
     },
   },
 ];

@@ -1459,7 +1459,298 @@ export const events: HistoricalEvent[] = [
         knowledge: 30,
         experience: 35,
         unlockCharacterIds: ['char_tyrion', 'char_yara'],
-        text: 'Capítulo completado. Tras años de exilio, Daenerys Targaryen zarpa por fin hacia Poniente. La última Targaryen viva se acerca al Trono de Hierro con tres dragones adultos volando sobre su flota.',
+        unlockLocationIds: ['beyond_the_wall'],
+        text: 'Capítulo completado. Tras años de exilio, Daenerys Targaryen zarpa por fin hacia Poniente. La última Targaryen viva se acerca al Trono de Hierro con tres dragones adultos volando sobre su flota. Muy al norte, más allá del Muro, algo mucho más antiguo que cualquier guerra por el trono empieza por fin a moverse.',
+      },
+    ],
+  },
+
+  // =========================================================
+  // CAPÍTULO 7 — EL INVIERNO
+  // =========================================================
+
+  {
+    id: 'ev_mas_alla_muro',
+    chapterId: 'ch7_invierno',
+    locationId: 'beyond_the_wall',
+    order: 1,
+    year: '300 d.C.',
+    title: 'Lo Que Acecha Más Allá',
+    characterIds: ['char_jon_snow', 'char_sam', 'char_night_king'],
+    summary:
+      'Jon Nieve, Lord Comandante de la Guardia de la Noche, confirma con sus propios ojos que los Caminantes Blancos y su ejército de muertos son reales, y que se dirigen hacia el Muro.',
+    tvOnlyNote:
+      'La confrontación directa con el Rey de la Noche y el desenlace completo de esta historia son desarrollos exclusivos de la adaptación televisiva.',
+    nextEventId: 'ev_alianza_libres',
+    steps: [
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'Durante generaciones, la Guardia de la Noche fue objeto de burlas por advertir de una amenaza que la mayoría de los señores de Poniente consideraba un cuento de nodrizas: los Caminantes Blancos, criaturas de hielo capaces de resucitar a los muertos como sirvientes helados.',
+      },
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'Jon Nieve, elegido Lord Comandante de la Guardia de la Noche, lidera una expedición más allá del Muro junto a su hermano jurado Samwell Tarly y confirma con sus propios ojos lo que tanto temían: un ejército de muertos, comandado por el Rey de la Noche, avanza hacia el sur.',
+      },
+      { type: 'dialogue', speakerId: 'char_sam', text: 'Los maestres de la Ciudadela se reirán de nosotros. Pero he leído lo suficiente para saber que esto ya ha pasado antes... hace ocho mil años.' },
+      {
+        type: 'decision',
+        prompt: 'Como Lord Comandante, Jon Nieve debe decidir cómo actuar ante la amenaza confirmada del Rey de la Noche. ¿Qué prioriza?',
+        options: [
+          {
+            id: 'avisar_reino',
+            label: 'AVISAR A TODOS LOS SEÑORES DE PONIENTE',
+            resultText: 'Aunque muchos no le creerán, intentar unir al reino entero contra una amenaza común es el único camino posible.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'reforzar_muro',
+            label: 'REFORZAR EL MURO POR SU CUENTA',
+            resultText: 'Con pocos recursos y menos aliados, la Guardia de la Noche podría tener que enfrentar sola lo que se avecina.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'aliados_salvajes',
+            label: 'BUSCAR ALIADOS ENTRE EL PUEBLO LIBRE',
+            resultText: 'Los antiguos enemigos de la Guardia podrían convertirse, contra todo pronóstico, en sus aliados más necesarios.',
+            knowledgeBonus: 4,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'La amenaza es real, y el tiempo se agota. El Muro, la barrera mágica que ha protegido Poniente durante ocho mil años, es la única defensa entre los vivos y un ejército que no conoce el cansancio, ni el miedo, ni la muerte.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Quién lidera el ejército de los muertos que avanza hacia el Muro?',
+        options: ['Un antiguo rey Targaryen resucitado', 'El Rey de la Noche', 'Un brujo del Norte', 'Euron Greyjoy'],
+        correctIndex: 1,
+        explanation: 'El Rey de la Noche, el más antiguo y poderoso de los Caminantes Blancos, comanda el ejército de los muertos que avanza hacia el Muro.',
+      },
+      {
+        type: 'reward',
+        knowledge: 22,
+        experience: 22,
+        unlockCharacterIds: ['char_sam'],
+        text: 'El invierno, por fin, ha llegado. Y con él, la amenaza que toda la historia de Poniente parecía haber olvidado.',
+      },
+    ],
+  },
+
+  {
+    id: 'ev_alianza_libres',
+    chapterId: 'ch7_invierno',
+    locationId: 'beyond_the_wall',
+    order: 2,
+    year: '300 d.C.',
+    title: 'La Alianza con el Pueblo Libre',
+    characterIds: ['char_jon_snow', 'char_melisandre'],
+    summary:
+      'Jon Nieve rompe siglos de enemistad al aliarse con el Pueblo Libre para salvarlo de convertirse en soldados del ejército de los muertos, un acto que le cuesta la vida a manos de sus propios hermanos... y que la magia le devuelve.',
+    nextEventId: 'ev_dragon_caido',
+    steps: [
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'Convencido de que dejar al Pueblo Libre —los llamados "salvajes"— al norte del Muro solo aumentaría el ejército del Rey de la Noche con miles de nuevos reclutas, Jon Nieve negocia su paso seguro al sur a cambio de su alianza contra la amenaza común.',
+      },
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'La decisión escandaliza a buena parte de la Guardia de la Noche, que lleva generaciones enfrentándose al Pueblo Libre en el campo de batalla. Algunos hermanos juran que Jon los ha traicionado a todos.',
+      },
+      {
+        type: 'decision',
+        prompt: '¿Cómo valoras la decisión de Jon Nieve de aliarse con el Pueblo Libre?',
+        options: [
+          {
+            id: 'racional',
+            label: 'LA ÚNICA OPCIÓN RACIONAL',
+            resultText: 'Ante una amenaza que no distingue entre salvajes y hombres del reino, la vieja rivalidad se vuelve un lujo que nadie puede permitirse.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'traicion',
+            label: 'UNA TRAICIÓN IMPERDONABLE',
+            resultText: 'Para generaciones de hermanos de la Guardia, esto rompe siglos de sacrificio y sangre derramada en la frontera.',
+            knowledgeBonus: 4,
+          },
+          {
+            id: 'vision',
+            label: 'UN ACTO DE VISIÓN POLÍTICA',
+            resultText: 'Jon entiende algo que muy pocos líderes de Poniente logran: que las viejas fronteras no sobrevivirán a lo que se avecina.',
+            knowledgeBonus: 3,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'Una noche, un grupo de sus propios hermanos jurados, liderados por Ser Alliser Thorne, apuñala a Jon Nieve repetidamente, considerándolo un traidor a la Guardia. Muere desangrado en la nieve frente al Castillo Negro.',
+      },
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'Pero la historia de Jon Nieve no termina ahí. La sacerdotisa roja Melisandre, sirviente del Señor de Luz, utiliza su magia para devolverle la vida. Jon despierta, respira de nuevo... y ejecuta personalmente a los amotinados que lo asesinaron.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Quién devuelve la vida a Jon Nieve tras su asesinato a manos de sus hermanos de la Guardia?',
+        options: ['Bran Stark', 'Melisandre', 'Daenerys Targaryen', 'Samwell Tarly'],
+        correctIndex: 1,
+        explanation: 'Melisandre, sacerdotisa roja del Señor de Luz, utiliza su magia para resucitar a Jon Nieve tras su asesinato en el Castillo Negro.',
+      },
+      {
+        type: 'reward',
+        knowledge: 24,
+        experience: 26,
+        unlockCharacterIds: ['char_melisandre'],
+        text: 'Jon Nieve ha muerto y ha vuelto a nacer. Lo que sea que le espera ahora, ya no le teme a la muerte de la misma manera.',
+      },
+    ],
+  },
+
+  {
+    id: 'ev_dragon_caido',
+    chapterId: 'ch7_invierno',
+    locationId: 'beyond_the_wall',
+    order: 3,
+    year: '300 d.C.',
+    title: 'La Caída de Viserion',
+    characterIds: ['char_jon_snow', 'char_daenerys', 'char_night_king'],
+    summary:
+      'En una expedición más allá del Muro para capturar a un espectro como prueba, el Rey de la Noche derriba y resucita al dragón Viserion, convirtiéndolo en un arma helada capaz de destruir el Muro.',
+    nextEventId: 'ev_batalla_invernalia',
+    steps: [
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'Para convencer a Daenerys de la amenaza real que se avecina, Jon Nieve organiza una expedición más allá del Muro para capturar a un espectro vivo como prueba irrefutable.',
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'Rodeados por el ejército de los muertos sobre un lago helado, Jon y sus hombres están a punto de perecer hasta que Daenerys llega en su rescate montada sobre sus tres dragones, arrasando a los espectros con fuego.',
+      },
+      { type: 'dialogue', speakerId: 'char_daenerys', text: 'Nunca había visto nada así. Que los dioses nos ayuden a todos si esto es real.' },
+      {
+        type: 'decision',
+        prompt: '¿Qué consecuencia tiene la intervención de los dragones de Daenerys en el lago helado?',
+        options: [
+          {
+            id: 'salva_convence',
+            label: 'SALVA A JON Y CONVENCE A DAENERYS',
+            resultText: 'El rescate confirma la amenaza más allá de toda duda y sella la alianza entre el Norte y la reina Targaryen.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'expone_dragones',
+            label: 'EXPONE A LOS DRAGONES AL PELIGRO',
+            resultText: 'Por primera vez, el Rey de la Noche demuestra que puede hacer algo que nadie creía posible: matar a un dragón.',
+            knowledgeBonus: 4,
+          },
+          {
+            id: 'une_jon_dany',
+            label: 'UNE DEFINITIVAMENTE A JON Y DAENERYS',
+            resultText: 'La batalla compartida forja un vínculo que pronto se revelará mucho más profundo de lo que ninguno de los dos esperaba.',
+            knowledgeBonus: 3,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'El Rey de la Noche arroja una lanza de hielo mágica que derriba a Viserion, uno de los tres dragones de Daenerys, matándolo en el acto. Poco después, lo resucita como una criatura helada bajo su control, con un aliento capaz de fundir el hielo... y de destruir el Muro entero.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Qué hace el Rey de la Noche con el dragón Viserion tras derribarlo?',
+        options: ['Lo devora', 'Lo resucita como un dragón de hielo a su servicio', 'Lo encierra bajo el hielo para siempre', 'Nada, el dragón sobrevive ileso'],
+        correctIndex: 1,
+        explanation: 'El Rey de la Noche resucita a Viserion como un dragón de hielo no-muerto, usando su aliento helado para derribar el Muro y abrir el paso hacia el sur.',
+      },
+      {
+        type: 'reward',
+        knowledge: 26,
+        experience: 30,
+        unlockLocationIds: ['winterfell'],
+        text: 'El Muro, la barrera mágica de ocho mil años, cae hecho pedazos. El ejército de los muertos, por fin, marcha libre hacia Poniente, directo hacia Invernalia.',
+      },
+    ],
+  },
+
+  {
+    id: 'ev_batalla_invernalia',
+    chapterId: 'ch7_invierno',
+    locationId: 'winterfell',
+    order: 4,
+    year: '300 d.C.',
+    title: 'La Batalla de Invernalia',
+    characterIds: ['char_jon_snow', 'char_arya', 'char_bran', 'char_night_king'],
+    summary:
+      'Los vivos hacen su última defensa en Invernalia. Bran Stark se ofrece como cebo para atraer al Rey de la Noche, y Arya Stark asesta el golpe que decide el destino de Poniente.',
+    steps: [
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'Todos los ejércitos que quedan en el Norte se reúnen en Invernalia para la última defensa de los vivos: los Inmaculados, los dothraki, los norteños, el Pueblo Libre y los tres dragones de Daenerys, dos de ellos ya montados por ella y por Jon.',
+      },
+      {
+        type: 'narration',
+        background: 'snow',
+        text: 'Bran Stark, ahora el Cuervo de Tres Ojos, se ofrece como cebo: sabe que el Rey de la Noche lo busca a él por encima de cualquier otro objetivo, y espera solo en el bosque de dioses de Invernalia mientras la batalla arde a su alrededor.',
+      },
+      { type: 'dialogue', speakerId: 'char_bran', text: 'Un cazador siempre sabe cuándo su presa ha dejado de huir.' },
+      {
+        type: 'decision',
+        prompt: '¿Cómo valoras el plan de usar a Bran Stark como cebo para el Rey de la Noche?',
+        options: [
+          {
+            id: 'sacrificio_necesario',
+            label: 'UN SACRIFICIO NECESARIO',
+            resultText: 'Concentrar la atención del enemigo en un único punto es la única forma de tener una oportunidad real de derrotarlo.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'riesgo_extremo',
+            label: 'UN RIESGO EXTREMO E INJUSTIFICABLE',
+            resultText: 'Apostarlo todo a que nadie llegue hasta Bran antes que el Rey de la Noche es una temeridad casi suicida.',
+            knowledgeBonus: 4,
+          },
+          {
+            id: 'unica_oportunidad',
+            label: 'LA ÚNICA OPORTUNIDAD REAL',
+            resultText: 'Sin un plan que aproveche lo que Bran sabe sobre el Rey de la Noche, la batalla estaría perdida de antemano.',
+            knowledgeBonus: 3,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'Cuando el Rey de la Noche finalmente alcanza el bosque de dioses para matar a Bran con sus propias manos, una sombra se mueve entre los árboles. Arya Stark, entrenada como asesina por los Hombres sin Rostro de Braavos, salta sobre él con una daga de acero valyrio.',
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'La hoja se hunde en el pecho del Rey de la Noche. En un instante, él y todo su ejército de muertos se hacen añicos como cristal, liberados por fin de la magia que los ataba. La Larga Noche, después de ocho mil años, ha terminado.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Quién asesta el golpe final que derrota al Rey de la Noche en la Batalla de Invernalia?',
+        options: ['Jon Nieve', 'Daenerys Targaryen', 'Arya Stark', 'Brandon Stark'],
+        correctIndex: 2,
+        explanation: 'Arya Stark, aprovechando el sigilo aprendido de los Hombres sin Rostro, mata al Rey de la Noche con una daga de acero valyrio, deshaciendo al instante a todo su ejército de muertos.',
+      },
+      {
+        type: 'reward',
+        knowledge: 32,
+        experience: 40,
+        unlockCharacterIds: ['char_arya', 'char_bran'],
+        text: 'Capítulo completado. El ejército de los muertos ha caído. Poniente, agotado tras generaciones de guerras y una noche que no debía terminar nunca, respira por fin al amanecer. Pero el Trono de Hierro, con todas sus viejas ambiciones, todavía espera.',
       },
     ],
   },

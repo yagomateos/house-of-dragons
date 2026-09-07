@@ -48,12 +48,12 @@ export const locations: LocationData[] = [
   {
     id: 'winterfell',
     name: 'Invernalia',
-    periodLabel: '283 d.C. (fecha aproximada)',
+    periodLabel: '300 d.C. (fecha aproximada)',
     x: 45,
     y: 12,
     icon: 'wolf',
-    description: 'Asiento ancestral de la Casa Stark en el Norte.',
-    eventIds: [],
+    description: 'Asiento ancestral de la Casa Stark en el Norte, y último bastión de los vivos frente al ejército de los muertos.',
+    eventIds: ['ev_batalla_invernalia'],
     unlockedFromStart: false,
   },
   {
@@ -107,8 +107,8 @@ export const locations: LocationData[] = [
     x: 50,
     y: 2,
     icon: 'snowflake',
-    description: 'Las tierras heladas al norte del Muro, dominio de los salvajes y de amenazas antiguas.',
-    eventIds: [],
+    description: 'Las tierras heladas al norte del Muro, dominio del Pueblo Libre... y de una amenaza mucho más antigua que cualquier guerra por el Trono de Hierro.',
+    eventIds: ['ev_mas_alla_muro', 'ev_alianza_libres', 'ev_dragon_caido'],
     unlockedFromStart: false,
   },
 ];
