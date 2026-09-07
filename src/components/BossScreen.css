@@ -72,6 +72,32 @@
   max-width: 420px;
 }
 
+/* Instrucciones de control, visibles ANTES de pulsar "Comenzar": no
+ * basta con explicarlo dentro del minijuego, porque para entonces el
+ * jugador ya está en plena partida y puede saltarse ese aviso sin
+ * querer. */
+.boss-howto {
+  max-width: 460px;
+  padding: 0.7rem 1rem;
+  margin: 0 0 1.2rem;
+  background: rgba(201, 162, 39, 0.08);
+  border: 1px solid rgba(201, 162, 39, 0.4);
+}
+
+.boss-howto-label {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--c-gold-bright);
+  margin: 0 0 0.3rem;
+}
+
+.boss-howto-text {
+  color: var(--c-text);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
 .boss-health-preview {
   font-family: var(--font-ui);
   font-size: 1rem;

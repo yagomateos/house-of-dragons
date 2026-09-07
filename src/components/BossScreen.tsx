@@ -115,6 +115,11 @@ export function BossScreen({ bossId }: { bossId: string }) {
           <p className="boss-name">{boss.name}</p>
           <p className="boss-tagline">&ldquo;{boss.tagline}&rdquo;</p>
 
+          <div className="boss-howto">
+            <p className="boss-howto-label">🎮 Cómo jugar</p>
+            <p className="boss-howto-text">{boss.howToPlay}</p>
+          </div>
+
           <p className="boss-health-preview">
             Llegas con <span className="heart-icon">❤ {currentHealth}/100</span>
           </p>

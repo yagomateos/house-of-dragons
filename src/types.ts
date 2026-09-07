@@ -197,6 +197,8 @@ export interface BossData {
   title: string;
   tagline: string;
   icon: IconKey;
+  /** Instrucciones de control, visibles en la pantalla previa al combate (antes de "Comenzar"). */
+  howToPlay: string;
   /** texto narrativo mostrado al superar el jefe */
   victoryText: string;
   rewards: {
