@@ -50,6 +50,27 @@ Al final de cada capítulo espera un **jefe final**: un combate en tiempo real, 
   <img src="docs/screenshots/08-enciclopedia.jpg" width="640" alt="Enciclopedia de Poniente" />
 </p>
 
+## Los jefes en acción
+
+Cada uno de los 7 jefes de capítulo es un minijuego de acción distinto, con su propia mecánica, música y controles (arrastrar el dedo, botones en pantalla o ambos):
+
+| Vhagar Desatada (cap. 1) — esquiva aérea | Las Fronteras en Llamas (cap. 2) — táctica en tiempo real |
+|---|---|
+| ![Vhagar Desatada](docs/screenshots/09-jefe-danza-dragones.jpg) | ![Las Fronteras en Llamas](docs/screenshots/10-jefe-guerra.jpg) |
+
+| El Dragón de Harren el Negro (cap. 3) — dragoncillos y huevos que eclosionan | La Flota de Stannis (cap. 5) — batalla naval |
+|---|---|
+| ![El Arquero de Harrenhal](docs/screenshots/12-jefe-arquero-harrenhal.jpg) | ![La Batalla de Aguasnegras](docs/screenshots/11-jefe-aguasnegras.jpg) |
+
+| El Rey Loco (cap. 4) — huida esquivando pólvora líquida | La Flota Esclavista (cap. 6) — vuelo libre a lomos de Drogon |
+|---|---|
+| ![La Pólvora del Rey Loco](docs/screenshots/13-jefe-rey-loco.jpg) | ![La Batalla de la Bahía](docs/screenshots/14-jefe-bahia-dragones.jpg) |
+
+<p align="center">
+  <img src="docs/screenshots/15-jefe-larga-noche.jpg" width="640" alt="El Rey de la Noche — La Larga Noche" />
+  <br /><sub>El Rey de la Noche (capítulo 7) — supervivencia en el bosque de dioses de Invernalia</sub>
+</p>
+
 ## Contenido de esta versión
 
 Esta es la **historia completa, de principio a fin**, no una demo ni un prototipo a medias:
