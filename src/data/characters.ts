@@ -284,7 +284,7 @@ export const characters: CharacterData[] = [
     description:
       'Hijo menor de Tywin, apodado "el Gnomo" por su estatura. Nombrado Mano del Rey en funciones, organizó la defensa de Desembarco del Rey con pólvora líquida durante la Batalla de Aguasnegras.',
     periodLabel: '273 d.C. — 300 d.C. (fecha aproximada)',
-    eventIds: ['ev_aguasnegras'],
+    eventIds: ['ev_aguasnegras', 'ev_flota_poniente'],
     status: 'vivo',
   },
   {
@@ -332,8 +332,66 @@ export const characters: CharacterData[] = [
     status: 'vivo',
   },
 
+  // --- Capítulo 6: La Madre de Dragones ---
+  {
+    id: 'char_jorah',
+    name: 'Jorah Mormont',
+    house: 'Mormont',
+    portrait: 'portrait-old-tan',
+    description:
+      'Caballero exiliado de Poniente por vender esclavos, se convirtió en el protector y consejero más leal de Daenerys en su exilio a través de Essos.',
+    periodLabel: '257 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_bahia_esclavos'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_missandei',
+    name: 'Missandei',
+    house: 'Naathi',
+    portrait: 'portrait-female-dark',
+    description:
+      'Antigua esclava e intérprete de Astapor, liberada por Daenerys. Se convirtió en su consejera de mayor confianza y en la voz de su causa ante los pueblos liberados.',
+    periodLabel: '281 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_bahia_esclavos'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_greyworm',
+    name: 'Gusano Gris',
+    house: 'Inmaculados',
+    portrait: 'portrait-knight',
+    description: 'Comandante de los Inmaculados, el ejército de esclavos-soldado liberado y jurado a Daenerys tras la caída de Astapor.',
+    periodLabel: 'Fecha de nacimiento desconocida — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_unsullied'],
+    status: 'vivo',
+  },
+  {
+    id: 'char_yara',
+    name: 'Yara Greyjoy',
+    house: 'Greyjoy',
+    portrait: 'portrait-female-silver',
+    description:
+      'Hija de Balon Greyjoy y comandante de la Flota de Hierro. Selló una alianza con Daenerys para apoyar su reclamación del Trono de Hierro a cambio del reconocimiento de la independencia de las Islas de Hierro.',
+    periodLabel: '278 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_flota_poniente'],
+    status: 'vivo',
+    tvOnlyNote:
+      'La alianza formal entre Daenerys y Yara Greyjoy, y el zarpe conjunto de la flota hacia Poniente, es contenido exclusivo de la adaptación televisiva: las novelas aún no han alcanzado este punto de la historia.',
+  },
+
+  {
+    id: 'char_daenerys',
+    name: 'Daenerys Targaryen',
+    house: 'Targaryen',
+    portrait: 'portrait-female',
+    description:
+      'Última Targaryen superviviente conocida. Exiliada en Essos desde niña, hizo eclosionar los tres últimos huevos de dragón del mundo y liberó las ciudades esclavistas de la Bahía de los Dragones camino de reclamar el Trono de Hierro.',
+    periodLabel: '284 d.C. — 300 d.C. (fecha aproximada)',
+    eventIds: ['ev_hijos_de_fuego', 'ev_unsullied', 'ev_bahia_esclavos', 'ev_flota_poniente'],
+    status: 'vivo',
+  },
+
   // --- Personajes de capítulos futuros (aparecerán bloqueados) ---
-  { id: 'char_daenerys', name: 'Daenerys Targaryen', house: 'Targaryen', portrait: 'portrait-female', description: 'Última Targaryen conocida, madre de dragones.', periodLabel: '284 d.C. — 300 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
   { id: 'char_jon_snow', name: 'Jon Nieve', house: 'Stark / Targaryen', portrait: 'portrait-male', description: 'Hijo criado como bastardo en Invernalia, figura central del conflicto final.', periodLabel: '283 d.C. — 300 d.C. (fecha aproximada)', eventIds: [], status: 'desconocido' },
   { id: 'char_night_king', name: 'El Rey de la Noche', house: 'Desconocida', portrait: 'skull', description: 'Líder de los Caminantes Blancos.', periodLabel: 'Fecha desconocida', eventIds: [], status: 'desconocido', tvOnlyNote: 'Este personaje y su rol final proceden de la adaptación televisiva; su desarrollo en las novelas aún no se ha publicado.' },
 ];

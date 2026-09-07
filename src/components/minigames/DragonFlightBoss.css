@@ -1,0 +1,367 @@
+.flight-game {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+.flight-hud {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.9rem;
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 2px solid var(--c-gold);
+  z-index: 5;
+}
+
+.flight-health {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  min-width: 0;
+  width: 40%;
+  max-width: 170px;
+}
+
+.flight-health-icon {
+  color: #d97a7a;
+  flex-shrink: 0;
+}
+
+.flight-health-track {
+  flex: 1;
+  height: 12px;
+  min-width: 40px;
+  background: #14141a;
+  border: 1px solid var(--c-stone-light);
+  overflow: hidden;
+}
+
+.flight-health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7fb562, #a8d878);
+  transition: width 0.2s ease;
+}
+
+.flight-health-fill--mid {
+  background: linear-gradient(90deg, #d0a13a, #e6c14f);
+}
+
+.flight-health-fill--low {
+  background: linear-gradient(90deg, #a83232, #e07a7a);
+}
+
+.flight-health-value {
+  font-family: var(--font-title);
+  font-size: 0.55rem;
+  color: var(--c-bone);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.flight-wave-label {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--c-gold);
+  white-space: nowrap;
+}
+
+.flight-boss-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.flight-boss-label {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  color: #e08f5a;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.flight-boss-track {
+  flex: 1;
+  height: 12px;
+  background: #14141a;
+  border: 2px solid #8f4a2f;
+  overflow: hidden;
+}
+
+.flight-boss-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8f4a2f, #d17a54);
+  transition: width 0.15s ease;
+}
+
+.flight-arena {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 0%, #2a1a14 0%, #1a100c 60%, #0b0b0f 100%);
+  touch-action: none;
+}
+
+.flight-arena--hit {
+  animation: flightFlash 0.25s ease;
+}
+
+@keyframes flightFlash {
+  0%, 100% { background-color: transparent; }
+  40% { background-color: rgba(224, 120, 60, 0.35); }
+}
+
+.flight-flagship {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  filter: drop-shadow(0 0 14px rgba(209, 122, 84, 0.7));
+  transition: filter 0.2s ease;
+}
+
+.flight-flagship--shielded {
+  filter: drop-shadow(0 0 18px rgba(120, 200, 255, 0.9));
+  animation: flightShieldPulse 0.9s ease infinite;
+}
+
+@keyframes flightShieldPulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+.flight-flagship--exploding > :first-child {
+  animation: flightFlagshipDie 0.75s ease forwards;
+}
+
+@keyframes flightFlagshipDie {
+  0% { opacity: 1; filter: brightness(1); }
+  40% { opacity: 1; filter: brightness(2.4) saturate(0); }
+  100% { opacity: 0; filter: brightness(3) saturate(0); }
+}
+
+.flight-explosion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.flight-explosion--1 {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #fff2b0 0%, #ff7a30 55%, transparent 75%);
+  animation: flightExplode 0.75s ease-out forwards;
+}
+
+.flight-explosion--2 {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #ffcf5c 0%, #e05a30 55%, transparent 75%);
+  animation: flightExplode 0.75s ease-out 0.08s forwards;
+}
+
+.flight-explosion--3 {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #ffffff 0%, #ffcf5c 45%, transparent 75%);
+  animation: flightExplode 0.6s ease-out 0.15s forwards;
+}
+
+@keyframes flightExplode {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(4.5); opacity: 0; }
+}
+
+.flight-barrage {
+  position: absolute;
+  top: 92%;
+  height: 84%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  clip-path: polygon(38% 0%, 62% 0%, 100% 100%, 0% 100%);
+}
+
+.flight-barrage--warn {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(168, 70, 40, 0.25),
+    rgba(168, 70, 40, 0.25) 6px,
+    rgba(168, 70, 40, 0.4) 6px,
+    rgba(168, 70, 40, 0.4) 12px
+  );
+  border-left: 2px dashed rgba(255, 140, 80, 0.6);
+  border-right: 2px dashed rgba(255, 140, 80, 0.6);
+}
+
+.flight-barrage--active {
+  background: linear-gradient(180deg, #fff2b0 0%, #ffcf5c 20%, #ff7a30 55%, #c0392b 100%);
+  box-shadow: 0 0 28px rgba(255, 120, 40, 0.95);
+  animation: flightFlameFlicker 0.15s ease infinite alternate;
+}
+
+@keyframes flightFlameFlicker {
+  0% { filter: brightness(1); transform: translateX(-50%) scaleX(1); }
+  100% { filter: brightness(1.2); transform: translateX(-50%) scaleX(1.08); }
+}
+
+.flight-enemy {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  padding: 2px;
+  border-radius: 50%;
+  border: 2px solid #8a6d4a;
+  box-shadow: 0 0 6px rgba(138, 109, 74, 0.7);
+  background: rgba(138, 109, 74, 0.12);
+  line-height: 0;
+}
+
+.flight-enemy--ballestero {
+  border-color: #d6a23a;
+  box-shadow: 0 0 6px rgba(214, 162, 58, 0.7);
+  background: rgba(214, 162, 58, 0.12);
+}
+
+.flight-enemy--hit {
+  box-shadow: 0 0 14px rgba(255, 80, 80, 1);
+  filter: brightness(1.6);
+}
+
+.flight-bolt {
+  position: absolute;
+  width: 4px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(180deg, #fff2b0, #ff7a30);
+  box-shadow: 0 0 8px rgba(255, 122, 48, 0.9);
+  z-index: 2;
+}
+
+.flight-enemy-shot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #e05a48;
+  box-shadow: 0 0 8px rgba(224, 60, 40, 0.9);
+  z-index: 2;
+}
+
+.flight-player {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  padding: 2px;
+  border-radius: 50%;
+  border: 2px solid var(--c-gold-bright);
+  box-shadow: 0 0 10px rgba(230, 193, 79, 0.85);
+  background: rgba(230, 193, 79, 0.12);
+  line-height: 0;
+  transition: filter 0.1s ease;
+}
+
+.flight-player--hit {
+  border-color: #ff5050;
+  box-shadow: 0 0 14px rgba(255, 80, 80, 1);
+  filter: brightness(1.6);
+}
+
+.flight-briefing {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.78);
+  cursor: pointer;
+}
+
+.flight-briefing-box {
+  max-width: 440px;
+  padding: 1.4rem;
+  background: rgba(20, 18, 26, 0.95);
+  border: 2px solid var(--c-gold);
+  text-align: center;
+}
+
+.flight-briefing-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--c-gold-bright);
+  margin: 0 0 0.8rem;
+}
+
+.flight-briefing-text {
+  color: var(--c-text);
+  line-height: 1.5;
+  margin: 0 0 0.6rem;
+}
+
+.flight-briefing-tap {
+  margin: 1rem 0 0;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--c-gold);
+  animation: flightBriefingPulse 1.2s ease infinite;
+}
+
+@keyframes flightBriefingPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.flight-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.flight-controls-move {
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.flight-btn {
+  width: 48px;
+  height: 48px;
+  background: rgba(20, 20, 26, 0.75);
+  border: 2px solid var(--c-gold);
+  color: var(--c-gold-bright);
+  font-size: 1.2rem;
+  touch-action: manipulation;
+  pointer-events: auto;
+}
+
+.flight-btn:active {
+  background: rgba(201, 162, 39, 0.3);
+}
+
+.flight-btn--shoot {
+  border-color: #e07a7a;
+  color: #e07a7a;
+  width: 56px;
+  height: 56px;
+}
+
+@media (min-width: 900px) {
+  .flight-controls {
+    opacity: 0.55;
+  }
+}

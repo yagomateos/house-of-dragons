@@ -1,9 +1,9 @@
 import type { BossData } from '../types';
 
 // Un jefe por capítulo, cada uno con un minijuego distinto (ver
-// src/components/minigames/). Los capítulos 5-7 aún no tienen
-// acontecimientos narrativos, así que sus jefes se añadirán cuando esos
-// capítulos tengan contenido jugable que lleve hasta ellos.
+// src/components/minigames/). El capítulo 7 aún no tiene acontecimientos
+// narrativos, así que su jefe se añadirá cuando tenga contenido jugable
+// que lleve hasta él.
 export const bosses: BossData[] = [
   {
     id: 'boss_ch1_dragon',
@@ -78,6 +78,21 @@ export const bosses: BossData[] = [
     rewards: {
       knowledge: 55,
       experience: 100,
+    },
+  },
+  {
+    id: 'boss_ch6_bahia',
+    chapterId: 'ch6_madre_dragones',
+    name: 'La Flota Esclavista',
+    type: 'flight',
+    title: 'LA BATALLA DE LA BAHÍA',
+    tagline: '"Dracarys." La flota esclavista bloquea la Bahía de los Dragones, dispuesta a hundir Meereen y acabar con su reina.',
+    icon: 'dragon-black',
+    victoryText:
+      'Drogon desciende en picado sobre la flota esclavista, y el mar arde. Los Hijos de la Arpía pierden a sus últimos aliados extranjeros, y Meereen respira, al menos por ahora, bajo la protección de sus dragones.',
+    rewards: {
+      knowledge: 60,
+      experience: 110,
     },
   },
 ];

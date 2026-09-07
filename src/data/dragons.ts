@@ -82,6 +82,37 @@ export const dragons: DragonData[] = [
     status: 'vivo',
     portrait: 'dragon-silver',
   },
+  {
+    id: 'drag_drogon',
+    name: 'Drogon',
+    rider: 'Daenerys Targaryen',
+    periodLabel: 'Nacido en Qarth, 298 d.C.',
+    description:
+      'El mayor y más feroz de los tres dragones de Daenerys, de escamas negras como el carbón. Nombrado en honor a su difunto esposo, Khal Drogo.',
+    sizeLabel: 'Colosal (adulto)',
+    status: 'vivo',
+    portrait: 'dragon-black',
+  },
+  {
+    id: 'drag_rhaegal',
+    name: 'Rhaegal',
+    rider: 'Sin jinete',
+    periodLabel: 'Nacido en Qarth, 298 d.C.',
+    description: 'Dragón de escamas verdes y bronce, nombrado en honor al príncipe Rhaegar Targaryen.',
+    sizeLabel: 'Grande (adulto)',
+    status: 'vivo',
+    portrait: 'dragon-green',
+  },
+  {
+    id: 'drag_viserion',
+    name: 'Viserion',
+    rider: 'Sin jinete',
+    periodLabel: 'Nacido en Qarth, 298 d.C.',
+    description: 'Dragón de escamas color crema y ojos dorados, nombrado en honor al difunto hermano de Daenerys, Viserys.',
+    sizeLabel: 'Grande (adulto)',
+    status: 'vivo',
+    portrait: 'dragon-pale',
+  },
 ];
 
 export function getDragon(id: string): DragonData | undefined {

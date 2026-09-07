@@ -1174,6 +1174,295 @@ export const events: HistoricalEvent[] = [
       },
     ],
   },
+
+  // =========================================================
+  // CAPÍTULO 6 — LA MADRE DE DRAGONES
+  // =========================================================
+
+  {
+    id: 'ev_hijos_de_fuego',
+    chapterId: 'ch6_madre_dragones',
+    locationId: 'dragonstone',
+    order: 1,
+    year: '298 d.C.',
+    title: 'Los Hijos del Fuego',
+    characterIds: ['char_daenerys'],
+    summary:
+      'Daenerys hace eclosionar los tres últimos huevos de dragón del mundo en la pira funeraria de su esposo Khal Drogo, y sale ilesa de las llamas.',
+    nextEventId: 'ev_unsullied',
+    steps: [
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'Tras la muerte de su esposo, el Khal Drogo, y la traición de la hechicera Mirri Maz Duur, Daenerys Targaryen se encuentra sola en el desierto rojo de Essos, con tres huevos de dragón petrificados como única herencia.',
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'Convencida de que solo el fuego puede despertar la magia dormida en los huevos, construye una pira funeraria para Drogo y camina hacia las llamas con los tres huevos, ante la mirada horrorizada de lo que queda de su séquito.',
+      },
+      {
+        type: 'decision',
+        prompt: '¿Qué representa para ti que Daenerys sobreviva ilesa a las llamas de la pira?',
+        options: [
+          {
+            id: 'sangre_dragon',
+            label: 'LA PRUEBA DE SU SANGRE DE DRAGÓN',
+            resultText: 'Solo los verdaderos Targaryen, herederos de la antigua Valyria, pueden caminar entre el fuego sin quemarse, dice la leyenda.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'milagro',
+            label: 'UN MILAGRO INEXPLICABLE',
+            resultText: 'Ni siquiera los maestres de la Ciudadela han logrado explicar jamás cómo sobrevivió al fuego.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'leyenda',
+            label: 'EL NACIMIENTO DE UNA LEYENDA',
+            resultText: 'Sea cual sea la explicación, la noticia de la Madre de Dragones empieza a extenderse por todo Essos.',
+            knowledgeBonus: 4,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'Cuando el fuego se apaga al amanecer, Daenerys emerge desnuda entre las cenizas, sin una sola quemadura, con tres dragones recién nacidos aferrados a su cuerpo: Drogon, Rhaegal y Viserion. Son los primeros dragones vivos en el mundo en más de un siglo.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Cómo nacieron los tres dragones de Daenerys?',
+        options: [
+          'Los compró en un mercado de Qarth',
+          'Eclosionaron de huevos petrificados en una pira funeraria',
+          'Los encontró salvajes en las Tierras de la Sombra',
+          'Se los regaló un hechicero de Asshai',
+        ],
+        correctIndex: 1,
+        explanation:
+          'Los tres huevos de dragón, regalo de bodas de un mercader, eclosionaron gracias al calor de la pira funeraria de Khal Drogo y a la propia sangre de dragón de Daenerys.',
+      },
+      {
+        type: 'reward',
+        knowledge: 20,
+        experience: 20,
+        unlockCharacterIds: ['char_daenerys'],
+        unlockDragonIds: ['drag_drogon', 'drag_rhaegal', 'drag_viserion'],
+        text: 'Por primera vez en más de cien años, hay dragones vivos en el mundo. Y una reina exiliada dispuesta a usarlos para recuperar lo que considera suyo.',
+      },
+    ],
+  },
+
+  {
+    id: 'ev_unsullied',
+    chapterId: 'ch6_madre_dragones',
+    locationId: 'dragonstone',
+    order: 2,
+    year: '298 d.C. — 299 d.C.',
+    title: 'Los Inmaculados',
+    characterIds: ['char_daenerys', 'char_greyworm'],
+    summary:
+      'En Astapor, Daenerys compra el ejército de los Inmaculados a cambio de uno de sus dragones... y después los vuelve contra sus antiguos amos.',
+    nextEventId: 'ev_bahia_esclavos',
+    steps: [
+      {
+        type: 'narration',
+        background: 'castle',
+        text: 'Con sus dragones aún crías pero creciendo, Daenerys llega a la ciudad esclavista de Astapor, cuna de los Inmaculados: soldados-esclavo entrenados desde la infancia para no sentir miedo ni dolor.',
+      },
+      {
+        type: 'narration',
+        background: 'castle',
+        text: 'El amo esclavista Kraznys le ofrece los ocho mil Inmaculados a cambio de su dragón más grande, Drogon. Daenerys acepta el trato, con una condición oculta que nadie en Astapor sospecha.',
+      },
+      {
+        type: 'decision',
+        prompt: '¿Por qué crees que Daenerys acepta entregar aparentemente a su dragón a cambio de un ejército de esclavos?',
+        options: [
+          {
+            id: 'necesita_ejercito',
+            label: 'NECESITA UN EJÉRCITO PARA RECLAMAR EL TRONO',
+            resultText: 'Sin soldados, ninguna reclamación al Trono de Hierro tiene la menor oportunidad de éxito.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'plan_oculto',
+            label: 'TIENE UN PLAN QUE NADIE SOSPECHA',
+            resultText: 'Los dragones, a diferencia del oro o los esclavos, no obedecen realmente a nadie más que a su verdadero dueño.',
+            knowledgeBonus: 4,
+          },
+          {
+            id: 'prueba_poder',
+            label: 'PONE A PRUEBA SU PROPIO PODER',
+            resultText: 'Es la primera vez que Daenerys negocia como gobernante, y no como una simple suplicante.',
+            knowledgeBonus: 3,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'battle',
+        text: 'En cuanto se cierra el trato, Daenerys ordena a Drogon en alto valyrio que reduzca a cenizas a Kraznys, y proclama libres a los Inmaculados, ofreciéndoles la opción de marcharse o de luchar por ella por voluntad propia. Todos ellos, guiados por su nuevo comandante, Gusano Gris, eligen quedarse.',
+      },
+      {
+        type: 'question',
+        prompt: '¿A quién ordena Daenerys que Drogon incinere tras liberar a los Inmaculados en Astapor?',
+        options: ['Al Khal Drogo', 'Al amo esclavista Kraznys', 'A su hermano Viserys', 'A Jorah Mormont'],
+        correctIndex: 1,
+        explanation:
+          'Daenerys ordena a Drogon en alto valyrio que mate a Kraznys, el amo esclavista que había intentado engañarla, liberando así a todo el ejército de los Inmaculados.',
+      },
+      {
+        type: 'reward',
+        knowledge: 22,
+        experience: 25,
+        unlockCharacterIds: ['char_greyworm'],
+        text: 'Con un ejército propio y tres dragones que crecen día a día, Daenerys ya no es una simple exiliada. Es una fuerza con la que el mundo entero debe empezar a contar.',
+      },
+    ],
+  },
+
+  {
+    id: 'ev_bahia_esclavos',
+    chapterId: 'ch6_madre_dragones',
+    locationId: 'dragonstone',
+    order: 3,
+    year: '299 d.C.',
+    title: 'La Rompedora de Cadenas',
+    characterIds: ['char_daenerys', 'char_jorah', 'char_missandei'],
+    summary:
+      'Daenerys libera las ciudades esclavistas de Yunkai y Meereen, ganándose el título de Rompedora de Cadenas mientras aprende las dificultades de gobernar.',
+    nextEventId: 'ev_flota_poniente',
+    steps: [
+      {
+        type: 'narration',
+        background: 'castle',
+        text: 'Ciudad tras ciudad, Daenerys marcha a través de la Bahía de los Esclavos liberando primero Yunkai y después Meereen, la mayor de las ciudades esclavistas, donde clava las cabezas de ciento sesenta y tres amos crucificados como advertencia y decide quedarse a gobernar en lugar de seguir avanzando de inmediato.',
+      },
+      { type: 'dialogue', speakerId: 'char_missandei', text: 'Los que fueron esclavos la llaman Rompedora de Cadenas, alteza. No hay mayor honor en toda la bahía.' },
+      {
+        type: 'narration',
+        background: 'castle',
+        text: 'Pero gobernar resulta mucho más difícil que conquistar. Los Hijos de la Arpía, una sociedad secreta de antiguos amos, siembran el terror en las calles de Meereen, y Jorah Mormont, su consejero más leal, confiesa finalmente que en el pasado la espió para la Corona de Poniente.',
+      },
+      {
+        type: 'decision',
+        prompt: 'Jorah confiesa que en el pasado la espiaba para la Corona de Poniente. ¿Cómo reacciona Daenerys?',
+        options: [
+          {
+            id: 'perdon',
+            label: 'LO PERDONA POR SU LEALTAD POSTERIOR',
+            resultText: 'Años de servicio genuino pesan más que una traición pasada ya confesada y arrepentida.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'destierro',
+            label: 'LO DESTIERRA DE SU LADO',
+            resultText: 'La confianza traicionada, aunque sea del pasado, no se recupera fácilmente para una reina.',
+            knowledgeBonus: 4,
+          },
+          {
+            id: 'duda',
+            label: 'DUDA, PERO LO MANTIENE CERCA',
+            resultText: 'Ni perdón total ni destierro inmediato: una tercera vía llena de recelo.',
+            knowledgeBonus: 3,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'castle',
+        text: 'Gobernar Meereen le enseña a Daenerys una lección que ningún ejército ni dragón puede darle: que liberar una ciudad es solo el principio, y que ser una buena reina exige mucho más que ser una conquistadora temida.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Qué título ganó Daenerys entre los antiguos esclavos de la Bahía de los Esclavos por liberar sus ciudades?',
+        options: ['La Reina de Espinas', 'La Rompedora de Cadenas', 'La Doncella de Invierno', 'La Víbora Roja'],
+        correctIndex: 1,
+        explanation:
+          'Los antiguos esclavos liberados por Daenerys en Astapor, Yunkai y Meereen comienzan a llamarla "la Rompedora de Cadenas".',
+      },
+      {
+        type: 'reward',
+        knowledge: 25,
+        experience: 28,
+        unlockCharacterIds: ['char_jorah', 'char_missandei'],
+        text: 'Meereen, por ahora, está en paz. Pero el Trono de Hierro sigue esperando al otro lado del mar, y los dragones ya casi no caben en las mazmorras donde los mantiene encerrados.',
+      },
+    ],
+  },
+
+  {
+    id: 'ev_flota_poniente',
+    chapterId: 'ch6_madre_dragones',
+    locationId: 'dragonstone',
+    order: 4,
+    year: '299 d.C. — 300 d.C.',
+    title: 'La Flota hacia Poniente',
+    characterIds: ['char_daenerys', 'char_tyrion', 'char_yara'],
+    summary:
+      'Con Tyrion Lannister como su nueva Mano y una alianza con la Flota de Hierro de Yara Greyjoy, Daenerys reúne por fin la fuerza necesaria para zarpar hacia Poniente.',
+    tvOnlyNote:
+      'El encuentro de Tyrion con Daenerys en Meereen y la alianza formal con la Casa Greyjoy son desarrollos de la adaptación televisiva; las novelas, en su último volumen publicado, aún no han llevado a estos personajes tan lejos en la historia.',
+    steps: [
+      {
+        type: 'narration',
+        background: 'castle',
+        text: 'Huido de Desembarco del Rey tras la muerte de su padre, Tyrion Lannister llega ante Daenerys y le ofrece algo que ningún otro consejero puede darle: su nombre, su experiencia gobernando y un profundo conocimiento de los Siete Reinos que ella pretende conquistar.',
+      },
+      { type: 'dialogue', speakerId: 'char_tyrion', text: 'He decidido cambiar de bando, alteza. Espero que sepáis apreciar mejor mis consejos que mi propia familia.' },
+      {
+        type: 'narration',
+        background: 'castle',
+        text: 'Impresionada por su astucia, Daenerys lo nombra su nueva Mano de la Reina. Poco después, Yara y Theon Greyjoy llegan a Meereen huyendo de su tío Euron, ofreciendo la Flota de Hierro a cambio de un trato: apoyo militar total a cambio del reconocimiento futuro de la independencia de las Islas de Hierro.',
+      },
+      {
+        type: 'decision',
+        prompt: '¿Cómo valoras la alianza entre Daenerys y la Casa Greyjoy?',
+        options: [
+          {
+            id: 'necesaria',
+            label: 'UNA JUGADA MILITAR NECESARIA',
+            resultText: 'Sin una flota propia, cruzar el mar Angosto con un ejército completo habría sido imposible.',
+            knowledgeBonus: 3,
+          },
+          {
+            id: 'arriesgada',
+            label: 'UN TRATO ARRIESGADO A LARGO PLAZO',
+            resultText: 'Prometer la independencia de un reino antes incluso de sentarse en el Trono de Hierro tiene un coste político futuro.',
+            knowledgeBonus: 4,
+          },
+          {
+            id: 'fuerza_causa',
+            label: 'LA PRUEBA DE QUE SU CAUSA GANA FUERZA',
+            resultText: 'Cada vez más señores de Poniente empiezan a apostar por la última Targaryen.',
+            knowledgeBonus: 3,
+          },
+        ],
+      },
+      {
+        type: 'narration',
+        background: 'sea',
+        text: 'Con los Inmaculados, un ejército de mercenarios, tres dragones ya adultos y una flota completa a su disposición, Daenerys Targaryen está por fin lista para zarpar hacia Poniente y reclamar el trono que considera suyo por derecho de sangre y de fuego.',
+      },
+      {
+        type: 'question',
+        prompt: '¿Qué ofrece la Casa Greyjoy a Daenerys a cambio de su apoyo militar?',
+        options: ['Oro de las Islas de Hierro', 'La Flota de Hierro', 'Un ejército de arqueros', 'Una alianza matrimonial'],
+        correctIndex: 1,
+        explanation:
+          'Yara Greyjoy ofrece la Flota de Hierro a Daenerys a cambio de que, una vez en el Trono de Hierro, reconozca la independencia de las Islas de Hierro.',
+      },
+      {
+        type: 'reward',
+        knowledge: 30,
+        experience: 35,
+        unlockCharacterIds: ['char_tyrion', 'char_yara'],
+        text: 'Capítulo completado. Tras años de exilio, Daenerys Targaryen zarpa por fin hacia Poniente. La última Targaryen viva se acerca al Trono de Hierro con tres dragones adultos volando sobre su flota.',
+      },
+    ],
+  },
 ];
 
 export function getEvent(id: string): HistoricalEvent | undefined {

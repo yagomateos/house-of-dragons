@@ -53,7 +53,7 @@ export const chapters: ChapterData[] = [
     title: 'La Madre de Dragones',
     subtitle: 'El regreso de la magia',
     yearRangeLabel: '298 d.C. — 300 d.C. (fecha aproximada)',
-    eventIds: [],
+    eventIds: ['ev_hijos_de_fuego', 'ev_unsullied', 'ev_bahia_esclavos', 'ev_flota_poniente'],
   },
   {
     id: 'ch7_invierno',
