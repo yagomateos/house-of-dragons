@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { PixelIcon } from '../PixelIcon';
 import { audio } from '../../utils/audio';
-import type { Difficulty } from '../../types';
+import type { Difficulty, IconKey } from '../../types';
 import { DAMAGE_BOSS_HIT } from '../../state/GameContext';
 import './WildfireEscapeBoss.css';
 
@@ -12,6 +12,11 @@ interface WildfireEscapeBossProps {
   onWin: () => void;
   onLose: () => void;
 }
+
+const CHARACTER_OPTIONS: { icon: IconKey; name: string }[] = [
+  { icon: 'portrait-male-gold', name: 'Jaime Lannister' },
+  { icon: 'portrait-old', name: 'Tywin Lannister' },
+];
 
 type AttackKind = 'orb' | 'jet' | 'wave' | 'cache';
 
@@ -116,9 +121,17 @@ export function WildfireEscapeBoss({ difficulty, startingHealth, onDamage, onWin
     lastSpawn: 0,
     invulnerableUntil: 0,
     finished: false,
+    paused: true,
   });
 
   const [, setTick] = useState(0);
+  const [selectedIcon, setSelectedIcon] = useState<IconKey | null>(null);
+
+  function chooseCharacter(icon: IconKey) {
+    setSelectedIcon(icon);
+    gameRef.current.paused = false;
+    gameRef.current.lastSpawn = performance.now();
+  }
 
   useEffect(() => {
     const keyMap: Record<string, string> = {
@@ -152,7 +165,7 @@ export function WildfireEscapeBoss({ difficulty, startingHealth, onDamage, onWin
 
     const interval = window.setInterval(() => {
       const g = gameRef.current;
-      if (g.finished) return;
+      if (g.finished || g.paused) return;
       const now = performance.now();
 
       const speed = cfg.speed;
@@ -298,7 +311,28 @@ export function WildfireEscapeBoss({ difficulty, startingHealth, onDamage, onWin
         <div
           className={`wildfire-player ${flashHit ? 'wildfire-player--hit' : ''}`}
           style={{ left: `${g.player.x}%`, top: `${g.player.y}%` }}
-        />
+        >
+          {selectedIcon && <PixelIcon icon={selectedIcon} size={26} />}
+        </div>
+
+        {!selectedIcon && (
+          <div className="wildfire-select">
+            <div className="wildfire-select-box">
+              <p className="wildfire-select-title">Elige a tu Lannister</p>
+              <p className="wildfire-select-text">
+                Esquiva la pólvora líquida antes de que Aerys pueda quemar la ciudad.
+              </p>
+              <div className="wildfire-select-grid">
+                {CHARACTER_OPTIONS.map((opt) => (
+                  <button key={opt.icon} className="wildfire-select-option" onClick={() => chooseCharacter(opt.icon)}>
+                    <PixelIcon icon={opt.icon} size={56} />
+                    <span>{opt.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="wildfire-controls" aria-hidden="true">

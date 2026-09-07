@@ -105,18 +105,77 @@
 
 .wildfire-player {
   position: absolute;
-  width: 22px;
-  height: 22px;
   transform: translate(-50%, -50%);
-  background: var(--c-gold-bright);
-  border: 2px solid #000;
-  box-shadow: 0 0 8px rgba(230, 193, 79, 0.8);
   z-index: 4;
-  transition: background 0.1s ease;
+  border-radius: 50%;
+  border: 2px solid var(--c-gold-bright);
+  box-shadow: 0 0 8px rgba(230, 193, 79, 0.8);
+  background: rgba(230, 193, 79, 0.12);
+  padding: 2px;
+  line-height: 0;
+  transition: filter 0.1s ease, border-color 0.1s ease, box-shadow 0.1s ease;
 }
 
 .wildfire-player--hit {
-  background: #ff5050;
+  border-color: #ff5050;
+  box-shadow: 0 0 14px rgba(255, 80, 80, 1);
+  filter: brightness(1.6);
+}
+
+.wildfire-select {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.wildfire-select-box {
+  max-width: 420px;
+  padding: 1.4rem;
+  background: rgba(20, 18, 26, 0.95);
+  border: 2px solid var(--c-gold);
+  text-align: center;
+}
+
+.wildfire-select-title {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--c-gold-bright);
+  margin: 0 0 0.6rem;
+}
+
+.wildfire-select-text {
+  color: var(--c-text);
+  line-height: 1.5;
+  margin: 0 0 0.8rem;
+}
+
+.wildfire-select-grid {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.wildfire-select-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--c-stone-light);
+  color: var(--c-bone);
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  width: 110px;
+}
+
+.wildfire-select-option:hover {
+  border-color: var(--c-gold);
 }
 
 .wildfire-orb {
