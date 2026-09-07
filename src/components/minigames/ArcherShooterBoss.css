@@ -122,6 +122,17 @@
   transform: translate(-50%, -50%);
   z-index: 3;
   filter: drop-shadow(0 0 14px rgba(177, 84, 209, 0.7));
+  transition: filter 0.2s ease;
+}
+
+.archer-dragon--shielded {
+  filter: drop-shadow(0 0 18px rgba(120, 200, 255, 0.9));
+  animation: archerShieldPulse 0.9s ease infinite;
+}
+
+@keyframes archerShieldPulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
 }
 
 .archer-fire {
@@ -151,23 +162,25 @@
 
 .archer-enemy {
   position: absolute;
-  width: 18px;
-  height: 22px;
   transform: translate(-50%, -50%);
-  background: #c0453a;
-  border: 2px solid #000;
-  box-shadow: 0 0 6px rgba(224, 60, 40, 0.7);
   z-index: 2;
+  padding: 2px;
+  border-radius: 50%;
+  border: 2px solid #e05a48;
+  box-shadow: 0 0 6px rgba(224, 60, 40, 0.7);
+  background: rgba(224, 60, 40, 0.12);
+  line-height: 0;
 }
 
 .archer-enemy--arquero {
-  background: #6fae54;
+  border-color: #6fae54;
   box-shadow: 0 0 6px rgba(111, 174, 84, 0.7);
+  background: rgba(111, 174, 84, 0.12);
 }
 
 .archer-enemy--hit {
-  background: #ff8a7a;
-  box-shadow: 0 0 12px rgba(255, 80, 80, 1);
+  box-shadow: 0 0 14px rgba(255, 80, 80, 1);
+  filter: brightness(1.6);
 }
 
 .archer-arrow {
@@ -193,18 +206,21 @@
 
 .archer-player {
   position: absolute;
-  width: 24px;
-  height: 24px;
   transform: translate(-50%, -50%);
-  background: var(--c-gold-bright);
-  border: 2px solid #000;
-  box-shadow: 0 0 8px rgba(230, 193, 79, 0.8);
   z-index: 4;
+  padding: 2px;
+  border-radius: 50%;
+  border: 2px solid var(--c-gold-bright);
+  box-shadow: 0 0 8px rgba(230, 193, 79, 0.8);
+  background: rgba(230, 193, 79, 0.12);
+  line-height: 0;
   transition: filter 0.1s ease;
 }
 
 .archer-player--hit {
-  background: #ff5050;
+  border-color: #ff5050;
+  box-shadow: 0 0 14px rgba(255, 80, 80, 1);
+  filter: brightness(1.6);
 }
 
 .archer-briefing {
@@ -250,6 +266,32 @@
 @keyframes archerBriefingPulse {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
+}
+
+.archer-select-grid {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+
+.archer-select-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--c-stone-light);
+  color: var(--c-bone);
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  width: 100px;
+}
+
+.archer-select-option:hover {
+  border-color: var(--c-gold);
 }
 
 .archer-controls {

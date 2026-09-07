@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Difficulty } from '../../types';
+import type { Difficulty, IconKey } from '../../types';
 import { PixelIcon } from '../PixelIcon';
 import './ArcherShooterBoss.css';
+
+const CHARACTER_OPTIONS: { icon: IconKey; name: string }[] = [
+  { icon: 'portrait-male-gold', name: 'Ser Aldric' },
+  { icon: 'portrait-female-silver', name: 'Lyra de Plata' },
+  { icon: 'portrait-knight', name: 'El Caballero Errante' },
+];
+
+const ENEMY_ICON: Record<EnemyKind, IconKey> = {
+  soldado: 'portrait-male-dark',
+  arquero: 'portrait-aemond',
+};
 
 interface ArcherShooterBossProps {
   difficulty: Difficulty;
@@ -61,7 +72,7 @@ const CONFIG: Record<Difficulty, DifficultyConfig> = {
       { count: 5, spawnEvery: 1100, archerRatio: 0, enemySpeed: 0.32 },
       { count: 6, spawnEvery: 950, archerRatio: 0.2, enemySpeed: 0.36 },
     ],
-    dragonHp: 70,
+    dragonHp: 160,
     fireDamageMult: 0.8,
   },
   normal: {
@@ -69,7 +80,7 @@ const CONFIG: Record<Difficulty, DifficultyConfig> = {
       { count: 6, spawnEvery: 950, archerRatio: 0, enemySpeed: 0.4 },
       { count: 8, spawnEvery: 800, archerRatio: 0.3, enemySpeed: 0.45 },
     ],
-    dragonHp: 90,
+    dragonHp: 220,
     fireDamageMult: 1,
   },
   dificil: {
@@ -77,7 +88,7 @@ const CONFIG: Record<Difficulty, DifficultyConfig> = {
       { count: 7, spawnEvery: 800, archerRatio: 0, enemySpeed: 0.48 },
       { count: 10, spawnEvery: 650, archerRatio: 0.4, enemySpeed: 0.55 },
     ],
-    dragonHp: 115,
+    dragonHp: 290,
     fireDamageMult: 1.2,
   },
 };
@@ -122,28 +133,38 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
     lastSpawn: 0,
     waveIndex: 0,
     spawnedInWave: 0,
-    dragon: null as { hp: number; maxHp: number; x: number; dir: 1 | -1; fire: FireBreath | null; nextFireAt: number } | null,
+    dragon: null as
+      | { hp: number; maxHp: number; x: number; dir: 1 | -1; fire: FireBreath | null; nextFireAt: number; firesCompleted: number }
+      | null,
     invulnerableUntil: 0,
     finished: false,
     paused: true,
   });
 
   const [, setTick] = useState(0);
-  const [briefingVisible, setBriefingVisible] = useState(true);
-  const briefingMountedAtRef = useRef(performance.now());
+  const [uiPhase, setUiPhase] = useState<'select' | 'briefing' | 'playing'>('select');
+  const [selectedIcon, setSelectedIcon] = useState<IconKey>(CHARACTER_OPTIONS[0].icon);
+  const briefingMountedAtRef = useRef<number | null>(null);
+
+  function chooseCharacter(icon: IconKey) {
+    setSelectedIcon(icon);
+    setUiPhase('briefing');
+    briefingMountedAtRef.current = performance.now();
+  }
 
   function dismissBriefing() {
-    if (performance.now() - briefingMountedAtRef.current < 500) return;
+    if (briefingMountedAtRef.current === null || performance.now() - briefingMountedAtRef.current < 500) return;
     gameRef.current.paused = false;
     gameRef.current.lastSpawn = performance.now();
-    setBriefingVisible(false);
+    setUiPhase('playing');
   }
 
   useEffect(() => {
+    if (uiPhase !== 'briefing') return;
     const t = window.setTimeout(dismissBriefing, 4000);
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [uiPhase]);
 
   function shoot() {
     const g = gameRef.current;
@@ -241,7 +262,15 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
           g.spawnedInWave = 0;
           g.lastSpawn = now;
           if (g.waveIndex >= cfg.waves.length) {
-            g.dragon = { hp: cfg.dragonHp, maxHp: cfg.dragonHp, x: 50, dir: 1, fire: null, nextFireAt: now + 1500 };
+            g.dragon = {
+              hp: cfg.dragonHp,
+              maxHp: cfg.dragonHp,
+              x: 50,
+              dir: 1,
+              fire: null,
+              nextFireAt: now + 1500,
+              firesCompleted: 0,
+            };
           }
         }
       } else if (g.dragon) {
@@ -255,6 +284,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
         if (d.fire) {
           if (now > d.fire.activeUntil) {
             d.fire = null;
+            d.firesCompleted += 1;
             d.nextFireAt = now + 2200;
           } else if (now > d.fire.telegraphUntil && !d.fire.hit && now > g.invulnerableUntil) {
             if (Math.abs(g.playerX - d.fire.x) < d.fire.width / 2) {
@@ -266,15 +296,21 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
           }
         }
 
-        for (const arrow of g.arrows) {
-          if (arrow.dead) continue;
-          if (Math.abs(arrow.x - d.x) < 10 && arrow.y < DRAGON_Y + 8 && arrow.y > DRAGON_Y - 4) {
-            arrow.dead = true;
-            d.hp = Math.max(0, d.hp - 6);
+        // El dragón es invulnerable hasta completar su primer aliento de
+        // fuego: así el jugador siempre vive al menos un ataque real
+        // antes de poder derrotarlo, en vez de matarlo a flechazos antes
+        // de que el patrón de fuego llegue a activarse.
+        if (d.firesCompleted >= 1) {
+          for (const arrow of g.arrows) {
+            if (arrow.dead) continue;
+            if (Math.abs(arrow.x - d.x) < 10 && arrow.y < DRAGON_Y + 8 && arrow.y > DRAGON_Y - 4) {
+              arrow.dead = true;
+              d.hp = Math.max(0, d.hp - 6);
+            }
           }
         }
 
-        if (d.hp <= 0 && !g.finished) {
+        if (d.hp <= 0 && d.firesCompleted >= 1 && !g.finished) {
           g.finished = true;
           onWin();
         }
@@ -342,7 +378,10 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
 
       <div className={`archer-arena ${flashHit ? 'archer-arena--hit' : ''}`} ref={arenaRef}>
         {g.dragon && (
-          <div className="archer-dragon" style={{ left: `${g.dragon.x}%`, top: `${DRAGON_Y}%` }}>
+          <div
+            className={`archer-dragon ${g.dragon.firesCompleted < 1 ? 'archer-dragon--shielded' : ''}`}
+            style={{ left: `${g.dragon.x}%`, top: `${DRAGON_Y}%` }}
+          >
             <PixelIcon icon="dragon-crimson" size={64} />
             {g.dragon.fire && (
               <div
@@ -360,7 +399,9 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
               key={e.id}
               className={`archer-enemy archer-enemy--${e.kind} ${hit ? 'archer-enemy--hit' : ''}`}
               style={{ left: `${e.x}%`, top: `${e.y}%` }}
-            />
+            >
+              <PixelIcon icon={ENEMY_ICON[e.kind]} size={26} />
+            </div>
           );
         })}
 
@@ -375,9 +416,27 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
         <div
           className={`archer-player ${flashHit ? 'archer-player--hit' : ''}`}
           style={{ left: `${g.playerX}%`, top: `${PLAYER_Y}%` }}
-        />
+        >
+          <PixelIcon icon={selectedIcon} size={30} />
+        </div>
 
-        {briefingVisible && (
+        {uiPhase === 'select' && (
+          <div className="archer-briefing">
+            <div className="archer-briefing-box">
+              <p className="archer-briefing-title">Elige a tu arquero</p>
+              <div className="archer-select-grid">
+                {CHARACTER_OPTIONS.map((opt) => (
+                  <button key={opt.icon} className="archer-select-option" onClick={() => chooseCharacter(opt.icon)}>
+                    <PixelIcon icon={opt.icon} size={56} />
+                    <span>{opt.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {uiPhase === 'briefing' && (
           <div
             className="archer-briefing"
             onClick={(e) => {
@@ -391,7 +450,10 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
                 Muévete con ◀▶, dispara flechas con el botón de ataque. Derrota las oleadas de soldados
                 y luego al dragón que ronda el castillo maldito.
               </p>
-              <p className="archer-briefing-text">Esquiva las flechas enemigas y el aliento de fuego del dragón.</p>
+              <p className="archer-briefing-text">
+                El dragón esquiva flechas hasta lanzar su primer aliento de fuego: sobrevívelo esquivando
+                la columna de llamas y luego dispárale para hacerle daño real.
+              </p>
               <p className="archer-briefing-tap">Toca para empezar</p>
             </div>
           </div>
