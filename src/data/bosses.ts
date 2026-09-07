@@ -53,13 +53,13 @@ export const bosses: BossData[] = [
   {
     id: 'boss_ch4_rebelion',
     chapterId: 'ch4_rebelion',
-    name: 'La Marcha hacia el Trono',
+    name: 'El Rey Loco',
     type: 'battle',
-    title: 'LA REBELIÓN',
-    tagline: 'Cada paso hacia Desembarco del Rey exige la decisión correcta.',
-    icon: 'skull',
+    title: 'LA PÓLVORA DEL REY LOCO',
+    tagline: '"¡Quemadlos a todos!" Aerys II ordena prender la pólvora líquida oculta bajo la ciudad.',
+    icon: 'portrait-old-silver',
     victoryText:
-      'El ejército rebelde alcanza las puertas de Desembarco del Rey. La dinastía Targaryen está a punto de llegar a su fin.',
+      'Esquivas el fuego valyrio que arde bajo Desembarco del Rey el tiempo suficiente para que la hoja de la Guardia Real llegue antes que la orden de Aerys. La dinastía Targaryen está a punto de llegar a su fin.',
     rewards: {
       knowledge: 50,
       experience: 90,
