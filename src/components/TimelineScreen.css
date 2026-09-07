@@ -79,6 +79,19 @@
   cursor: default;
 }
 
+.timeline-card--boss {
+  border-color: var(--c-red-bright);
+  background: rgba(168, 50, 50, 0.08);
+}
+
+.timeline-card-boss-status {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--c-red-bright);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .timeline-card--future {
   font-style: italic;
 }

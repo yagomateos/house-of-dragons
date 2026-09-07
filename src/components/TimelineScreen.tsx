@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGame } from '../state/GameContext';
 import { chapters } from '../data/chapters';
 import { getEvent } from '../data/events';
+import { getBossForChapter } from '../data/bosses';
 import { PixelIcon } from './PixelIcon';
 import { audio } from '../utils/audio';
 import './TimelineScreen.css';
@@ -69,6 +70,32 @@ export function TimelineScreen() {
                 </button>
               );
             })}
+
+            {(() => {
+              const boss = getBossForChapter(chapter.id);
+              if (!boss || chapter.eventIds.length === 0) return null;
+              const lastEventId = chapter.eventIds[chapter.eventIds.length - 1];
+              const bossUnlocked = completedIds.includes(lastEventId);
+              if (!bossUnlocked) return null;
+              const bossDefeated = save?.defeatedBossIds.includes(boss.id) ?? false;
+              return (
+                <button
+                  key={boss.id}
+                  className="timeline-card timeline-card--boss"
+                  onClick={() => {
+                    audio.click();
+                    dispatch({ type: 'PLAY_BOSS', bossId: boss.id });
+                  }}
+                >
+                  <PixelIcon icon={boss.icon} size={28} />
+                  <div className="timeline-card-body">
+                    <p className="timeline-card-year">Jefe del capítulo</p>
+                    <p className="timeline-card-title">{boss.name}</p>
+                  </div>
+                  <span className="timeline-card-boss-status">{bossDefeated ? '✓ Reenfrentar' : 'Enfrentar'}</span>
+                </button>
+              );
+            })()}
           </div>
         ))}
       </div>
