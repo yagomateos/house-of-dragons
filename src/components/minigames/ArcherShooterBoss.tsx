@@ -324,7 +324,7 @@ export function ArcherShooterBoss({ difficulty, startingHealth, onDamage, onWin,
       } else if (g.dragon) {
         const d = g.dragon;
         d.x += d.dir * 0.35;
-        if (d.x > 82 || d.x < 18) d.dir = d.dir === 1 ? -1 : 1;
+        if (d.x > 90 || d.x < 10) d.dir = d.dir === 1 ? -1 : 1;
 
         if (!d.fire && now > d.nextFireAt) {
           d.fire = { id: nextId++, x: d.x, width: 26, telegraphUntil: now + 700, activeUntil: now + 700 + 1100, hit: false };

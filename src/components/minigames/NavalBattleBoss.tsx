@@ -319,7 +319,7 @@ export function NavalBattleBoss({ difficulty, startingHealth, onDamage, onWin, o
       } else if (g.flagship) {
         const f = g.flagship;
         f.x += f.dir * 0.35;
-        if (f.x > 82 || f.x < 18) f.dir = f.dir === 1 ? -1 : 1;
+        if (f.x > 90 || f.x < 10) f.dir = f.dir === 1 ? -1 : 1;
 
         if (!f.wildfire && now > f.nextWildfireAt) {
           f.wildfire = { id: nextId++, x: f.x, width: 26, telegraphUntil: now + 700, activeUntil: now + 700 + 1100, hit: false };
@@ -467,7 +467,7 @@ export function NavalBattleBoss({ difficulty, startingHealth, onDamage, onWin, o
               className={`naval-enemy naval-enemy--${e.kind} ${hit ? 'naval-enemy--hit' : ''}`}
               style={{ left: `${e.x}%`, top: `${e.y}%` }}
             >
-              <PixelIcon icon="ship" size={24} />
+              <PixelIcon icon="ship" size={30} />
             </div>
           );
         })}

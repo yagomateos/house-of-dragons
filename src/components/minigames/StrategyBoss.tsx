@@ -69,9 +69,9 @@ interface DifficultyConfig {
 }
 
 const CONFIG: Record<Difficulty, DifficultyConfig> = {
-  facil: { duration: 34, spawnEvery: 4100, enemySpeed: 0.2, archerChance: 0.1 },
-  normal: { duration: 46, spawnEvery: 3300, enemySpeed: 0.29, archerChance: 0.18 },
-  dificil: { duration: 60, spawnEvery: 2600, enemySpeed: 0.39, archerChance: 0.25 },
+  facil: { duration: 34, spawnEvery: 3600, enemySpeed: 0.24, archerChance: 0.14 },
+  normal: { duration: 50, spawnEvery: 2500, enemySpeed: 0.38, archerChance: 0.26 },
+  dificil: { duration: 66, spawnEvery: 1900, enemySpeed: 0.5, archerChance: 0.34 },
 };
 
 const TICK_MS = 60;
@@ -107,8 +107,8 @@ function makePlayerUnit(kind: 'soldado' | 'arquero' | 'caballeria', x: number, y
 function spawnEnemy(cfg: DifficultyConfig): Unit {
   const isArcher = Math.random() < cfg.archerChance;
   const kind: UnitKind = isArcher ? 'asaltante_arco' : 'asaltante';
-  const hp = isArcher ? 16 : 23;
-  const dmg = isArcher ? 7 : 6;
+  const hp = isArcher ? 19 : 27;
+  const dmg = isArcher ? 8 : 7;
   const range = isArcher ? 22 : 7;
   const atkCooldownMs = isArcher ? 1000 : 800;
   return {

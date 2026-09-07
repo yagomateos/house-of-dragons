@@ -61,7 +61,7 @@ function spawnAttack(cfg: DifficultyConfig, now: number): Attack {
     return {
       id,
       kind,
-      x: 10 + Math.random() * 80,
+      x: 4 + Math.random() * 92,
       y: 14,
       vy: 1.6 + Math.random() * 0.6,
       width: 6,
@@ -75,7 +75,7 @@ function spawnAttack(cfg: DifficultyConfig, now: number): Attack {
     return {
       id,
       kind,
-      x: 15 + Math.random() * 70,
+      x: 4 + Math.random() * 92,
       y: 0,
       width: 14,
       telegraphUntil: now + cfg.telegraph,
@@ -100,7 +100,7 @@ function spawnAttack(cfg: DifficultyConfig, now: number): Attack {
   return {
     id,
     kind: 'coldBurst',
-    x: 15 + Math.random() * 70,
+    x: 4 + Math.random() * 92,
     y: 58 + Math.random() * 30,
     width: 17,
     telegraphUntil: now + cfg.telegraph * 1.3,

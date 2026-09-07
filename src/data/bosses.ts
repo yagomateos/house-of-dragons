@@ -106,6 +106,10 @@ export const bosses: BossData[] = [
     rewards: {
       knowledge: 65,
       experience: 120,
+      // Pyke, El Valle y Antigua nunca tuvieron un capítulo propio: sin
+      // esto quedarían con un candado permanente e injustificado incluso
+      // tras terminar toda la crónica.
+      unlockLocationIds: ['pyke', 'the_eyrie', 'oldtown'],
     },
   },
 ];

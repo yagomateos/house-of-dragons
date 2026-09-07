@@ -33,20 +33,24 @@ export function BossScreen({ bossId }: { bossId: string }) {
   const [rewardApplied, setRewardApplied] = useState(false);
   const [wasAlreadyDefeated] = useState(() => state.save?.defeatedBossIds.includes(bossId) ?? false);
 
-  const bossMusicActive = phase === 'intro' || phase === 'playing';
+  const isFinalBoss = boss ? chapters.find((c) => c.id === boss.chapterId)?.order === chapters.length : false;
+  const showEpicVictory = phase === 'won' && isFinalBoss;
 
   useEffect(() => {
     if (!boss) return;
-    if (bossMusicActive) {
+    if (showEpicVictory) {
+      audio.startVictoryTheme();
+    } else if (phase === 'intro' || phase === 'playing') {
       audio.startBossTheme(boss.type);
     } else {
       audio.stopBossTheme();
     }
     return () => {
       audio.stopBossTheme();
+      audio.stopVictoryTheme();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bossMusicActive, boss?.type]);
+  }, [phase, boss?.type, showEpicVictory]);
 
   if (!boss || !state.save) return null;
 
@@ -224,9 +228,17 @@ export function BossScreen({ bossId }: { bossId: string }) {
       )}
 
       {phase === 'won' && (
-        <div className="boss-result">
-          <p className="boss-result-title boss-result-title--win">¡VICTORIA!</p>
+        <div className={`boss-result ${showEpicVictory ? 'boss-result--epic' : ''}`}>
+          <p className={`boss-result-title boss-result-title--win ${showEpicVictory ? 'boss-result-title--epic' : ''}`}>
+            {showEpicVictory ? '👑 LA CRÓNICA HA TERMINADO 👑' : '¡VICTORIA!'}
+          </p>
           <p className="boss-result-text">{boss.victoryText}</p>
+          {showEpicVictory && (
+            <p className="boss-result-text boss-result-text--epic">
+              Del fuego de los Targaryen a la Larga Noche: tu viaje como cronista de Poniente termina aquí,
+              con los siete capítulos de esta historia completos.
+            </p>
+          )}
           {wasAlreadyDefeated ? (
             <p className="boss-result-sub">Ya habías superado este jefe — sin recompensas adicionales.</p>
           ) : (
@@ -255,7 +267,7 @@ export function BossScreen({ bossId }: { bossId: string }) {
               })}
             </div>
           )}
-          <p className="boss-result-sub">Capítulo completado.</p>
+          <p className="boss-result-sub">{showEpicVictory ? 'Historia completa: los 7 capítulos de la crónica.' : 'Capítulo completado.'}</p>
           <button className="btn btn-primary boss-start-btn" onClick={handleExitToMap}>
             Continuar
           </button>

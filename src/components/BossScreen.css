@@ -118,11 +118,33 @@
   color: #e07a7a;
 }
 
+/* Pantalla de victoria del jefe final: fanfarria visual distinta de un
+ * "capítulo superado" normal, para que se sienta como el cierre de
+ * toda la crónica y no un jefe más. */
+.boss-result--epic {
+  background: radial-gradient(ellipse at 50% 30%, rgba(201, 162, 39, 0.16) 0%, transparent 65%);
+}
+
+.boss-result-title--epic {
+  font-size: clamp(1.1rem, 4.2vw, 1.7rem);
+  animation: epicVictoryGlow 1.6s ease-in-out infinite;
+}
+
+@keyframes epicVictoryGlow {
+  0%, 100% { text-shadow: 0 0 14px rgba(201, 162, 39, 0.6); }
+  50% { text-shadow: 0 0 28px rgba(201, 162, 39, 0.95), 0 0 42px rgba(230, 193, 79, 0.5); }
+}
+
 .boss-result-text {
   max-width: 520px;
   color: var(--c-text);
   line-height: 1.55;
   margin: 0 0 1.2rem;
+}
+
+.boss-result-text--epic {
+  color: var(--c-gold-bright);
+  font-style: italic;
 }
 
 .boss-reward-grid {

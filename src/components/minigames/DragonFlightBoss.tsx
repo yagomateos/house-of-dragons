@@ -485,7 +485,7 @@ export function DragonFlightBoss({ difficulty, startingHealth, onDamage, onWin, 
               className={`flight-enemy flight-enemy--${e.kind} ${hit ? 'flight-enemy--hit' : ''}`}
               style={{ left: `${e.x}%`, top: `${e.y}%` }}
             >
-              <PixelIcon icon="ship" size={24} />
+              <PixelIcon icon="ship" size={30} />
             </div>
           );
         })}

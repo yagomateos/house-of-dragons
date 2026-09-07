@@ -36,6 +36,7 @@ let ctx: AudioContext | null = null;
 let theme: { stop: () => void } | null = null;
 let bossTheme: { stop: () => void } | null = null;
 let bossThemeKey: string | null = null;
+let victoryTheme: { stop: () => void } | null = null;
 
 // Los navegadores bloquean el audio hasta el primer gesto del usuario
 // (clic, toque o tecla). Exponemos ese estado para poder avisar en la
@@ -249,6 +250,7 @@ interface ThemeDef {
 const MODE_HARMONIC_MINOR = [0, 2, 3, 5, 7, 8, 11];
 const MODE_PHRYGIAN = [0, 1, 3, 5, 7, 8, 10];
 const MODE_DORIAN = [0, 2, 3, 5, 7, 9, 10];
+const MODE_MAJOR = [0, 2, 4, 5, 7, 9, 11];
 
 /** Convierte un grado de escala (puede superar la octava) a frecuencia. */
 function degreeToFreq(root: number, mode: number[], degree: number): number {
@@ -432,6 +434,23 @@ const BOSS_THEME_DEFS: Partial<Record<string, ThemeDef>> = {
   },
 };
 
+// Fanfarria final: suena solo al derrotar al último jefe de la crónica
+// (capítulo 7). Modo mayor, el único de todo el juego — todos los
+// jefes usan modos menores/modales para tensión — deliberadamente para
+// que se sienta como una resolución triunfal después de siete jefes
+// oscuros, no como un tema de combate más.
+const VICTORY_THEME_DEF: ThemeDef = {
+  eighth: 0.19,
+  loopSteps: 16,
+  masterGain: 0.082,
+  voices: [
+    buildVoice(261.63, MODE_MAJOR, [0, 0, 4, 4, 7, 7, 9, 9, 0, 0, 4, 4, 7, 9, 11, 12], 'square', 0.09, 0.9),
+    buildVoice(261.63, MODE_MAJOR, [null, 4, null, 7, null, 9, null, 11, null, 4, null, 7, null, 9, null, 12], 'square', 0.065, 1.6),
+    buildVoice(261.63, MODE_MAJOR, [0, null, null, null, 4, null, null, null, 7, null, null, null, 0, null, null, null], 'triangle', 0.035, 3.6),
+  ],
+  drumSteps: [0, 2, 4, 6, 8, 10, 12, 14],
+};
+
 export const audio = {
   /** Blip audible siempre, incluso si los efectos están desactivados (feedback de los propios interruptores de Ajustes). */
   rawBlip(on: boolean) {
@@ -584,6 +603,32 @@ export const audio = {
       bossTheme = null;
     }
     bossThemeKey = null;
+    if (readPrefs().music && !theme && !victoryTheme) {
+      this.startTheme();
+    }
+  },
+
+  /** Fanfarria de victoria final: solo al derrotar al jefe del último capítulo. */
+  startVictoryTheme() {
+    if (victoryTheme) return;
+    if (theme) {
+      theme.stop();
+      theme = null;
+    }
+    if (bossTheme) {
+      bossTheme.stop();
+      bossTheme = null;
+    }
+    bossThemeKey = null;
+    if (!readPrefs().music) return;
+    victoryTheme = playThemeDef(VICTORY_THEME_DEF);
+  },
+
+  stopVictoryTheme() {
+    if (victoryTheme) {
+      victoryTheme.stop();
+      victoryTheme = null;
+    }
     if (readPrefs().music && !theme) {
       this.startTheme();
     }
@@ -602,6 +647,10 @@ export const audio = {
       if (bossTheme) {
         bossTheme.stop();
         bossTheme = null;
+      }
+      if (victoryTheme) {
+        victoryTheme.stop();
+        victoryTheme = null;
       }
     }
   },
